@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Playfair+Display:wght@600&display=swap');
+
+:root {
+  --font-display: 'Playfair Display', 'Times New Roman', serif;
+  --font-body: 'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
+
+  --color-bg: #f6f1ea;
+  --color-surface: #ffffff;
+  --color-primary: #c35b1d;
+  --color-secondary: #213547;
+  --color-accent: #e3bc91;
+  --color-muted: #6f6b63;
+
+  --radius-lg: 28px;
+  --radius-md: 18px;
+  --radius-sm: 12px;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #1b1d21;
+    --color-surface: #25282f;
+    --color-primary: #f08a34;
+    --color-secondary: #ebe6df;
+    --color-accent: #d4a770;
+    --color-muted: #a0a3ad;
+    color-scheme: dark;
+  }
+}
