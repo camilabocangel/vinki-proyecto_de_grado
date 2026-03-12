@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+cd frontend/app || exit 1
+npx lint-staged
