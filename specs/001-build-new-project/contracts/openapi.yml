@@ -1,0 +1,876 @@
+openapi: "3.1.0"
+info:
+  title: Vinki API
+  version: "1.0.0"
+  description: |
+    API REST para la plataforma de simulación de entrevistas técnicas Vinki.
+    - Autenticación: JWT en cookies httpOnly (access_token + refresh_token).
+    - Todos los endpoints requieren autenticación excepto /auth/register y /auth/login.
+    - Rate limiting activo en todos los endpoints de /auth/*.
+  contact:
+    name: Vinki Team — UPB
+
+servers:
+  - url: http://localhost:3000/api
+    description: Desarrollo local
+  - url: https://vinki-api.fly.dev/api
+    description: Producción
+
+tags:
+  - name: auth
+    description: Registro, login, refresh, logout
+  - name: catalogs
+    description: Lenguajes, frameworks, niveles, habilidades, preguntas
+  - name: interviews
+    description: Creación y gestión de sesiones de entrevista
+  - name: answers
+    description: Envío de respuestas durante la sesión
+  - name: evaluations
+    description: Resultados de la evaluación IA
+  - name: reports
+    description: Dashboard, historial y exportaciones
+  - name: recruiter
+    description: Panel de reclutador — solo role=recruiter
+  - name: admin
+    description: Gestión del catálogo de preguntas — solo role=admin
+  - name: notifications
+    description: SSE — stream de notificaciones en tiempo real
+
+# ─── COMPONENTS ──────────────────────────────────────────────────────────────
+components:
+  schemas:
+    # --- Auth ---
+    RegisterRequest:
+      type: object
+      required: [name, email, password]
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    AuthResponse:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/UserProfile"
+      description: Tokens enviados en cookies httpOnly (no en body).
+
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum: [student, recruiter, admin]
+        createdAt:
+          type: string
+          format: date-time
+
+    # --- Catalogs ---
+    Language:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+
+    Framework:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        languageId: { type: integer }
+
+    Level:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+
+    Skill:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+
+    # --- Questions ---
+    QuestionSummary:
+      type: object
+      properties:
+        id: { type: integer }
+        questionText: { type: string }
+        type: { type: string }
+        languageId: { type: integer }
+        frameworkId: { type: integer, nullable: true }
+        levelId: { type: integer }
+        skillId: { type: integer }
+        createdAt: { type: string, format: date-time }
+
+    CreateQuestionRequest:
+      type: object
+      required: [questionText, type, languageId, levelId, skillId]
+      properties:
+        questionText: { type: string }
+        type: { type: string }
+        source: { type: string, nullable: true }
+        languageId: { type: integer }
+        frameworkId: { type: integer, nullable: true }
+        levelId: { type: integer }
+        skillId: { type: integer }
+
+    # --- Interviews ---
+    CreateInterviewRequest:
+      type: object
+      required: [roleId, chosenLevelId]
+      properties:
+        roleId: { type: integer }
+        languageId: { type: integer, nullable: true }
+        frameworkId: { type: integer, nullable: true }
+        chosenLevelId: { type: integer }
+
+    InterviewDetail:
+      type: object
+      properties:
+        id: { type: integer }
+        userId: { type: integer }
+        roleId: { type: integer }
+        languageId: { type: integer, nullable: true }
+        frameworkId: { type: integer, nullable: true }
+        chosenLevelId: { type: integer }
+        startedAt: { type: string, format: date-time }
+        finishedAt: { type: string, format: date-time, nullable: true }
+        evaluationStatus:
+          type: string
+          enum: [pending, processing, completed, failed]
+        questions:
+          type: array
+          items:
+            $ref: "#/components/schemas/InterviewQuestionItem"
+
+    InterviewQuestionItem:
+      type: object
+      properties:
+        id: { type: integer }
+        questionId: { type: integer }
+        questionTextSnapshot: { type: string }
+        orderNumber: { type: integer }
+        answer:
+          $ref: "#/components/schemas/AnswerItem"
+          nullable: true
+
+    # --- Answers ---
+    SubmitAnswerRequest:
+      type: object
+      description: Al menos uno de answerText o audioUrl requerido.
+      properties:
+        answerText: { type: string, nullable: true }
+        audioUrl: { type: string, nullable: true, maxLength: 500 }
+
+    AnswerItem:
+      type: object
+      properties:
+        id: { type: integer }
+        answerText: { type: string, nullable: true }
+        audioUrl: { type: string, nullable: true }
+        answeredAt: { type: string, format: date-time }
+
+    # --- Evaluations ---
+    AnswerEvaluationResult:
+      type: object
+      properties:
+        id: { type: integer }
+        answerId: { type: integer }
+        technicalCorrectness:
+          { type: number, minimum: 0, maximum: 5, nullable: true }
+        clarityOfExplanation:
+          { type: number, minimum: 0, maximum: 5, nullable: true }
+        communication: { type: number, minimum: 0, maximum: 5, nullable: true }
+        confidence: { type: number, minimum: 0, maximum: 5, nullable: true }
+        problemSolving: { type: number, minimum: 0, maximum: 5, nullable: true }
+        detectedLevelId: { type: integer, nullable: true }
+        feedbackText: { type: string, nullable: true }
+        evaluatedAt: { type: string, format: date-time }
+
+    InterviewReport:
+      type: object
+      properties:
+        interview:
+          $ref: "#/components/schemas/InterviewDetail"
+        evaluations:
+          type: array
+          items:
+            type: object
+            properties:
+              interviewQuestionId: { type: integer }
+              orderNumber: { type: integer }
+              questionTextSnapshot: { type: string }
+              answer:
+                $ref: "#/components/schemas/AnswerItem"
+              evaluation:
+                $ref: "#/components/schemas/AnswerEvaluationResult"
+                nullable: true
+
+    # --- Dashboard ---
+    StudentDashboard:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/UserProfile"
+        averageScore:
+          type: number
+          nullable: true
+          description: Promedio global de technicalCorrectness (0–5)
+        pendingNotifications:
+          type: integer
+          description: Cantidad de evaluaciones completadas no revisadas
+        recentInterviews:
+          type: array
+          items:
+            $ref: "#/components/schemas/InterviewSummary"
+        skillScores:
+          type: array
+          items:
+            $ref: "#/components/schemas/SkillScoreItem"
+
+    InterviewSummary:
+      type: object
+      properties:
+        id: { type: integer }
+        startedAt: { type: string, format: date-time }
+        finishedAt: { type: string, format: date-time, nullable: true }
+        evaluationStatus: { type: string }
+        chosenLevelId: { type: integer }
+        languageId: { type: integer, nullable: true }
+        frameworkId: { type: integer, nullable: true }
+        averageScore: { type: number, nullable: true }
+
+    SkillScoreItem:
+      type: object
+      properties:
+        skillId: { type: integer }
+        skillName: { type: string }
+        score: { type: number, minimum: 0, maximum: 100 }
+        lastUpdated: { type: string, format: date-time }
+
+    # --- Recruiter ---
+    StudentListItem:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        email: { type: string }
+        createdAt: { type: string, format: date-time }
+        totalInterviews: { type: integer }
+        averageScore: { type: number, nullable: true }
+        lastInterviewAt: { type: string, format: date-time, nullable: true }
+
+    RecruiterNoteRequest:
+      type: object
+      required: [content]
+      properties:
+        content: { type: string }
+        interviewId: { type: integer, nullable: true }
+
+    # --- Common ---
+    PaginatedResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items: {}
+        total: { type: integer }
+        page: { type: integer }
+        limit: { type: integer }
+
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode: { type: integer }
+        message: { type: string }
+        error: { type: string }
+
+  responses:
+    Unauthorized:
+      description: No autenticado o token expirado
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Forbidden:
+      description: Sin permisos para este recurso
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    NotFound:
+      description: Recurso no encontrado
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+# ─── PATHS ───────────────────────────────────────────────────────────────────
+paths:
+  # AUTH
+  /auth/register:
+    post:
+      tags: [auth]
+      summary: Registrar nuevo usuario (role=student por defecto)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+      responses:
+        "201":
+          description: Usuario creado. Cookies httpOnly seteadas.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "409":
+          description: Email ya registrado
+
+  /auth/login:
+    post:
+      tags: [auth]
+      summary: Iniciar sesión
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Login exitoso. Cookies httpOnly seteadas.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /auth/refresh:
+    post:
+      tags: [auth]
+      summary: Refrescar access token usando el refresh token en cookie
+      responses:
+        "200":
+          description: Nuevo access token seteado en cookie.
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /auth/logout:
+    post:
+      tags: [auth]
+      summary: Cerrar sesión — limpia cookies y revoca tokens
+      responses:
+        "204":
+          description: Logout exitoso
+
+  /auth/me:
+    get:
+      tags: [auth]
+      summary: Obtener perfil del usuario autenticado
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+          description: Perfil del usuario
+
+  # CATALOGS
+  /catalogs/languages:
+    get:
+      tags: [catalogs]
+      summary: Listar lenguajes disponibles
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Language"
+          description: Lista de lenguajes
+
+  /catalogs/languages/{languageId}/frameworks:
+    get:
+      tags: [catalogs]
+      summary: Listar frameworks de un lenguaje
+      parameters:
+        - name: languageId
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Framework"
+          description: Lista de frameworks
+
+  /catalogs/levels:
+    get:
+      tags: [catalogs]
+      summary: Listar niveles de experiencia
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Level"
+          description: Lista de niveles
+
+  /catalogs/roles:
+    get:
+      tags: [catalogs]
+      summary: Listar roles de entrevista disponibles (Backend Engineer, etc.)
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id: { type: integer }
+                    name: { type: string }
+          description: Lista de roles
+
+  # QUESTIONS (admin)
+  /admin/questions:
+    get:
+      tags: [admin]
+      summary: Listar preguntas con filtros (role=admin requerido)
+      parameters:
+        - name: languageId
+          in: query
+          schema: { type: integer }
+        - name: levelId
+          in: query
+          schema: { type: integer }
+        - name: skillId
+          in: query
+          schema: { type: integer }
+        - name: q
+          in: query
+          description: Búsqueda por texto libre
+          schema: { type: string }
+        - name: page
+          in: query
+          schema: { type: integer, default: 1 }
+        - name: limit
+          in: query
+          schema: { type: integer, default: 20 }
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/PaginatedResponse"
+                  - properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/QuestionSummary"
+          description: Lista paginada de preguntas
+        "403":
+          $ref: "#/components/responses/Forbidden"
+    post:
+      tags: [admin]
+      summary: Crear pregunta (role=admin requerido)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateQuestionRequest"
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuestionSummary"
+          description: Pregunta creada
+
+  /admin/questions/{id}:
+    put:
+      tags: [admin]
+      summary: Actualizar pregunta
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateQuestionRequest"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuestionSummary"
+          description: Pregunta actualizada
+    delete:
+      tags: [admin]
+      summary: Eliminar pregunta
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "204":
+          description: Pregunta eliminada
+
+  /admin/questions/import:
+    post:
+      tags: [admin]
+      summary: Importar preguntas en lote (CSV o JSON)
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Resultado de la importación
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  created: { type: integer }
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        row: { type: integer }
+                        message: { type: string }
+
+  # INTERVIEWS
+  /interviews:
+    post:
+      tags: [interviews]
+      summary: Iniciar nueva sesión de entrevista (role=student)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateInterviewRequest"
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InterviewDetail"
+          description: Entrevista creada con 5 preguntas asignadas
+        "409":
+          description: El estudiante ya tiene una entrevista en curso
+
+  /interviews/{id}:
+    get:
+      tags: [interviews]
+      summary: Obtener estado actual de una entrevista
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InterviewDetail"
+          description: Detalle de la entrevista
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /interviews/{id}/finish:
+    post:
+      tags: [interviews]
+      summary: Cerrar entrevista y disparar evaluación IA en batch
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Entrevista cerrada. Job de evaluación encolado.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  interviewId: { type: integer }
+                  evaluationStatus: { type: string, example: processing }
+
+  # ANSWERS
+  /interviews/{interviewId}/questions/{questionId}/answer:
+    post:
+      tags: [answers]
+      summary: Enviar respuesta a una pregunta de la entrevista activa
+      parameters:
+        - name: interviewId
+          in: path
+          required: true
+          schema: { type: integer }
+        - name: questionId
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubmitAnswerRequest"
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnswerItem"
+          description: Respuesta guardada
+        "409":
+          description: Ya existe una respuesta para esta pregunta
+
+  # REPORTS
+  /dashboard:
+    get:
+      tags: [reports]
+      summary: Dashboard del estudiante autenticado
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StudentDashboard"
+          description: Datos del dashboard
+
+  /interviews/{id}/report:
+    get:
+      tags: [reports]
+      summary: Reporte completo de una entrevista finalizada con evaluaciones
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InterviewReport"
+          description: Reporte de la entrevista
+
+  /interviews/{id}/report/export:
+    get:
+      tags: [reports]
+      summary: Exportar reporte de entrevista como PDF o CSV
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+        - name: format
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [pdf, csv]
+      responses:
+        "200":
+          description: Archivo de exportación
+          content:
+            application/pdf:
+              schema: { type: string, format: binary }
+            text/csv:
+              schema: { type: string, format: binary }
+
+  /interviews/{id}/mark-seen:
+    post:
+      tags: [reports]
+      summary: Marcar notificación de evaluación como vista (fallback offline SSE)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "204":
+          description: Marcada como vista
+
+  # RECRUITER
+  /recruiter/students:
+    get:
+      tags: [recruiter]
+      summary: Listar todos los estudiantes con métricas (role=recruiter)
+      parameters:
+        - name: languageId
+          in: query
+          schema: { type: integer }
+        - name: levelId
+          in: query
+          schema: { type: integer }
+        - name: minScore
+          in: query
+          schema: { type: number }
+        - name: page
+          in: query
+          schema: { type: integer, default: 1 }
+        - name: limit
+          in: query
+          schema: { type: integer, default: 20 }
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/PaginatedResponse"
+                  - properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/StudentListItem"
+          description: Lista paginada de estudiantes
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /recruiter/students/{studentId}:
+    get:
+      tags: [recruiter]
+      summary: Perfil detallado de un estudiante (role=recruiter)
+      parameters:
+        - name: studentId
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: "#/components/schemas/UserProfile"
+                  skillScores:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SkillScoreItem"
+                  recentInterviews:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/InterviewSummary"
+          description: Perfil del estudiante
+
+  /recruiter/students/{studentId}/notes:
+    post:
+      tags: [recruiter]
+      summary: Agregar nota interna sobre un estudiante
+      parameters:
+        - name: studentId
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecruiterNoteRequest"
+      responses:
+        "201":
+          description: Nota agregada
+
+  /recruiter/students/export:
+    get:
+      tags: [recruiter]
+      summary: Exportar reporte de uno o varios estudiantes
+      parameters:
+        - name: studentIds
+          in: query
+          schema:
+            type: array
+            items: { type: integer }
+        - name: format
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [pdf, csv]
+      responses:
+        "200":
+          description: Archivo de exportación
+          content:
+            application/pdf:
+              schema: { type: string, format: binary }
+            text/csv:
+              schema: { type: string, format: binary }
+
+  # SSE NOTIFICATIONS
+  /notifications/stream:
+    get:
+      tags: [notifications]
+      summary: |
+        SSE stream de notificaciones del usuario autenticado.
+        El cliente se conecta tras cerrar una entrevista y escucha el evento
+        `evaluation.completed` o `evaluation.failed`.
+      responses:
+        "200":
+          description: Stream SSE activo
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                example: |
+                  data: {"type":"evaluation.completed","interviewId":42,"evaluationId":7,"message":"¡Tu evaluación está lista!"}
+        "401":
+          $ref: "#/components/responses/Unauthorized"
