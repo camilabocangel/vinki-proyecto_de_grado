@@ -61,8 +61,8 @@ services:
       JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
       JWT_ACCESS_EXPIRATION: 15m
       JWT_REFRESH_EXPIRATION: 7d
-      OPENAI_API_KEY: ${OPENAI_API_KEY:-sk-dummy}
-      LLM_SANDBOX: 'true'
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      LLM_SANDBOX: ${LLM_SANDBOX:-false}
       AWS_S3_BUCKET: vinki-audio
       AWS_S3_ENDPOINT: http://minio:9000
       AWS_S3_ACCESS_KEY: minioadmin
