@@ -1,6 +1,6 @@
 # Data Model: Vinki — Plataforma de Simulación de Entrevistas Técnicas
 
-**Branch**: `001-build-new-project` | **Date**: 2026-03-19  
+**Branch**: `001-build-new-project` | **Date**: 2026-03-20  
 **Source**: `docs/db.sql` + `docs/dbDiagram.txt` + clarificaciones de spec
 
 ---
@@ -265,5 +265,6 @@ RecruiterNote ──? Interview
 | `interviews.evaluation_notification_seen BOOLEAN` añadido | Fallback offline para SSE (ver R3.4 en research.md)                                                               |
 | `recruiter_notes` tabla añadida                           | FR-023: reclutadores pueden agregar notas internas                                                                |
 | `users.role VARCHAR(20)` añadido                          | FR-003: roles en la tabla de usuarios (vs tabla `roles` separada que queda para catálogos de roles de entrevista) |
+| Puertos Docker alternativos (5433, 6380)         | Evitar conflictos con servicios locales del desarrollador              |
 
 > La tabla `roles` original del schema se conserva para los roles de entrevista (Backend Engineer, Fullstack Engineer) — es un catálogo de perfiles, distinto del campo `role` del usuario.

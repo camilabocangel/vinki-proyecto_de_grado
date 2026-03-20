@@ -12,7 +12,9 @@ info:
 
 servers:
   - url: http://localhost:3000/api
-    description: Desarrollo local
+    description: Desarrollo local (npm run start:dev)
+  - url: http://localhost:3001/api
+    description: Desarrollo Docker Compose
   - url: https://vinki-api.fly.dev/api
     description: Producción
 

@@ -9,6 +9,7 @@
 - **Framework**: NestJS (Node.js 20) + TypeScript.
 - **Base de datos**: PostgreSQL 15 + extensión `vector`. ORM recomendado: Prisma o TypeORM.
 - **Mensajería**: Redis + BullMQ para trabajos asincrónicos de evaluación.
+  > **Nota Docker**: En Docker Compose, PostgreSQL usa el puerto **5433** y Redis usa **6380** para evitar conflictos con instancias locales (puertos estándar 5432/6379).
 - **Observabilidad**: Winston/Pino para logs estructurados, métricas Prometheus, tracing OpenTelemetry opcional.
 - **Integraciones**: Servicio de embeddings/vector search (pgvector o proveedor externo), API LLM (OpenAI/Azure), almacenamiento de audio (S3 compatible).
 

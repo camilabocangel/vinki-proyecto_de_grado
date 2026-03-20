@@ -21,8 +21,8 @@ cd vinki
 # Backend
 cp backend/.env.example backend/.env
 # Editar backend/.env:
-#   DATABASE_URL="postgresql://vinki:password@localhost:5432/vinki_dev"
-#   REDIS_URL="redis://localhost:6379"
+#   DATABASE_URL="postgresql://vinki:vinki_dev@localhost:5433/vinki?schema=public"
+#   REDIS_URL="redis://localhost:6380"
 #   JWT_PRIVATE_KEY="<RS256 private key PEM>"
 #   JWT_PUBLIC_KEY="<RS256 public key PEM>"
 #   OPENAI_API_KEY="sk-..."
@@ -43,13 +43,16 @@ cp frontend/app/.env.example frontend/app/.env
 ```bash
 # Desde la raíz del repositorio
 docker compose up -d
-# Levanta: postgres:15 (puerto 5432) + pgvector, redis:7 (puerto 6379), minio (puerto 9000)
+# Levanta: postgres:15 (puerto 5433) + pgvector, redis:7 (puerto 6380), minio (puerto 9000), backend NestJS (puerto 3001), frontend Vite (puerto 5174)
 ```
 
 Verificar:
 
 ```bash
 docker compose ps  # todos deben estar "running"
+# Nota: Los puertos del host son 5433 (PostgreSQL), 6380 (Redis), 9000/9001 (MinIO),
+# 3001 (Backend API), 5174 (Frontend). Se usan puertos alternativos para evitar
+# conflictos con servicios locales existentes.
 ```
 
 ---
@@ -91,17 +94,17 @@ rm jwt_private.pem jwt_public.pem
 ## 5. Iniciar backend y frontend
 
 ```bash
-# Terminal 1 — Backend (NestJS en localhost:3000)
+# Terminal 1 — Backend (NestJS en localhost:3000, o localhost:3001 via Docker)
 cd backend
 npm run start:dev
 
-# Terminal 2 — Frontend (Vite en localhost:5173)
+# Terminal 2 — Frontend (Vite en localhost:5173, o localhost:5174 via Docker)
 cd frontend/app
 npm install
 npm run dev
 ```
 
-Backend Swagger disponible en: `http://localhost:3000/api/docs`
+Backend Swagger disponible en: `http://localhost:3000/api/docs` (local) o `http://localhost:3001/api/docs` (Docker)
 
 ---
 
@@ -185,7 +188,7 @@ vinki/
 ├── docs/
 │   ├── db.sql                 # Schema canónico + seeds de referencia
 │   └── dbDiagram.txt          # Diagrama de entidades
-└── docker-compose.yml         # PostgreSQL + pgvector + Redis + MinIO
+└── docker-compose.yml         # PostgreSQL + pgvector + Redis + MinIO + Backend + Frontend
 ```
 
 ---
@@ -210,3 +213,4 @@ vinki/
 | `BullMQ worker not processing jobs`       | Verificar `REDIS_URL` en `.env` y que el contenedor de Redis está corriendo            |
 | `husky hooks not running`                 | Ejecutar `git config core.hooksPath .husky` en la raíz del repo                        |
 | `openapi-typescript client outdated`      | Ejecutar `npm run generate:api` en `frontend/app` tras cambios en el backend           |
+| Puerto ya en uso al levantar Docker | Los puertos por defecto (5432, 6379) pueden estar ocupados. docker-compose.yml usa 5433/6380 como alternativa |

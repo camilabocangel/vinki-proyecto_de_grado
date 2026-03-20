@@ -1,6 +1,6 @@
 # Implementation Plan: Vinki — Plataforma de Simulación de Entrevistas Técnicas
 
-**Branch**: `001-build-new-project` | **Date**: 2026-03-19 | **Spec**: [spec.md](spec.md)
+**Branch**: `001-build-new-project` | **Date**: 2026-03-19 | **Spec**: [spec.md](spec.md) | **Status**: Implementation ~88% complete (76/86 tasks done)
 **Input**: Feature specification from `/specs/001-build-new-project/spec.md`
 
 ## Summary
@@ -9,11 +9,11 @@ Vinki es una plataforma web full-stack para simulación de entrevistas técnicas
 
 ## Technical Context
 
-**Language/Version**: TypeScript 5.x — Node.js 20 (backend) / React 18 + Vite (frontend)  
+**Language/Version**: TypeScript 5.x — Node.js 20 (backend) / React 19 + Vite (frontend)  
 **Primary Dependencies**:
 
 - Backend: NestJS, Prisma (ORM), BullMQ + Redis (colas), `pgvector` (semantic search), OpenAI SDK, Passport + JWT, Pino (logs)
-- Frontend: React 18, Ant Design, Zustand, TanStack Query, Vite, Vitest, Playwright
+- Frontend: React 19, Ant Design 6, Zustand, TanStack Query, Vite, Vitest, Playwright
 
 **Storage**: PostgreSQL 15 con extensión `pgvector`; Redis (colas BullMQ); S3-compatible (audio, registro complementario)  
 **Testing**: Backend — Jest + Supertest (unit/e2e, ≥70% cobertura módulos críticos); Frontend — Vitest + React Testing Library (unit) + Playwright (E2E)  
@@ -73,7 +73,7 @@ backend/
 │   ├── integration/
 │   └── e2e/
 ├── .env.example
-└── docker-compose.yml
+└── docker-compose.yml     # Includes backend and frontend services
 
 frontend/app/
 ├── src/
