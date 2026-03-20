@@ -7,9 +7,9 @@ export default function InterviewConfirmationPage() {
   const navigate = useNavigate()
 
   return (
-    <div style={{ padding: 24, maxWidth: 600, margin: '0 auto' }}>
+    <div className="vinki-page" style={{ maxWidth: 600, margin: '0 auto' }}>
       <Result
-        icon={<CheckCircleFilled style={{ color: '#52c41a' }} />}
+        icon={<CheckCircleFilled style={{ color: '#7C3AED' }} />}
         title="¡Entrevista enviada!"
         subTitle="Tu evaluación está siendo procesada por nuestra IA. Recibirás una notificación cuando esté lista."
         extra={[

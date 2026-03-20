@@ -63,8 +63,10 @@ export default function RecruiterDashboardPage() {
   ]
 
   return (
-    <div style={{ padding: 24 }}>
-      <Title level={2}>Panel de reclutador</Title>
+    <div className="vinki-page">
+      <Title level={3} className="vinki-page-title">
+        Panel de reclutador
+      </Title>
 
       <Space style={{ marginBottom: 16 }}>
         <Select

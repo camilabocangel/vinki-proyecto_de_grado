@@ -52,7 +52,12 @@ export default function InterviewSessionPage() {
     },
   })
 
-  if (isLoading || !currentInterview) return <Skeleton active paragraph={{ rows: 6 }} />
+  if (isLoading || !currentInterview)
+    return (
+      <div className="vinki-page">
+        <Skeleton active paragraph={{ rows: 6 }} />
+      </div>
+    )
 
   const question = currentInterview.questions[currentQuestionIndex]
   const totalQuestions = currentInterview.questions.length
@@ -76,7 +81,7 @@ export default function InterviewSessionPage() {
   }
 
   return (
-    <div style={{ padding: 24, maxWidth: 800, margin: '0 auto' }}>
+    <div className="vinki-page" style={{ maxWidth: 800, margin: '0 auto' }}>
       <Progress
         percent={((currentQuestionIndex + 1) / totalQuestions) * 100}
         format={() => `${currentQuestionIndex + 1} / ${totalQuestions}`}

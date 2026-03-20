@@ -4,7 +4,7 @@ import { Steps, Card, Select, Button, Typography, Space, App } from 'antd'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { api } from '../../api/client'
 
-const { Title, Paragraph } = Typography
+const { Title, Text } = Typography
 
 interface CatalogItem {
   id: number
@@ -119,9 +119,13 @@ export default function InterviewWizardPage() {
   ]
 
   return (
-    <div style={{ padding: 24, maxWidth: 600, margin: '0 auto' }}>
-      <Title level={2}>Configurar entrevista</Title>
-      <Paragraph>Selecciona los parámetros de tu sesión de práctica.</Paragraph>
+    <div className="vinki-page" style={{ maxWidth: 640, margin: '0 auto' }}>
+      <Title level={3} className="vinki-page-title">
+        Configurar entrevista
+      </Title>
+      <Text type="secondary" style={{ display: 'block', marginBottom: 24 }}>
+        Selecciona los parámetros de tu sesión de práctica.
+      </Text>
 
       <Steps
         current={current}
@@ -129,7 +133,9 @@ export default function InterviewWizardPage() {
         style={{ marginBottom: 24 }}
       />
 
-      <Card style={{ marginBottom: 24 }}>{steps[current].content}</Card>
+      <Card className="vinki-card" style={{ marginBottom: 24 }}>
+        {steps[current].content}
+      </Card>
 
       <Space>
         {current > 0 && <Button onClick={() => setCurrent(current - 1)}>Anterior</Button>}

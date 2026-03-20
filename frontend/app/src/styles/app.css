@@ -1,72 +1,293 @@
-.app-shell {
-  min-height: 100vh;
-  background: transparent;
+/* ==========================================
+   Vinki App Layout Styles
+   ========================================== */
+
+/* Sidebar */
+.vinki-sidebar {
+  background: var(--color-sidebar) !important;
+  border-right: none;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
 }
 
-.app-header {
-  padding: 3.5rem clamp(1.5rem, 4vw, 5rem);
-  background: linear-gradient(135deg, rgba(195, 91, 29, 0.92), rgba(33, 53, 71, 0.9));
-  color: #fff;
-  margin: 2rem;
-  border-radius: var(--radius-lg);
-  box-shadow: 0 25px 80px rgba(33, 53, 71, 0.25);
-  position: relative;
-  overflow: hidden;
-}
-
-.app-content {
-  padding: 0 clamp(2rem, 5vw, 6rem) 4rem;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.5rem;
-  margin-top: 2rem;
-}
-
-.roadmap-columns {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-  margin-top: 2.5rem;
-}
-
-.roadmap-card {
-  border: none;
-  box-shadow: 0 20px 50px rgba(33, 53, 71, 0.08);
-  border-radius: var(--radius-md);
-}
-
-.roadmap-card .ant-card-head {
-  border-bottom: none;
-}
-
-.roadmap-card h3 {
-  font-family: var(--font-display);
-  letter-spacing: 0.4px;
-}
-
-.roadmap-card ul {
-  padding-left: 1.25rem;
-  color: var(--color-muted);
-  line-height: 1.6;
-}
-
-.cta-stack {
+.vinki-sidebar .ant-layout-sider-children {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
+  flex-direction: column;
 }
 
-.floating-badge {
-  position: absolute;
-  top: 18px;
-  right: 18px;
-  padding: 0.4rem 0.9rem;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  font-size: 0.85rem;
+.vinki-logo {
+  padding: 24px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.vinki-logo-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.vinki-logo-text {
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+/* Sidebar menu label */
+.vinki-menu-label {
+  padding: 20px 24px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-sidebar-text);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+}
+
+/* Sidebar menu overrides */
+.vinki-sidebar .ant-menu {
+  background: transparent !important;
+  border-right: none;
+  padding: 0 12px;
+}
+
+.vinki-sidebar .ant-menu-item {
+  margin: 2px 0 !important;
+  border-radius: var(--radius-md) !important;
+  color: var(--color-sidebar-text) !important;
+  height: 44px !important;
+  line-height: 44px !important;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.vinki-sidebar .ant-menu-item:hover {
+  color: #fff !important;
+  background: rgba(124, 58, 237, 0.15) !important;
+}
+
+.vinki-sidebar .ant-menu-item-selected {
+  background: var(--color-primary) !important;
+  color: #fff !important;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.35);
+}
+
+.vinki-sidebar .ant-menu-item .anticon {
+  font-size: 18px;
+}
+
+/* Sidebar logout */
+.vinki-logout {
+  margin-top: auto;
+  padding: 16px 12px 24px;
+}
+
+.vinki-logout .ant-btn {
+  width: 100%;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--color-sidebar-text);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-start;
+  padding-left: 16px;
+}
+
+.vinki-logout .ant-btn:hover {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: var(--color-error) !important;
+  border-color: rgba(239, 68, 68, 0.2) !important;
+}
+
+/* Header */
+.vinki-header {
+  background: var(--color-surface) !important;
+  padding: 0 32px !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.vinki-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.vinki-header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.vinki-user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  transition: background 0.2s;
+}
+
+.vinki-user-info:hover {
+  background: var(--color-bg);
+}
+
+/* Content */
+.vinki-content {
+  background: var(--color-bg) !important;
+  padding: 0;
+  min-height: calc(100vh - 64px);
+}
+
+/* Page containers */
+.vinki-page {
+  padding: 28px 32px;
+  max-width: 1280px;
+}
+
+.vinki-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.vinki-page-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0 !important;
+}
+
+/* Cards */
+.vinki-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.2s ease;
+}
+
+.vinki-card:hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+.vinki-card .ant-card-head {
+  border-bottom: 1px solid var(--color-border);
+  padding: 16px 24px;
+  min-height: auto;
+}
+
+.vinki-card .ant-card-head-title {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* Stat cards */
+.vinki-stat-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-card);
+  padding: 20px 24px;
+}
+
+.vinki-stat-card .ant-statistic-title {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.vinki-stat-card .ant-statistic-content {
+  font-weight: 700;
+}
+
+/* Score circles */
+.vinki-score-circle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.vinki-score-circle .ant-progress-text {
+  font-weight: 700;
+  font-size: 18px !important;
+}
+
+/* Status tags */
+.vinki-status-processing {
+  color: var(--color-primary);
+  background: var(--color-primary-bg);
+  border-color: var(--color-primary-light);
+}
+
+.vinki-status-completed {
+  color: var(--color-success);
+  background: #ecfdf5;
+  border-color: #6ee7b7;
+}
+
+.vinki-status-failed {
+  color: var(--color-error);
+  background: #fef2f2;
+  border-color: #fca5a5;
+}
+
+/* Grid utilities */
+.vinki-grid-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+/* Auth pages */
+.vinki-auth-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #1e1b2e 0%, #2d2645 50%, #1e1b2e 100%);
+}
+
+.vinki-auth-card {
+  width: 420px;
+  max-width: 90vw;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+  border: none;
+}
+
+.vinki-auth-logo {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.vinki-auth-logo-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 12px;
 }

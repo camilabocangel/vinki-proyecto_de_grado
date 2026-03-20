@@ -75,9 +75,11 @@ export default function AdminQuestionsPage() {
   ]
 
   return (
-    <div style={{ padding: 24 }}>
+    <div className="vinki-page">
       <Space style={{ marginBottom: 16, width: '100%', justifyContent: 'space-between' }}>
-        <Title level={2}>Catálogo de preguntas</Title>
+        <Title level={3} className="vinki-page-title">
+          Catálogo de preguntas
+        </Title>
         <Space>
           <Button type="primary" icon={<PlusOutlined />}>
             Nueva pregunta

@@ -5,10 +5,12 @@ import {
   Typography,
   Tag,
   Skeleton,
-  Descriptions,
   Collapse,
   Space,
   Button,
+  Row,
+  Col,
+  Progress,
 } from 'antd'
 import { DownloadOutlined } from '@ant-design/icons'
 import { api } from '../../api/client'
@@ -38,7 +40,23 @@ interface ReportData {
   evaluations: ReportItem[]
 }
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
+
+const metricLabels: Record<string, string> = {
+  technicalCorrectness: 'Corrección técnica',
+  clarityOfExplanation: 'Claridad',
+  communication: 'Comunicación',
+  confidence: 'Confianza',
+  problemSolving: 'Resolución',
+}
+
+const metricColors: Record<string, string> = {
+  technicalCorrectness: '#7C3AED',
+  clarityOfExplanation: '#3B82F6',
+  communication: '#10B981',
+  confidence: '#F97316',
+  problemSolving: '#EF4444',
+}
 
 export default function FeedbackPage() {
   const { id } = useParams<{ id: string }>()
@@ -49,9 +67,18 @@ export default function FeedbackPage() {
     enabled: !!id,
   })
 
-  if (isLoading) return <Skeleton active paragraph={{ rows: 10 }} />
-
-  if (!data) return <Paragraph>No se encontró el reporte.</Paragraph>
+  if (isLoading)
+    return (
+      <div className="vinki-page">
+        <Skeleton active paragraph={{ rows: 10 }} />
+      </div>
+    )
+  if (!data)
+    return (
+      <div className="vinki-page">
+        <Paragraph>No se encontró el reporte.</Paragraph>
+      </div>
+    )
 
   const avgMetrics = (evals: ReportItem[]) => {
     const evaluated = evals.filter((e) => e.evaluation)
@@ -71,9 +98,21 @@ export default function FeedbackPage() {
   const avg = avgMetrics(data.evaluations)
 
   return (
-    <div style={{ padding: 24, maxWidth: 900, margin: '0 auto' }}>
-      <Space style={{ marginBottom: 16, width: '100%', justifyContent: 'space-between' }}>
-        <Title level={2}>Reporte de entrevista</Title>
+    <div className="vinki-page">
+      <div className="vinki-page-header">
+        <div>
+          <Title level={3} className="vinki-page-title">
+            Reporte de entrevista
+          </Title>
+          <Tag
+            color={data.interview.evaluationStatus === 'completed' ? 'green' : 'purple'}
+            style={{ marginTop: 4 }}
+          >
+            {data.interview.evaluationStatus === 'completed'
+              ? 'Evaluación completada'
+              : 'En proceso'}
+          </Tag>
+        </div>
         <Space>
           <Button
             icon={<DownloadOutlined />}
@@ -88,74 +127,150 @@ export default function FeedbackPage() {
             CSV
           </Button>
         </Space>
-      </Space>
-
-      <Tag
-        color={data.interview.evaluationStatus === 'completed' ? 'success' : 'processing'}
-      >
-        {data.interview.evaluationStatus}
-      </Tag>
+      </div>
 
       {avg && (
-        <Card style={{ marginTop: 16, marginBottom: 24 }}>
-          <Title level={4}>Resumen de métricas</Title>
-          <SkillRadarChart
-            data={[
-              { metric: 'Corrección técnica', value: avg.technicalCorrectness },
-              { metric: 'Claridad', value: avg.clarityOfExplanation },
-              { metric: 'Comunicación', value: avg.communication },
-              { metric: 'Confianza', value: avg.confidence },
-              { metric: 'Resolución', value: avg.problemSolving },
-            ]}
-          />
-        </Card>
+        <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+          <Col xs={24} md={12}>
+            <Card className="vinki-card" title="Métricas promedio">
+              <SkillRadarChart
+                data={[
+                  { metric: 'Corrección', value: avg.technicalCorrectness },
+                  { metric: 'Claridad', value: avg.clarityOfExplanation },
+                  { metric: 'Comunicación', value: avg.communication },
+                  { metric: 'Confianza', value: avg.confidence },
+                  { metric: 'Resolución', value: avg.problemSolving },
+                ]}
+              />
+            </Card>
+          </Col>
+          <Col xs={24} md={12}>
+            <Card className="vinki-card" title="Desglose por métrica">
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 16,
+                  padding: '8px 0',
+                }}
+              >
+                {Object.entries(avg).map(([key, value]) => (
+                  <div key={key}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        marginBottom: 6,
+                      }}
+                    >
+                      <Text style={{ fontWeight: 500 }}>{metricLabels[key]}</Text>
+                      <Text strong>{((value / 5) * 100).toFixed(0)}%</Text>
+                    </div>
+                    <Progress
+                      percent={(value / 5) * 100}
+                      showInfo={false}
+                      strokeColor={metricColors[key]}
+                      size="small"
+                    />
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </Col>
+        </Row>
       )}
 
-      <Collapse
-        items={data.evaluations.map((item) => ({
-          key: item.interviewQuestionId,
-          label: `Pregunta ${item.orderNumber}: ${item.questionTextSnapshot.slice(0, 80)}...`,
-          children: (
-            <div>
-              <Descriptions column={1} bordered size="small">
-                <Descriptions.Item label="Tu respuesta">
-                  {item.answer?.answerText || <Text type="secondary">Sin respuesta</Text>}
-                </Descriptions.Item>
-              </Descriptions>
-              {item.evaluation && (
-                <>
-                  <Descriptions
-                    column={2}
-                    bordered
-                    size="small"
-                    style={{ marginTop: 12 }}
+      <Card className="vinki-card" title="Detalle por pregunta">
+        <Collapse
+          expandIconPosition="end"
+          items={data.evaluations.map((item) => ({
+            key: item.interviewQuestionId,
+            label: (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <Tag color="purple">P{item.orderNumber}</Tag>
+                <Text>
+                  {item.questionTextSnapshot.slice(0, 100)}
+                  {item.questionTextSnapshot.length > 100 ? '...' : ''}
+                </Text>
+              </div>
+            ),
+            children: (
+              <div>
+                <div
+                  style={{
+                    padding: '12px 16px',
+                    background: '#F9FAFB',
+                    borderRadius: 8,
+                    marginBottom: 16,
+                  }}
+                >
+                  <Text
+                    type="secondary"
+                    style={{ fontSize: 12, display: 'block', marginBottom: 4 }}
                   >
-                    <Descriptions.Item label="Corrección técnica">
-                      {item.evaluation.technicalCorrectness}/5
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Claridad">
-                      {item.evaluation.clarityOfExplanation}/5
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Comunicación">
-                      {item.evaluation.communication}/5
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Confianza">
-                      {item.evaluation.confidence}/5
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Resolución">
-                      {item.evaluation.problemSolving}/5
-                    </Descriptions.Item>
-                  </Descriptions>
-                  <Card size="small" style={{ marginTop: 12 }}>
-                    <Title level={5}>Feedback</Title>
-                    <Paragraph>{item.evaluation.feedbackText}</Paragraph>
-                  </Card>
-                </>
-              )}
-            </div>
-          ),
-        }))}
-      />
+                    Tu respuesta
+                  </Text>
+                  <Text>{item.answer?.answerText || 'Sin respuesta escrita'}</Text>
+                </div>
+                {item.evaluation && (
+                  <>
+                    <Row gutter={[12, 12]} style={{ marginBottom: 16 }}>
+                      {Object.entries(metricLabels).map(([key, label]) => (
+                        <Col xs={12} sm={8} key={key}>
+                          <div
+                            style={{
+                              textAlign: 'center',
+                              padding: 12,
+                              background: '#F9FAFB',
+                              borderRadius: 8,
+                            }}
+                          >
+                            <Text
+                              type="secondary"
+                              style={{ fontSize: 11, display: 'block' }}
+                            >
+                              {label}
+                            </Text>
+                            <Text
+                              strong
+                              style={{ fontSize: 20, color: metricColors[key] }}
+                            >
+                              {(
+                                item.evaluation?.[key as keyof Evaluation] as number
+                              )?.toFixed(1)}
+                            </Text>
+                            <Text type="secondary" style={{ fontSize: 11 }}>
+                              /5
+                            </Text>
+                          </div>
+                        </Col>
+                      ))}
+                    </Row>
+                    <Card
+                      size="small"
+                      style={{
+                        background: '#F5F3FF',
+                        border: '1px solid #E9D5FF',
+                        borderRadius: 8,
+                      }}
+                    >
+                      <Text
+                        type="secondary"
+                        style={{ fontSize: 12, display: 'block', marginBottom: 4 }}
+                      >
+                        Feedback IA
+                      </Text>
+                      <Paragraph style={{ marginBottom: 0 }}>
+                        {item.evaluation.feedbackText}
+                      </Paragraph>
+                    </Card>
+                  </>
+                )}
+              </div>
+            ),
+          }))}
+        />
+      </Card>
     </div>
   )
 }

@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { Form, Input, Button, Card, Typography, Alert, Layout } from 'antd'
+import { Form, Input, Button, Card, Typography, Alert } from 'antd'
 import { MailOutlined, LockOutlined } from '@ant-design/icons'
 import { useAuth } from '../../hooks/useAuth'
 
-const { Title, Paragraph } = Typography
+const { Title, Text } = Typography
 
 export default function LoginPage() {
   const navigate = useNavigate()
@@ -24,58 +24,66 @@ export default function LoginPage() {
   }
 
   return (
-    <Layout
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    >
-      <Card style={{ width: 400, maxWidth: '90vw' }}>
-        <Title level={2} style={{ textAlign: 'center' }}>
-          Vinki
-        </Title>
-        <Paragraph style={{ textAlign: 'center' }}>
-          Inicia sesión para continuar
-        </Paragraph>
+    <div className="vinki-auth-page">
+      <Card className="vinki-auth-card" styles={{ body: { padding: '40px 36px' } }}>
+        <div className="vinki-auth-logo">
+          <div className="vinki-auth-logo-icon">V</div>
+          <Title level={3} style={{ marginBottom: 4 }}>
+            Bienvenido a Vinki
+          </Title>
+          <Text type="secondary">Inicia sesión para continuar</Text>
+        </div>
 
         {loginError && (
           <Alert
             message={loginError.message}
             type="error"
             showIcon
-            style={{ marginBottom: 16 }}
+            style={{ marginBottom: 20, borderRadius: 8 }}
           />
         )}
 
-        <Form layout="vertical" onFinish={onFinish}>
+        <Form layout="vertical" onFinish={onFinish} size="large">
           <Form.Item
             name="email"
+            label="Email"
             rules={[{ required: true, type: 'email', message: 'Email válido requerido' }]}
           >
-            <Input prefix={<MailOutlined />} placeholder="Email" size="large" />
+            <Input
+              prefix={<MailOutlined style={{ color: '#9CA3AF' }} />}
+              placeholder="tu@email.com"
+            />
           </Form.Item>
           <Form.Item
             name="password"
+            label="Contraseña"
             rules={[{ required: true, message: 'Contraseña requerida' }]}
           >
             <Input.Password
-              prefix={<LockOutlined />}
-              placeholder="Contraseña"
-              size="large"
+              prefix={<LockOutlined style={{ color: '#9CA3AF' }} />}
+              placeholder="Tu contraseña"
             />
           </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit" loading={loading} block size="large">
+          <Form.Item style={{ marginBottom: 16 }}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={loading}
+              block
+              size="large"
+              style={{ height: 46 }}
+            >
               Iniciar sesión
             </Button>
           </Form.Item>
         </Form>
         <div style={{ textAlign: 'center' }}>
-          <Link to="/register">¿No tienes cuenta? Regístrate</Link>
+          <Text type="secondary">¿No tienes cuenta? </Text>
+          <Link to="/register" style={{ fontWeight: 600 }}>
+            Regístrate
+          </Link>
         </div>
       </Card>
-    </Layout>
+    </div>
   )
 }
