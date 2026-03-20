@@ -178,6 +178,9 @@ model AnswerEvaluation {
   problemSolving       Float?   @map("problem_solving") @db.Real
   detectedLevelId      Int?     @map("detected_level_id")
   feedbackText         String?  @map("feedback_text")
+  juniorAnswer         String?  @map("junior_answer")
+  midAnswer            String?  @map("mid_answer")
+  seniorAnswer         String?  @map("senior_answer")
   evaluatedAt          DateTime @default(now()) @map("evaluated_at") @db.Timestamptz()
 
   answer        Answer @relation(fields: [answerId], references: [id], onDelete: Cascade)

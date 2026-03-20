@@ -90,6 +90,9 @@ export class EvaluationProcessor extends WorkerHost {
             problemSolving: result.problemSolving,
             detectedLevelId,
             feedbackText: result.feedbackText,
+            juniorAnswer: result.juniorAnswer,
+            midAnswer: result.midAnswer,
+            seniorAnswer: result.seniorAnswer,
           },
         });
 

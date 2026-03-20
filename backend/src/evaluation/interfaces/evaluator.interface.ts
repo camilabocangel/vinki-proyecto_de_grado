@@ -15,6 +15,9 @@ export interface EvaluationOutput {
   problemSolving: number;
   feedbackText: string;
   detectedLevel: 'Junior' | 'Mid' | 'Senior';
+  juniorAnswer: string;
+  midAnswer: string;
+  seniorAnswer: string;
 }
 
 export interface AnswerInputWithLevel extends AnswerInput {

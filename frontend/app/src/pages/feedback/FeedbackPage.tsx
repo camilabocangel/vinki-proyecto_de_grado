@@ -26,6 +26,9 @@ interface Evaluation {
   problemSolving: number | null
   feedbackText: string | null
   detectedLevel: { id: number; name: string } | null
+  juniorAnswer: string | null
+  midAnswer: string | null
+  seniorAnswer: string | null
 }
 
 interface ReportItem {
@@ -289,6 +292,7 @@ export default function FeedbackPage() {
                         background: '#F5F3FF',
                         border: '1px solid #E9D5FF',
                         borderRadius: 8,
+                        marginBottom: 16,
                       }}
                     >
                       <Text
@@ -301,6 +305,72 @@ export default function FeedbackPage() {
                         {item.evaluation.feedbackText}
                       </Paragraph>
                     </Card>
+
+                    {(item.evaluation.juniorAnswer ||
+                      item.evaluation.midAnswer ||
+                      item.evaluation.seniorAnswer) && (
+                      <Card
+                        size="small"
+                        title="Respuestas recomendadas por nivel"
+                        style={{ borderRadius: 8 }}
+                      >
+                        <div
+                          style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
+                        >
+                          {item.evaluation.juniorAnswer && (
+                            <div
+                              style={{
+                                padding: '12px 16px',
+                                background: '#ECFDF5',
+                                border: '1px solid #A7F3D0',
+                                borderRadius: 8,
+                              }}
+                            >
+                              <Tag color="green" style={{ marginBottom: 6 }}>
+                                Junior
+                              </Tag>
+                              <Paragraph style={{ marginBottom: 0, fontSize: 13 }}>
+                                {item.evaluation.juniorAnswer}
+                              </Paragraph>
+                            </div>
+                          )}
+                          {item.evaluation.midAnswer && (
+                            <div
+                              style={{
+                                padding: '12px 16px',
+                                background: '#EFF6FF',
+                                border: '1px solid #BFDBFE',
+                                borderRadius: 8,
+                              }}
+                            >
+                              <Tag color="blue" style={{ marginBottom: 6 }}>
+                                Mid
+                              </Tag>
+                              <Paragraph style={{ marginBottom: 0, fontSize: 13 }}>
+                                {item.evaluation.midAnswer}
+                              </Paragraph>
+                            </div>
+                          )}
+                          {item.evaluation.seniorAnswer && (
+                            <div
+                              style={{
+                                padding: '12px 16px',
+                                background: '#FFFBEB',
+                                border: '1px solid #FDE68A',
+                                borderRadius: 8,
+                              }}
+                            >
+                              <Tag color="gold" style={{ marginBottom: 6 }}>
+                                Senior
+                              </Tag>
+                              <Paragraph style={{ marginBottom: 0, fontSize: 13 }}>
+                                {item.evaluation.seniorAnswer}
+                              </Paragraph>
+                            </div>
+                          )}
+                        </div>
+                      </Card>
+                    )}
                   </>
                 )}
               </div>

@@ -34,6 +34,11 @@ Evalúa cada respuesta en las siguientes 5 métricas usando una escala de 0 a 5:
 Además, determina el nivel de experiencia que refleja la respuesta:
 - **detectedLevel**: "Junior" si la respuesta muestra conocimiento básico o superficial, "Mid" si muestra comprensión sólida con aplicación práctica, "Senior" si muestra dominio profundo, mejores prácticas y razonamiento arquitectónico.
 
+También genera una recomendación de cómo respondería cada nivel a la misma pregunta:
+- **juniorAnswer**: Un ejemplo breve de cómo respondería un Junior (conocimiento básico, conceptos fundamentales)
+- **midAnswer**: Un ejemplo breve de cómo respondería un Mid (aplicación práctica, patrones comunes, experiencia real)
+- **seniorAnswer**: Un ejemplo breve de cómo respondería un Senior (visión arquitectónica, trade-offs, mejores prácticas avanzadas)
+
 Responde en JSON con el siguiente formato para CADA respuesta:
 {
   "evaluations": [
@@ -45,7 +50,10 @@ Responde en JSON con el siguiente formato para CADA respuesta:
       "confidence": <0-5>,
       "problemSolving": <0-5>,
       "detectedLevel": "Junior" | "Mid" | "Senior",
-      "feedbackText": "<párrafo con retroalimentación constructiva en español, incluye el nivel detectado>"
+      "feedbackText": "<párrafo con retroalimentación constructiva en español>",
+      "juniorAnswer": "<ejemplo de respuesta nivel Junior en español>",
+      "midAnswer": "<ejemplo de respuesta nivel Mid en español>",
+      "seniorAnswer": "<ejemplo de respuesta nivel Senior en español>"
     }
   ]
 }
