@@ -291,3 +291,73 @@
   font-weight: 700;
   margin-bottom: 12px;
 }
+
+/* Menu toggle button */
+.vinki-menu-toggle {
+  display: none;
+}
+
+/* Sidebar overlay (mobile) */
+.vinki-sidebar-overlay {
+  display: none;
+}
+
+/* ==========================================
+   Responsive
+   ========================================== */
+
+@media (max-width: 991px) {
+  /* Show menu toggle on mobile/tablet */
+  .vinki-menu-toggle {
+    display: inline-flex;
+  }
+
+  /* Sidebar becomes overlay on mobile */
+  .vinki-sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 99;
+  }
+
+  /* Page padding reduced on mobile */
+  .vinki-page {
+    padding: 20px 16px;
+  }
+
+  .vinki-header {
+    padding: 0 16px !important;
+  }
+
+  /* Page header stacks on mobile */
+  .vinki-page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .vinki-page-title {
+    font-size: 20px;
+  }
+
+  /* Stat cards: full width on small screens */
+  .vinki-stat-card {
+    padding: 16px;
+  }
+
+  /* Hide user name on small screens */
+  .vinki-user-info > div:first-child {
+    display: none;
+  }
+}
+
+@media (max-width: 575px) {
+  .vinki-page {
+    padding: 16px 12px;
+  }
+
+  .vinki-stat-card {
+    padding: 12px 16px;
+  }
+}

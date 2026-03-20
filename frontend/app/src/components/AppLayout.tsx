@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { Layout, Menu, Typography, Avatar, Dropdown, Button } from 'antd'
 import {
@@ -15,10 +16,13 @@ import { useAuth } from '../hooks/useAuth'
 const { Header, Content, Sider } = Layout
 const { Text } = Typography
 
+const SIDER_WIDTH = 260
+
 export function AppLayout() {
   const navigate = useNavigate()
   const location = useLocation()
   const { user, logout } = useAuth()
+  const [collapsed, setCollapsed] = useState(false)
 
   const mainMenuItems = [
     { key: '/dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
@@ -26,7 +30,7 @@ export function AppLayout() {
     { key: '/history', icon: <LineChartOutlined />, label: 'Historial' },
   ]
 
-  const roleMenuItems = []
+  const roleMenuItems: { key: string; icon: React.ReactNode; label: string }[] = []
   if (user?.role === 'recruiter' || user?.role === 'admin') {
     roleMenuItems.push({ key: '/recruiter', icon: <TeamOutlined />, label: 'Talento' })
   }
@@ -45,11 +49,21 @@ export function AppLayout() {
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sider
-        width={260}
+        width={SIDER_WIDTH}
         breakpoint="lg"
         collapsedWidth={0}
+        collapsed={collapsed}
+        onCollapse={(val) => setCollapsed(val)}
+        trigger={null}
         className="vinki-sidebar"
-        style={{ position: 'fixed', height: '100vh', left: 0, top: 0, zIndex: 100 }}
+        style={{
+          position: 'fixed',
+          height: '100vh',
+          left: 0,
+          top: 0,
+          zIndex: 100,
+          overflow: 'auto',
+        }}
       >
         <div className="vinki-logo">
           <div className="vinki-logo-icon">V</div>
@@ -94,10 +108,26 @@ export function AppLayout() {
         </div>
       </Sider>
 
-      <Layout style={{ marginLeft: 260 }}>
+      <Layout
+        style={{
+          marginLeft: collapsed ? 0 : SIDER_WIDTH,
+          transition: 'margin-left 0.2s',
+        }}
+      >
         <Header className="vinki-header">
           <div className="vinki-header-left">
-            {/* Breadcrumb or page context can go here */}
+            <Button
+              type="text"
+              icon={
+                collapsed ? (
+                  <span style={{ fontSize: 18 }}>☰</span>
+                ) : (
+                  <span style={{ fontSize: 18 }}>✕</span>
+                )
+              }
+              onClick={() => setCollapsed(!collapsed)}
+              className="vinki-menu-toggle"
+            />
           </div>
           <div className="vinki-header-right">
             <Dropdown
@@ -149,6 +179,20 @@ export function AppLayout() {
           <Outlet />
         </Content>
       </Layout>
+
+      {/* Overlay when sidebar open on mobile */}
+      {!collapsed && (
+        <div
+          className="vinki-sidebar-overlay"
+          onClick={() => setCollapsed(true)}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') setCollapsed(true)
+          }}
+          role="button"
+          tabIndex={0}
+          aria-label="Cerrar menú"
+        />
+      )}
     </Layout>
   )
 }

@@ -124,13 +124,13 @@ export default function DashboardPage() {
 
       {/* Score Cards */}
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col xs={24} sm={8}>
+        <Col xs={24} sm={12} md={8}>
           <Card className="vinki-stat-card">
-            <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
               <Progress
                 type="circle"
                 percent={scorePercent}
-                size={72}
+                size={64}
                 strokeColor="#7C3AED"
                 format={() => (
                   <Text strong style={{ fontSize: 18 }}>
@@ -156,9 +156,9 @@ export default function DashboardPage() {
             </div>
           </Card>
         </Col>
-        <Col xs={24} sm={8}>
+        <Col xs={24} sm={12} md={8}>
           <Card className="vinki-stat-card">
-            <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
               <Progress
                 type="circle"
                 percent={
@@ -166,7 +166,7 @@ export default function DashboardPage() {
                     ? (data.recentInterviews.length / 10) * 100
                     : 0
                 }
-                size={72}
+                size={64}
                 strokeColor="#F97316"
                 format={() => (
                   <Text strong style={{ fontSize: 18 }}>
@@ -192,13 +192,13 @@ export default function DashboardPage() {
             </div>
           </Card>
         </Col>
-        <Col xs={24} sm={8}>
+        <Col xs={24} sm={12} md={8}>
           <Card className="vinki-stat-card">
-            <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
               <Progress
                 type="circle"
                 percent={100}
-                size={72}
+                size={64}
                 strokeColor={data?.pendingNotifications ? '#F59E0B' : '#10B981'}
                 format={() => (
                   <Text strong style={{ fontSize: 18 }}>
