@@ -2,6 +2,7 @@ import {
   Controller,
   Post,
   Get,
+  Put,
   Body,
   UseGuards,
   Req,
@@ -16,6 +17,8 @@ import { AuthService } from './auth.service.js';
 import { JwtCookieGuard } from './guards/jwt-cookie.guard.js';
 import { RegisterDto } from './dto/register.dto.js';
 import { LoginDto } from './dto/login.dto.js';
+import { UpdateProfileDto } from './dto/update-profile.dto.js';
+import { ChangePasswordDto } from './dto/change-password.dto.js';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -72,6 +75,21 @@ export class AuthController {
   async me(@Req() req: Request) {
     const user = (req as any).user;
     return this.authService.getProfile(user.userId);
+  }
+
+  @UseGuards(JwtCookieGuard)
+  @Put('profile')
+  async updateProfile(@Req() req: Request, @Body() dto: UpdateProfileDto) {
+    const user = (req as any).user;
+    return this.authService.updateProfile(user.userId, dto);
+  }
+
+  @UseGuards(JwtCookieGuard)
+  @Post('change-password')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async changePassword(@Req() req: Request, @Body() dto: ChangePasswordDto) {
+    const user = (req as any).user;
+    await this.authService.changePassword(user.userId, dto);
   }
 
   private setTokenCookies(

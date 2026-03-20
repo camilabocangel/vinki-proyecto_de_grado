@@ -20,6 +20,7 @@ const RecruiterDashboardPage = lazy(
 )
 const StudentProfilePage = lazy(() => import('./pages/recruiter/StudentProfilePage'))
 const AdminQuestionsPage = lazy(() => import('./pages/admin/AdminQuestionsPage'))
+const ProfilePage = lazy(() => import('./pages/profile/ProfilePage'))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -66,6 +67,7 @@ export default function App() {
                 />
                 <Route path="/feedback/:id" element={<FeedbackPage />} />
                 <Route path="/history" element={<FeedbackHistoryPage />} />
+                <Route path="/settings" element={<ProfilePage />} />
 
                 {/* Recruiter */}
                 <Route element={<ProtectedRoute roles={['recruiter', 'admin']} />}>

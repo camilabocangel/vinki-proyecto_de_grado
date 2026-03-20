@@ -143,6 +143,7 @@ export function AppLayout() {
                     key: 'profile',
                     icon: <UserOutlined />,
                     label: 'Mi perfil',
+                    onClick: () => navigate('/settings'),
                   },
                   { type: 'divider' },
                   {
