@@ -1,0 +1,217 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  student
+  recruiter
+  admin
+}
+
+enum EvaluationStatus {
+  pending
+  processing
+  completed
+  failed
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String   @db.VarChar(255)
+  email        String   @unique @db.VarChar(255)
+  passwordHash String   @map("password_hash") @db.VarChar(255)
+  role         UserRole @default(student)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  interviews     Interview[]
+  skillScores    UserSkillScore[]
+  recruiterNotes RecruiterNote[]  @relation("RecruiterNotes")
+  studentNotes   RecruiterNote[]  @relation("StudentNotes")
+
+  @@map("users")
+}
+
+model Role {
+  id   Int    @id @default(autoincrement())
+  name String @unique @db.VarChar(120)
+
+  interviews Interview[]
+
+  @@map("roles")
+}
+
+model Language {
+  id   Int    @id @default(autoincrement())
+  name String @unique @db.VarChar(120)
+
+  frameworks Framework[]
+  questions  Question[]
+  interviews Interview[]
+
+  @@map("languages")
+}
+
+model Framework {
+  id         Int    @id @default(autoincrement())
+  name       String @db.VarChar(120)
+  languageId Int    @map("language_id")
+
+  language   Language    @relation(fields: [languageId], references: [id])
+  questions  Question[]
+  interviews Interview[]
+
+  @@index([languageId])
+  @@map("frameworks")
+}
+
+model Level {
+  id   Int    @id @default(autoincrement())
+  name String @unique @db.VarChar(120)
+
+  questions         Question[]
+  interviews        Interview[]
+  answerEvaluations AnswerEvaluation[]
+
+  @@map("levels")
+}
+
+model Skill {
+  id   Int    @id @default(autoincrement())
+  name String @unique @db.VarChar(150)
+
+  questions   Question[]
+  skillScores UserSkillScore[]
+
+  @@map("skills")
+}
+
+model Question {
+  id           Int                              @id @default(autoincrement())
+  questionText String                           @map("question_text")
+  type         String                           @db.VarChar(80)
+  source       String?                          @db.VarChar(120)
+  languageId   Int                              @map("language_id")
+  frameworkId  Int?                             @map("framework_id")
+  levelId      Int                              @map("level_id")
+  skillId      Int                              @map("skill_id")
+  embedding    Unsupported("vector(1536)")?
+  createdAt    DateTime                         @default(now()) @map("created_at") @db.Timestamptz()
+
+  language           Language            @relation(fields: [languageId], references: [id])
+  framework          Framework?          @relation(fields: [frameworkId], references: [id])
+  level              Level               @relation(fields: [levelId], references: [id])
+  skill              Skill               @relation(fields: [skillId], references: [id])
+  interviewQuestions InterviewQuestion[]
+
+  @@index([languageId])
+  @@index([frameworkId])
+  @@index([levelId])
+  @@index([skillId])
+  @@map("questions")
+}
+
+model Interview {
+  id                         Int              @id @default(autoincrement())
+  userId                     Int              @map("user_id")
+  roleId                     Int              @map("role_id")
+  languageId                 Int?             @map("language_id")
+  frameworkId                Int?             @map("framework_id")
+  chosenLevelId              Int              @map("chosen_level_id")
+  startedAt                  DateTime         @default(now()) @map("started_at") @db.Timestamptz()
+  finishedAt                 DateTime?        @map("finished_at") @db.Timestamptz()
+  evaluationStatus           EvaluationStatus @default(pending) @map("evaluation_status")
+  evaluationNotificationSeen Boolean          @default(false) @map("evaluation_notification_seen")
+
+  user      User        @relation(fields: [userId], references: [id])
+  role      Role        @relation(fields: [roleId], references: [id])
+  language  Language?   @relation(fields: [languageId], references: [id])
+  framework Framework?  @relation(fields: [frameworkId], references: [id])
+  level     Level       @relation(fields: [chosenLevelId], references: [id])
+  questions InterviewQuestion[]
+
+  @@index([userId])
+  @@map("interviews")
+}
+
+model InterviewQuestion {
+  id                   Int     @id @default(autoincrement())
+  interviewId          Int     @map("interview_id")
+  questionId           Int     @map("question_id")
+  questionTextSnapshot String  @map("question_text_snapshot")
+  orderNumber          Int     @map("order_number")
+  generatedByAi        Boolean @default(true) @map("generated_by_ai")
+
+  interview Interview @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+  question  Question  @relation(fields: [questionId], references: [id])
+  answers   Answer[]
+
+  @@index([interviewId])
+  @@map("interview_questions")
+}
+
+model Answer {
+  id                  Int      @id @default(autoincrement())
+  interviewQuestionId Int      @map("interview_question_id")
+  answerText          String?  @map("answer_text")
+  audioUrl            String?  @map("audio_url") @db.VarChar(500)
+  answeredAt          DateTime @default(now()) @map("answered_at") @db.Timestamptz()
+
+  interviewQuestion InterviewQuestion @relation(fields: [interviewQuestionId], references: [id], onDelete: Cascade)
+  evaluation        AnswerEvaluation?
+
+  @@index([interviewQuestionId])
+  @@map("answers")
+}
+
+model AnswerEvaluation {
+  id                   Int      @id @default(autoincrement())
+  answerId             Int      @unique @map("answer_id")
+  technicalCorrectness Float?   @map("technical_correctness") @db.Real
+  clarityOfExplanation Float?   @map("clarity_of_explanation") @db.Real
+  communication        Float?   @db.Real
+  confidence           Float?   @db.Real
+  problemSolving       Float?   @map("problem_solving") @db.Real
+  detectedLevelId      Int?     @map("detected_level_id")
+  feedbackText         String?  @map("feedback_text")
+  evaluatedAt          DateTime @default(now()) @map("evaluated_at") @db.Timestamptz()
+
+  answer        Answer @relation(fields: [answerId], references: [id], onDelete: Cascade)
+  detectedLevel Level? @relation(fields: [detectedLevelId], references: [id])
+
+  @@index([answerId])
+  @@map("answer_evaluations")
+}
+
+model UserSkillScore {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @map("user_id")
+  skillId     Int      @map("skill_id")
+  score       Float    @db.Real
+  lastUpdated DateTime @default(now()) @map("last_updated") @db.Timestamptz()
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skill Skill @relation(fields: [skillId], references: [id])
+
+  @@unique([userId, skillId])
+  @@index([userId])
+  @@map("user_skill_scores")
+}
+
+model RecruiterNote {
+  id          Int      @id @default(autoincrement())
+  recruiterId Int      @map("recruiter_id")
+  studentId   Int      @map("student_id")
+  interviewId Int?     @map("interview_id")
+  content     String
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  recruiter User @relation("RecruiterNotes", fields: [recruiterId], references: [id])
+  student   User @relation("StudentNotes", fields: [studentId], references: [id])
+
+  @@map("recruiter_notes")
+}

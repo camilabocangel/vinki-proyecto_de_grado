@@ -14,13 +14,19 @@
     "storybook": "storybook dev -p 6006",
     "storybook:build": "storybook build",
     "preview": "vite preview",
-    "check": "npm run lint && npm run format && npm run test:unit && npm run test:e2e -- --list"
+    "check": "npm run lint && npm run format && npm run test:unit && npm run test:e2e -- --list",
+    "generate:api": "openapi-typescript ../../specs/001-build-new-project/contracts/openapi.yml -o src/api/generated.ts"
   },
   "dependencies": {
     "@ant-design/icons": "^6.1.0",
+    "@tanstack/react-query": "^5.91.3",
     "antd": "^6.3.2",
+    "openapi-typescript-helpers": "^0.1.0",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "react-router-dom": "^7.13.1",
+    "recharts": "^3.8.0",
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@axe-core/react": "^4.11.1",
@@ -48,6 +54,7 @@
     "husky": "^9.1.7",
     "jsdom": "^28.1.0",
     "lint-staged": "^16.3.3",
+    "openapi-typescript": "^7.13.0",
     "prettier": "^3.8.1",
     "storybook": "^8.6.18",
     "typescript": "~5.9.3",

@@ -1,0 +1,101 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg15
+    restart: unless-stopped
+    ports:
+      - '5433:5432'
+    environment:
+      POSTGRES_USER: vinki
+      POSTGRES_PASSWORD: vinki_dev
+      POSTGRES_DB: vinki
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U vinki']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - '6380:6379'
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  minio:
+    image: minio/minio
+    restart: unless-stopped
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - miniodata:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ['CMD', 'mc', 'ready', 'local']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - '3001:3000'
+    environment:
+      DATABASE_URL: postgresql://vinki:vinki_dev@postgres:5432/vinki?schema=public
+      REDIS_URL: redis://redis:6379
+      JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY}
+      JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
+      JWT_ACCESS_EXPIRATION: 15m
+      JWT_REFRESH_EXPIRATION: 7d
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-sk-dummy}
+      LLM_SANDBOX: 'true'
+      AWS_S3_BUCKET: vinki-audio
+      AWS_S3_ENDPOINT: http://minio:9000
+      AWS_S3_ACCESS_KEY: minioadmin
+      AWS_S3_SECRET_KEY: minioadmin
+      AWS_REGION: us-east-1
+      NODE_ENV: development
+      PORT: '3000'
+      FRONTEND_URL: http://localhost:5174
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/prisma:/app/prisma
+
+  frontend:
+    build:
+      context: ./frontend/app
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - '5174:5173'
+    environment:
+      VITE_API_URL: http://localhost:3001/api
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend/app/src:/app/src
+      - ./frontend/app/public:/app/public
+
+volumes:
+  pgdata:
+  redisdata:
+  miniodata:
