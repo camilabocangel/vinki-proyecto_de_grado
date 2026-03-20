@@ -12,7 +12,21 @@ export class ReportsService {
     const recentInterviews = await this.prisma.interview.findMany({
       where: { userId },
       orderBy: { startedAt: 'desc' },
-      take: 5,
+      include: {
+        role: true,
+        level: true,
+        language: true,
+        framework: true,
+        questions: {
+          include: {
+            answers: {
+              include: {
+                evaluation: { include: { detectedLevel: true } },
+              },
+            },
+          },
+        },
+      },
     });
 
     const pendingNotifications = await this.prisma.interview.count({
@@ -54,6 +68,53 @@ export class ReportsService {
       averageScore = allScores.reduce((sum, s) => sum + s, 0) / allScores.length;
     }
 
+    const mappedInterviews = recentInterviews.map((iv) => {
+      const evals = iv.questions.flatMap((q) =>
+        q.answers
+          .filter((a) => a.evaluation)
+          .map((a) => a.evaluation!),
+      );
+      const avgScore =
+        evals.length > 0
+          ? evals.reduce(
+              (sum, e) =>
+                sum +
+                ((e.technicalCorrectness ?? 0) +
+                  (e.clarityOfExplanation ?? 0) +
+                  (e.communication ?? 0) +
+                  (e.confidence ?? 0) +
+                  (e.problemSolving ?? 0)) /
+                  5,
+              0,
+            ) / evals.length
+          : null;
+
+      // Most common detected level
+      const levelCounts: Record<string, number> = {};
+      for (const e of evals) {
+        const name = (e as any).detectedLevel?.name;
+        if (name) levelCounts[name] = (levelCounts[name] ?? 0) + 1;
+      }
+      const detectedLevel =
+        Object.keys(levelCounts).length > 0
+          ? Object.entries(levelCounts).sort((a, b) => b[1] - a[1])[0][0]
+          : null;
+
+      return {
+        id: iv.id,
+        startedAt: iv.startedAt,
+        finishedAt: iv.finishedAt,
+        evaluationStatus: iv.evaluationStatus,
+        roleName: iv.role.name,
+        levelName: iv.level.name,
+        languageName: iv.language?.name ?? null,
+        frameworkName: iv.framework?.name ?? null,
+        questionCount: iv.questions.length,
+        avgScore,
+        detectedLevel,
+      };
+    });
+
     return {
       user: {
         id: user.id,
@@ -64,7 +125,7 @@ export class ReportsService {
       },
       averageScore,
       pendingNotifications,
-      recentInterviews,
+      recentInterviews: mappedInterviews,
       skillScores: skillScores.map((ss) => ({
         skillId: ss.skillId,
         skillName: ss.skill.name,

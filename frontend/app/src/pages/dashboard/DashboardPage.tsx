@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
   Card,
@@ -10,6 +11,7 @@ import {
   Skeleton,
   Badge,
   Progress,
+  Select,
 } from 'antd'
 import { ThunderboltFilled, ArrowRightOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
@@ -18,17 +20,25 @@ import { useSSE } from '../../hooks/useSSE'
 
 const { Title, Text } = Typography
 
+interface InterviewRow {
+  id: number
+  startedAt: string
+  finishedAt: string | null
+  evaluationStatus: string
+  roleName: string
+  levelName: string
+  languageName: string | null
+  frameworkName: string | null
+  questionCount: number
+  avgScore: number | null
+  detectedLevel: string | null
+}
+
 interface DashboardData {
   user: { id: number; name: string; email: string; role: string }
   averageScore: number | null
   pendingNotifications: number
-  recentInterviews: Array<{
-    id: number
-    startedAt: string
-    finishedAt: string | null
-    evaluationStatus: string
-    chosenLevelId: number
-  }>
+  recentInterviews: InterviewRow[]
   skillScores: Array<{
     skillId: number
     skillName: string
@@ -44,9 +54,17 @@ const statusConfig: Record<string, { color: string; label: string }> = {
   failed: { color: 'red', label: 'Error' },
 }
 
+const levelColors: Record<string, string> = {
+  Junior: 'green',
+  Mid: 'blue',
+  Senior: 'gold',
+}
+
 export default function DashboardPage() {
   const navigate = useNavigate()
   useSSE()
+
+  const [roleFilter, setRoleFilter] = useState<string | null>(null)
 
   const { data, isLoading } = useQuery({
     queryKey: ['dashboard'],
@@ -62,10 +80,18 @@ export default function DashboardPage() {
 
   const scorePercent = data?.averageScore ? Math.round((data.averageScore / 5) * 100) : 0
 
+  // Unique roles for filter
+  const roles = [...new Set(data?.recentInterviews.map((i) => i.roleName) ?? [])]
+
+  const filteredInterviews = roleFilter
+    ? data?.recentInterviews.filter((i) => i.roleName === roleFilter)
+    : data?.recentInterviews
+
   const columns = [
     {
       title: 'Fecha',
       dataIndex: 'startedAt',
+      width: 120,
       render: (v: string) =>
         new Date(v).toLocaleDateString('es', {
           day: '2-digit',
@@ -74,17 +100,83 @@ export default function DashboardPage() {
         }),
     },
     {
+      title: 'Rol',
+      dataIndex: 'roleName',
+      width: 140,
+      render: (v: string) => <Tag>{v}</Tag>,
+    },
+    {
+      title: 'Nivel elegido',
+      dataIndex: 'levelName',
+      width: 110,
+      render: (v: string) => <Tag color={levelColors[v] ?? 'default'}>{v}</Tag>,
+    },
+    {
+      title: 'Tecnología',
+      width: 160,
+      render: (_: unknown, record: InterviewRow) => {
+        const parts = [record.languageName, record.frameworkName].filter(Boolean)
+        return parts.length > 0 ? parts.join(' / ') : '-'
+      },
+    },
+    {
+      title: 'Preguntas',
+      dataIndex: 'questionCount',
+      width: 90,
+      align: 'center' as const,
+    },
+    {
+      title: 'Puntaje',
+      dataIndex: 'avgScore',
+      width: 90,
+      align: 'center' as const,
+      render: (v: number | null) =>
+        v != null ? (
+          <Text
+            strong
+            style={{ color: v >= 3.5 ? '#10B981' : v >= 2.5 ? '#F97316' : '#EF4444' }}
+          >
+            {v.toFixed(1)}
+          </Text>
+        ) : (
+          <Text type="secondary">-</Text>
+        ),
+    },
+    {
+      title: 'Nivel IA',
+      dataIndex: 'detectedLevel',
+      width: 100,
+      render: (v: string | null) =>
+        v ? (
+          <Tag color={levelColors[v] ?? 'default'}>{v}</Tag>
+        ) : (
+          <Text type="secondary">-</Text>
+        ),
+    },
+    {
       title: 'Estado',
       dataIndex: 'evaluationStatus',
+      width: 110,
       render: (status: string) => {
         const cfg = statusConfig[status] || statusConfig.pending
         return <Tag color={cfg.color}>{cfg.label}</Tag>
       },
     },
     {
+      title: 'Duración',
+      width: 100,
+      render: (_: unknown, record: InterviewRow) => {
+        if (!record.finishedAt) return <Text type="secondary">En curso</Text>
+        const ms =
+          new Date(record.finishedAt).getTime() - new Date(record.startedAt).getTime()
+        const mins = Math.round(ms / 60000)
+        return mins >= 60 ? `${Math.floor(mins / 60)}h ${mins % 60}m` : `${mins} min`
+      },
+    },
+    {
       title: '',
-      width: 120,
-      render: (_: unknown, record: { id: number; evaluationStatus: string }) => (
+      width: 130,
+      render: (_: unknown, record: InterviewRow) => (
         <Button
           type="link"
           size="small"
@@ -263,13 +355,33 @@ export default function DashboardPage() {
       )}
 
       {/* Recent interviews */}
-      <Card className="vinki-card" title="Últimas entrevistas">
+      <Card
+        className="vinki-card"
+        title="Historial de entrevistas"
+        extra={
+          roles.length > 1 && (
+            <Select
+              allowClear
+              placeholder="Filtrar por rol"
+              style={{ width: 180 }}
+              value={roleFilter}
+              onChange={(v) => setRoleFilter(v ?? null)}
+              options={roles.map((r) => ({ label: r, value: r }))}
+            />
+          )
+        }
+      >
         <Table
-          dataSource={data?.recentInterviews}
+          dataSource={filteredInterviews}
           columns={columns}
           rowKey="id"
-          pagination={false}
+          pagination={{
+            pageSize: 8,
+            showSizeChanger: false,
+            showTotal: (t) => `${t} entrevistas`,
+          }}
           size="middle"
+          scroll={{ x: 900 }}
         />
       </Card>
     </div>

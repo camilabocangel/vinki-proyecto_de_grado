@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { Layout, Menu, Typography, Avatar, Dropdown, Button } from 'antd'
 import {
@@ -22,7 +22,15 @@ export function AppLayout() {
   const navigate = useNavigate()
   const location = useLocation()
   const { user, logout } = useAuth()
-  const [collapsed, setCollapsed] = useState(false)
+  const isMobile = () => window.innerWidth < 992
+  const [collapsed, setCollapsed] = useState(isMobile)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 991px)')
+    const handler = (e: MediaQueryListEvent) => setCollapsed(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
 
   const mainMenuItems = [
     { key: '/dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
@@ -50,10 +58,8 @@ export function AppLayout() {
     <Layout style={{ minHeight: '100vh' }}>
       <Sider
         width={SIDER_WIDTH}
-        breakpoint="lg"
         collapsedWidth={0}
         collapsed={collapsed}
-        onCollapse={(val) => setCollapsed(val)}
         trigger={null}
         className="vinki-sidebar"
         style={{
