@@ -75,6 +75,21 @@ export class AuthService {
     };
   }
 
+  async refreshFromToken(refreshToken: string) {
+    try {
+      const payload = this.jwtService.verify(refreshToken as any, {
+        algorithms: ['RS256'],
+      } as any);
+      const user = await this.prisma.user.findUnique({
+        where: { id: payload.sub },
+      });
+      if (!user) throw new UnauthorizedException('User not found');
+      return this.generateTokens(user);
+    } catch {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+  }
+
   async getProfile(userId: number) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new UnauthorizedException();

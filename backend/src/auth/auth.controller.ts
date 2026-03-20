@@ -44,16 +44,18 @@ export class AuthController {
     return { user: result.user };
   }
 
-  @UseGuards(JwtCookieGuard)
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   async refresh(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const user = (req as any).user;
-    const fullUser = await this.authService.getProfile(user.userId);
-    const result = this.authService.generateTokens(fullUser as any);
+    const refreshToken = req.cookies?.refresh_token;
+    if (!refreshToken) {
+      res.status(401).json({ message: 'No refresh token' });
+      return;
+    }
+    const result = await this.authService.refreshFromToken(refreshToken);
     this.setTokenCookies(res, result.accessToken, result.refreshToken);
     return { user: result.user };
   }
