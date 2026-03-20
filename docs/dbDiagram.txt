@@ -1,0 +1,118 @@
+Table users {
+  id int [pk, increment]
+  name varchar
+  email varchar [unique]
+  password_hash varchar
+  created_at timestamp
+}
+
+Table roles {
+  id int [pk, increment]
+  name varchar
+}
+
+Table languages {
+  id int [pk, increment]
+  name varchar
+}
+
+Table frameworks {
+  id int [pk, increment]
+  name varchar
+  language_id int
+}
+
+Table levels {
+  id int [pk, increment]
+  name varchar
+}
+
+Table skills {
+  id int [pk, increment]
+  name varchar
+}
+
+Table questions {
+  id int [pk, increment]
+  question_text text
+  type varchar
+  source varchar
+  language_id int
+  framework_id int
+  level_id int
+  skill_id int
+  embedding vector
+  created_at timestamp
+}
+
+Table interviews {
+  id int [pk, increment]
+  user_id int
+  role_id int
+  language_id int
+  framework_id int
+  chosen_level_id int
+  started_at timestamp
+  finished_at timestamp
+}
+
+Table interview_questions {
+  id int [pk, increment]
+  interview_id int
+  question_id int
+  question_text_snapshot text
+  order_number int
+  generated_by_ai boolean
+}
+
+Table answers {
+  id int [pk, increment]
+  interview_question_id int
+  answer_text text
+  audio_url varchar
+  answered_at timestamp
+}
+
+Table answer_evaluations {
+  id int [pk, increment]
+  answer_id int
+  technical_correctness float
+  clarity_of_explanation float
+  communication float
+  confidence float
+  problem_solving float
+  detected_level_id int
+  feedback_text text
+  evaluated_at timestamp
+}
+
+Table user_skill_scores {
+  id int [pk, increment]
+  user_id int
+  skill_id int
+  score float
+  last_updated timestamp
+}
+
+Ref: frameworks.language_id > languages.id
+Ref: questions.language_id > languages.id
+Ref: questions.framework_id > frameworks.id
+Ref: questions.level_id > levels.id
+Ref: questions.skill_id > skills.id
+
+Ref: interviews.user_id > users.id
+Ref: interviews.role_id > roles.id
+Ref: interviews.language_id > languages.id
+Ref: interviews.framework_id > frameworks.id
+Ref: interviews.chosen_level_id > levels.id
+
+Ref: interview_questions.interview_id > interviews.id
+Ref: interview_questions.question_id > questions.id
+
+Ref: answers.interview_question_id > interview_questions.id
+
+Ref: answer_evaluations.answer_id > answers.id
+Ref: answer_evaluations.detected_level_id > levels.id
+
+Ref: user_skill_scores.user_id > users.id
+Ref: user_skill_scores.skill_id > skills.id
