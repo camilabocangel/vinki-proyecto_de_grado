@@ -82,7 +82,11 @@ export class ReportsService {
           orderBy: { orderNumber: 'asc' },
           include: {
             answers: {
-              include: { evaluation: true },
+              include: {
+                evaluation: {
+                  include: { detectedLevel: true },
+                },
+              },
             },
           },
         },

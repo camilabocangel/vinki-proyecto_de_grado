@@ -14,6 +14,11 @@ export interface EvaluationOutput {
   confidence: number;
   problemSolving: number;
   feedbackText: string;
+  detectedLevel: 'Junior' | 'Mid' | 'Senior';
+}
+
+export interface AnswerInputWithLevel extends AnswerInput {
+  questionLevel: string;
 }
 
 export interface IEvaluatorService {

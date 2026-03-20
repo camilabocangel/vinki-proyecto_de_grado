@@ -25,6 +25,7 @@ interface Evaluation {
   confidence: number | null
   problemSolving: number | null
   feedbackText: string | null
+  detectedLevel: { id: number; name: string } | null
 }
 
 interface ReportItem {
@@ -97,6 +98,23 @@ export default function FeedbackPage() {
 
   const avg = avgMetrics(data.evaluations)
 
+  const detectedLevels = data.evaluations
+    .map((e) => e.evaluation?.detectedLevel?.name)
+    .filter(Boolean) as string[]
+
+  const levelCounts = detectedLevels.reduce<Record<string, number>>((acc, l) => {
+    acc[l] = (acc[l] ?? 0) + 1
+    return acc
+  }, {})
+
+  const dominantLevel =
+    detectedLevels.length > 0
+      ? Object.entries(levelCounts).sort((a, b) => b[1] - a[1])[0][0]
+      : null
+
+  const levelColor =
+    dominantLevel === 'Senior' ? 'gold' : dominantLevel === 'Mid' ? 'blue' : 'green'
+
   return (
     <div className="vinki-page">
       <div className="vinki-page-header">
@@ -104,14 +122,20 @@ export default function FeedbackPage() {
           <Title level={3} className="vinki-page-title">
             Reporte de entrevista
           </Title>
-          <Tag
-            color={data.interview.evaluationStatus === 'completed' ? 'green' : 'purple'}
-            style={{ marginTop: 4 }}
-          >
-            {data.interview.evaluationStatus === 'completed'
-              ? 'Evaluación completada'
-              : 'En proceso'}
-          </Tag>
+          <div style={{ display: 'flex', gap: 8, marginTop: 4, flexWrap: 'wrap' }}>
+            <Tag
+              color={data.interview.evaluationStatus === 'completed' ? 'green' : 'purple'}
+            >
+              {data.interview.evaluationStatus === 'completed'
+                ? 'Evaluación completada'
+                : 'En proceso'}
+            </Tag>
+            {dominantLevel && (
+              <Tag color={levelColor} style={{ fontWeight: 700, fontSize: 13 }}>
+                Nivel detectado: {dominantLevel}
+              </Tag>
+            )}
+          </div>
         </div>
         <Space>
           <Button
@@ -188,6 +212,19 @@ export default function FeedbackPage() {
             label: (
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <Tag color="purple">P{item.orderNumber}</Tag>
+                {item.evaluation?.detectedLevel && (
+                  <Tag
+                    color={
+                      item.evaluation.detectedLevel.name === 'Senior'
+                        ? 'gold'
+                        : item.evaluation.detectedLevel.name === 'Mid'
+                          ? 'blue'
+                          : 'green'
+                    }
+                  >
+                    {item.evaluation.detectedLevel.name}
+                  </Tag>
+                )}
                 <Text>
                   {item.questionTextSnapshot.slice(0, 100)}
                   {item.questionTextSnapshot.length > 100 ? '...' : ''}

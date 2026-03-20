@@ -5,6 +5,8 @@ import { Job } from 'bullmq';
 import { PrismaService } from '../../common/prisma.service.js';
 import { EVALUATOR_SERVICE, type IEvaluatorService, type AnswerInput } from '../interfaces/evaluator.interface.js';
 
+const SKILL_SCORE_ALPHA = 0.3; // exponential moving average weight
+
 @Processor('evaluation')
 export class EvaluationProcessor extends WorkerHost {
   private readonly logger = new Logger(EvaluationProcessor.name);
@@ -22,10 +24,13 @@ export class EvaluationProcessor extends WorkerHost {
     this.logger.log(`Processing evaluation for interview ${interviewId}`);
 
     try {
-      // Load all answers for this interview
+      // Load all answers with question skill info
       const interviewQuestions = await this.prisma.interviewQuestion.findMany({
         where: { interviewId },
-        include: { answers: true },
+        include: {
+          answers: true,
+          question: { include: { skill: true } },
+        },
       });
 
       const answerInputs: AnswerInput[] = interviewQuestions
@@ -48,11 +53,33 @@ export class EvaluationProcessor extends WorkerHost {
         return;
       }
 
+      // Load levels from DB (Junior, Mid, Senior)
+      const dbLevels = await this.prisma.level.findMany();
+      const levelByName = new Map(dbLevels.map((l) => [l.name, l.id]));
+
       // Run evaluation
       const results = await this.evaluator.evaluate(answerInputs);
 
-      // Persist evaluations
+      // Build a map: answerId -> skillId for UserSkillScore updates
+      const answerSkillMap = new Map<number, number>();
+      for (const iq of interviewQuestions) {
+        for (const answer of iq.answers) {
+          if (answer.answerText) {
+            answerSkillMap.set(answer.id, iq.question.skillId);
+          }
+        }
+      }
+
+      // Get userId for skill score update
+      const interview = await this.prisma.interview.findUnique({
+        where: { id: interviewId },
+      });
+      const userId = interview?.userId;
+
+      // Persist evaluations and update skill scores
       for (const result of results) {
+        const detectedLevelId = levelByName.get(result.detectedLevel) ?? null;
+
         await this.prisma.answerEvaluation.create({
           data: {
             answerId: result.answerId,
@@ -61,9 +88,44 @@ export class EvaluationProcessor extends WorkerHost {
             communication: result.communication,
             confidence: result.confidence,
             problemSolving: result.problemSolving,
+            detectedLevelId,
             feedbackText: result.feedbackText,
           },
         });
+
+        // Update UserSkillScore with exponential moving average
+        if (userId) {
+          const skillId = answerSkillMap.get(result.answerId);
+          if (skillId) {
+            const avgScore =
+              (result.technicalCorrectness +
+                result.clarityOfExplanation +
+                result.communication +
+                result.confidence +
+                result.problemSolving) /
+              5;
+            // Convert 0-5 scale to 0-100 percentage
+            const newScorePercent = (avgScore / 5) * 100;
+
+            const existing = await this.prisma.userSkillScore.findUnique({
+              where: { userId_skillId: { userId, skillId } },
+            });
+
+            if (existing) {
+              const updatedScore =
+                SKILL_SCORE_ALPHA * newScorePercent +
+                (1 - SKILL_SCORE_ALPHA) * existing.score;
+              await this.prisma.userSkillScore.update({
+                where: { userId_skillId: { userId, skillId } },
+                data: { score: updatedScore, lastUpdated: new Date() },
+              });
+            } else {
+              await this.prisma.userSkillScore.create({
+                data: { userId, skillId, score: newScorePercent },
+              });
+            }
+          }
+        }
       }
 
       // Update interview status
@@ -72,14 +134,9 @@ export class EvaluationProcessor extends WorkerHost {
         data: { evaluationStatus: 'completed' },
       });
 
-      // Get userId for SSE notification
-      const interview = await this.prisma.interview.findUnique({
-        where: { id: interviewId },
-      });
-
       this.eventEmitter.emit('evaluation.completed', {
         interviewId,
-        userId: interview?.userId,
+        userId,
       });
 
       this.logger.log(`Evaluation completed for interview ${interviewId}`);

@@ -31,6 +31,9 @@ Evalúa cada respuesta en las siguientes 5 métricas usando una escala de 0 a 5:
    - 3-4: Buen enfoque con oportunidades de mejora
    - 5: Enfoque óptimo y sistemático
 
+Además, determina el nivel de experiencia que refleja la respuesta:
+- **detectedLevel**: "Junior" si la respuesta muestra conocimiento básico o superficial, "Mid" si muestra comprensión sólida con aplicación práctica, "Senior" si muestra dominio profundo, mejores prácticas y razonamiento arquitectónico.
+
 Responde en JSON con el siguiente formato para CADA respuesta:
 {
   "evaluations": [
@@ -41,7 +44,8 @@ Responde en JSON con el siguiente formato para CADA respuesta:
       "communication": <0-5>,
       "confidence": <0-5>,
       "problemSolving": <0-5>,
-      "feedbackText": "<párrafo con retroalimentación constructiva en español>"
+      "detectedLevel": "Junior" | "Mid" | "Senior",
+      "feedbackText": "<párrafo con retroalimentación constructiva en español, incluye el nivel detectado>"
     }
   ]
 }
