@@ -18,10 +18,10 @@ async function fetchMe(): Promise<User> {
 }
 
 export function useAuth() {
-  const { user, isAuthenticated, login, logout, setUser } = useAuthStore()
+  const { login, logout, setUser } = useAuthStore()
   const queryClient = useQueryClient()
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ['auth', 'me'],
     queryFn: fetchMe,
     retry: false,
@@ -29,32 +29,29 @@ export function useAuth() {
     refetchOnWindowFocus: true,
   })
 
+  // Sync query data to Zustand store (for use outside React Query context)
   useEffect(() => {
-    if (data) {
-      setUser(data)
-    }
+    if (data) setUser(data)
   }, [data, setUser])
 
-  useEffect(() => {
-    if (isError) {
-      setUser(null)
-    }
-  }, [isError, setUser])
+  // Derive auth state directly from query data — no useEffect lag
+  const user = data ?? null
+  const isAuthenticated = !!data
 
   const loginMutation = useMutation({
     mutationFn: (credentials: { email: string; password: string }) =>
       api.post<{ user: User }>('/auth/login', credentials),
-    onSuccess: (data) => {
-      login(data.user)
+    onSuccess: (result) => {
+      login(result.user)
       queryClient.invalidateQueries({ queryKey: ['auth'] })
     },
   })
 
   const registerMutation = useMutation({
-    mutationFn: (data: { name: string; email: string; password: string }) =>
-      api.post<{ user: User }>('/auth/register', data),
-    onSuccess: (data) => {
-      login(data.user)
+    mutationFn: (input: { name: string; email: string; password: string }) =>
+      api.post<{ user: User }>('/auth/register', input),
+    onSuccess: (result) => {
+      login(result.user)
       queryClient.invalidateQueries({ queryKey: ['auth'] })
     },
   })
