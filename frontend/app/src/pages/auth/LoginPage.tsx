@@ -45,7 +45,12 @@ export default function LoginPage() {
           />
         )}
 
-        <Form layout="vertical" onFinish={onFinish} size="large">
+        <Form
+          layout="vertical"
+          onFinish={onFinish}
+          size="large"
+          aria-label={t('auth.login')}
+        >
           <Form.Item
             name="email"
             label={t('auth.email')}

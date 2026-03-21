@@ -293,7 +293,7 @@ export default function DashboardPage() {
   ]
 
   return (
-    <div className="vinki-page">
+    <div className="vinki-page" role="main">
       <div className="vinki-page-header">
         <div>
           <Title level={3} className="vinki-page-title">
@@ -317,7 +317,7 @@ export default function DashboardPage() {
       {/* Score Cards */}
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         <Col xs={24} sm={12} md={8}>
-          <Card className="vinki-stat-card">
+          <Card className="vinki-stat-card" aria-label={t('dashboard.aiScore')}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
               <Progress
                 type="circle"
@@ -349,7 +349,7 @@ export default function DashboardPage() {
           </Card>
         </Col>
         <Col xs={24} sm={12} md={8}>
-          <Card className="vinki-stat-card">
+          <Card className="vinki-stat-card" aria-label={t('dashboard.interviewsDone')}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
               <Progress
                 type="circle"
@@ -385,7 +385,7 @@ export default function DashboardPage() {
           </Card>
         </Col>
         <Col xs={24} sm={12} md={8}>
-          <Card className="vinki-stat-card">
+          <Card className="vinki-stat-card" aria-label={t('dashboard.pending')}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
               <Progress
                 type="circle"

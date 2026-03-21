@@ -32,6 +32,7 @@ model User {
   skillScores    UserSkillScore[]
   recruiterNotes RecruiterNote[]  @relation("RecruiterNotes")
   studentNotes   RecruiterNote[]  @relation("StudentNotes")
+  auditLogs      AuditLog[]
 
   @@map("users")
 }
@@ -218,4 +219,20 @@ model RecruiterNote {
   student   User @relation("StudentNotes", fields: [studentId], references: [id])
 
   @@map("recruiter_notes")
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  action    String   @db.VarChar(100)
+  entity    String   @db.VarChar(100)
+  entityId  Int?     @map("entity_id")
+  details   String?
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("audit_logs")
 }

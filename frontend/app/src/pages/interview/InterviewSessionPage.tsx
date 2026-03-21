@@ -369,6 +369,8 @@ export default function InterviewSessionPage() {
         />
         <Text
           strong
+          aria-label={t('interview.timeRemaining')}
+          aria-live="polite"
           style={{
             color: timeLeft < 60 ? 'var(--color-error)' : undefined,
             whiteSpace: 'nowrap',
@@ -437,11 +439,17 @@ export default function InterviewSessionPage() {
               onClick={startRecording}
               disabled={isTranscribing}
               type="dashed"
+              aria-label={t('interview.recordAnswer')}
             >
               {t('interview.recordAnswer')}
             </Button>
           ) : (
-            <Button icon={<PauseOutlined />} onClick={stopRecording} danger>
+            <Button
+              icon={<PauseOutlined />}
+              onClick={stopRecording}
+              danger
+              aria-label={t('audio.stop')}
+            >
               <span
                 style={{
                   display: 'inline-block',

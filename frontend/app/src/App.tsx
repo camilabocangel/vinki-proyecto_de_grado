@@ -20,8 +20,11 @@ const RecruiterDashboardPage = lazy(
 )
 const StudentProfilePage = lazy(() => import('./pages/recruiter/StudentProfilePage'))
 const AdminQuestionsPage = lazy(() => import('./pages/admin/AdminQuestionsPage'))
+const AdminAuditPage = lazy(() => import('./pages/admin/AdminAuditPage'))
+const AdminAnalyticsPage = lazy(() => import('./pages/admin/AdminAnalyticsPage'))
 const ProfilePage = lazy(() => import('./pages/profile/ProfilePage'))
 const StudyPlanPage = lazy(() => import('./pages/dashboard/StudyPlanPage'))
+const SharedReportPage = lazy(() => import('./pages/feedback/SharedReportPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
 const queryClient = new QueryClient({
@@ -55,6 +58,7 @@ export default function App() {
             {/* Public routes */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/shared/:token" element={<SharedReportPage />} />
 
             {/* Protected routes */}
             <Route element={<ProtectedRoute />}>
@@ -84,6 +88,8 @@ export default function App() {
                 {/* Admin */}
                 <Route element={<ProtectedRoute roles={['admin']} />}>
                   <Route path="/admin/questions" element={<AdminQuestionsPage />} />
+                  <Route path="/admin/audit" element={<AdminAuditPage />} />
+                  <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
                 </Route>
               </Route>
             </Route>

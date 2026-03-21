@@ -7,9 +7,11 @@ import {
   Param,
   Body,
   Query,
+  Res,
   UseGuards,
   ParseIntPipe,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtCookieGuard } from '../auth/guards/jwt-cookie.guard.js';
 import { RolesGuard } from '../auth/guards/roles.guard.js';
@@ -50,6 +52,36 @@ export class AdminQuestionsController {
     ]);
 
     return { data, total, page: p, pageSize: ps };
+  }
+
+  @Get('export')
+  async exportQuestions(@Query('format') format: string, @Res() res: Response) {
+    const questions = await this.prisma.question.findMany({
+      include: { language: true, level: true, skill: true, framework: true },
+      orderBy: { id: 'asc' },
+    });
+
+    if (format === 'json') {
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Content-Disposition', 'attachment; filename=questions.json');
+      res.send(JSON.stringify(questions, null, 2));
+    } else {
+      // CSV
+      const headers = ['ID', 'Question', 'Type', 'Language', 'Framework', 'Level', 'Skill'];
+      const rows = questions.map((q) => [
+        q.id,
+        `"${q.questionText.replace(/"/g, '""')}"`,
+        q.type,
+        q.language?.name ?? '',
+        q.framework?.name ?? '',
+        q.level?.name ?? '',
+        q.skill?.name ?? '',
+      ]);
+      const csv = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=questions.csv');
+      res.send(csv);
+    }
   }
 
   @Post('import')

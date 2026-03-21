@@ -45,7 +45,12 @@ export default function RegisterPage() {
           />
         )}
 
-        <Form layout="vertical" onFinish={onFinish} size="large">
+        <Form
+          layout="vertical"
+          onFinish={onFinish}
+          size="large"
+          aria-label={t('auth.register')}
+        >
           <Form.Item
             name="name"
             label={t('auth.fullName')}

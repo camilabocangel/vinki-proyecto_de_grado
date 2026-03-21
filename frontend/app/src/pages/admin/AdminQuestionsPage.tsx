@@ -18,15 +18,19 @@ import {
   Spin,
   Form,
   Tag,
+  Dropdown,
 } from 'antd'
 import {
   PlusOutlined,
   UploadOutlined,
+  DownloadOutlined,
   DeleteOutlined,
   EditOutlined,
   RobotOutlined,
 } from '@ant-design/icons'
 import { api } from '../../api/client'
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
 
 const { Title, Text } = Typography
 
@@ -347,6 +351,26 @@ export default function AdminQuestionsPage() {
           <Button icon={<UploadOutlined />} onClick={() => setImportModalOpen(true)}>
             {t('admin.import')}
           </Button>
+          <Dropdown
+            menu={{
+              items: [
+                {
+                  key: 'csv',
+                  label: 'CSV',
+                  onClick: () =>
+                    window.open(`${API_URL}/admin/questions/export?format=csv`),
+                },
+                {
+                  key: 'json',
+                  label: 'JSON',
+                  onClick: () =>
+                    window.open(`${API_URL}/admin/questions/export?format=json`),
+                },
+              ],
+            }}
+          >
+            <Button icon={<DownloadOutlined />}>{t('common.export')}</Button>
+          </Dropdown>
         </Space>
       </Space>
 

@@ -6,6 +6,8 @@ import {
   ThunderboltOutlined,
   TeamOutlined,
   DatabaseOutlined,
+  FileSearchOutlined,
+  BarChartOutlined,
   LogoutOutlined,
   UserOutlined,
   LineChartOutlined,
@@ -18,8 +20,11 @@ import {
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../hooks/useAuth'
+import { useSessionTimeout } from '../hooks/useSessionTimeout'
 import { useTheme } from '../hooks/useTheme'
 import { api } from '../api/client'
+import { Breadcrumbs } from './Breadcrumbs'
+import { GlobalSearch } from './GlobalSearch'
 
 interface PendingNotifications {
   count: number
@@ -37,6 +42,7 @@ export function AppLayout() {
   const { user, logout } = useAuth()
   const { t, i18n } = useTranslation()
   const { isDark, toggle: toggleTheme } = useTheme()
+  const { showWarning } = useSessionTimeout(!!user)
   const queryClient = useQueryClient()
   const isMobile = () => window.innerWidth < 992
   const [collapsed, setCollapsed] = useState(isMobile)
@@ -80,6 +86,16 @@ export function AppLayout() {
       icon: <DatabaseOutlined />,
       label: t('nav.questions'),
     })
+    roleMenuItems.push({
+      key: '/admin/audit',
+      icon: <FileSearchOutlined />,
+      label: t('nav.auditLogs'),
+    })
+    roleMenuItems.push({
+      key: '/admin/analytics',
+      icon: <BarChartOutlined />,
+      label: t('nav.analytics'),
+    })
   }
 
   const generalMenuItems = [
@@ -94,6 +110,8 @@ export function AppLayout() {
         collapsed={collapsed}
         trigger={null}
         className="vinki-sidebar"
+        role="navigation"
+        aria-label={t('nav.mainMenu')}
         style={{
           position: 'fixed',
           height: '100vh',
@@ -115,6 +133,7 @@ export function AppLayout() {
           selectedKeys={[location.pathname]}
           items={mainMenuItems}
           onClick={({ key }) => navigate(key)}
+          aria-label={t('nav.mainMenu')}
         />
 
         {roleMenuItems.length > 0 && (
@@ -126,6 +145,7 @@ export function AppLayout() {
               selectedKeys={[location.pathname]}
               items={roleMenuItems}
               onClick={({ key }) => navigate(key)}
+              aria-label={t('nav.management')}
             />
           </>
         )}
@@ -137,6 +157,7 @@ export function AppLayout() {
           selectedKeys={[location.pathname]}
           items={generalMenuItems}
           onClick={({ key }) => navigate(key)}
+          aria-label={t('nav.general')}
         />
 
         <div className="vinki-logout">
@@ -165,6 +186,7 @@ export function AppLayout() {
               }
               onClick={() => setCollapsed(!collapsed)}
               className="vinki-menu-toggle"
+              aria-label={collapsed ? t('nav.mainMenu') : t('nav.closeMenu')}
             />
           </div>
           <div className="vinki-header-right">
@@ -215,7 +237,11 @@ export function AppLayout() {
               trigger={['click']}
             >
               <Badge count={notifications?.count ?? 0} size="small">
-                <Button type="text" icon={<BellOutlined style={{ fontSize: 18 }} />} />
+                <Button
+                  type="text"
+                  icon={<BellOutlined style={{ fontSize: 18 }} />}
+                  aria-label={t('nav.notifications')}
+                />
               </Badge>
             </Dropdown>
             <Dropdown
@@ -265,9 +291,33 @@ export function AppLayout() {
           </div>
         </Header>
         <Content className="vinki-content">
+          <div style={{ padding: '16px 32px 0' }}>
+            <Breadcrumbs />
+          </div>
           <Outlet />
         </Content>
       </Layout>
+
+      <GlobalSearch />
+
+      {showWarning && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: 16,
+            right: 16,
+            zIndex: 1000,
+            background: 'var(--color-warning, #faad14)',
+            color: '#000',
+            padding: '8px 16px',
+            borderRadius: 8,
+            fontSize: 13,
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          }}
+        >
+          {t('auth.sessionExpiring')}
+        </div>
+      )}
 
       {/* Overlay when sidebar open on mobile */}
       {!collapsed && (

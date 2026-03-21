@@ -20,7 +20,9 @@
     "total": "Total",
     "interviews": "interviews",
     "notFound": "The page you're looking for doesn't exist",
-    "goHome": "Go home"
+    "goHome": "Go home",
+    "new": "New",
+    "rateLimited": "Too many requests. Please wait a moment."
   },
   "roles": {
     "student": "Student",
@@ -45,7 +47,8 @@
     "noAccount": "Don't have an account?",
     "hasAccount": "Already have an account?",
     "signUp": "Sign up",
-    "signIn": "Sign in"
+    "signIn": "Sign in",
+    "sessionExpiring": "Your session will auto-refresh..."
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -62,7 +65,9 @@
     "studyPlan": "Study Plan",
     "notifications": "Notifications",
     "noNotifications": "No pending notifications",
-    "markAllSeen": "Mark all as seen"
+    "markAllSeen": "Mark all as seen",
+    "auditLogs": "Audit Logs",
+    "analytics": "Analytics"
   },
   "dashboard": {
     "greeting": "Hello, {{name}}",
@@ -171,7 +176,12 @@
     "aiFeedback": "AI Feedback",
     "recommendedAnswers": "Recommended answers by level",
     "notFound": "Report not found.",
-    "skill": "Skill"
+    "skill": "Skill",
+    "share": "Share",
+    "shareTitle": "Share link",
+    "shareDescription": "Share this link. It expires in 7 days.",
+    "copyLink": "Copy link",
+    "linkCopied": "Link copied"
   },
   "metrics": {
     "technicalCorrectness": "Technical correctness",
@@ -222,7 +232,18 @@
     "noQuestionsSelected": "Select at least one question",
     "importQuestions": "Import questions",
     "importFormat": "Paste a JSON array of questions",
-    "importSuccess": "{{created}} created, {{errors}} errors"
+    "importSuccess": "{{created}} created, {{errors}} errors",
+    "exportQuestions": "Export questions",
+    "auditTitle": "Audit Log",
+    "action": "Action",
+    "entity": "Entity",
+    "details": "Details",
+    "totalUsers": "Total users",
+    "totalInterviews": "Total interviews",
+    "completedInterviews": "Completed",
+    "totalQuestions": "Total questions",
+    "interviewsPerDay": "Interviews per day",
+    "levelDistribution": "Level distribution"
   },
   "recruiter": {
     "panel": "Recruiter panel",
@@ -263,6 +284,11 @@
   },
   "history": {
     "filterByStatus": "Filter by status"
+  },
+  "search": {
+    "placeholder": "Search interviews, questions...",
+    "noResults": "No results",
+    "hint": "Type to search (Cmd+K)"
   },
   "onboarding": {
     "welcome": "Welcome to Vinki!",

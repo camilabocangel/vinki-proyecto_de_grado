@@ -30,6 +30,9 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   })
 
   if (!res.ok) {
+    if (res.status === 429) {
+      throw new Error('Too many requests. Please wait a moment.')
+    }
     const error = await res.json().catch(() => ({ message: 'Request failed' }))
     throw new Error(error.message || `HTTP ${res.status}`)
   }

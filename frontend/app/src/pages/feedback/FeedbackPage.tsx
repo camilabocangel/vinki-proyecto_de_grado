@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
@@ -12,8 +13,11 @@ import {
   Row,
   Col,
   Progress,
+  Modal,
+  Input,
+  message,
 } from 'antd'
-import { DownloadOutlined } from '@ant-design/icons'
+import { DownloadOutlined, ShareAltOutlined, CopyOutlined } from '@ant-design/icons'
 import { api } from '../../api/client'
 import { SkillRadarChart } from '../../components/SkillRadarChart'
 
@@ -67,6 +71,28 @@ const metricColors: Record<string, string> = {
 export default function FeedbackPage() {
   const { t } = useTranslation()
   const { id } = useParams<{ id: string }>()
+  const [shareModalOpen, setShareModalOpen] = useState(false)
+  const [shareUrl, setShareUrl] = useState('')
+  const [shareLoading, setShareLoading] = useState(false)
+
+  const handleShare = async () => {
+    setShareLoading(true)
+    try {
+      const result = await api.post<{ token: string }>(`/interviews/${id}/share`)
+      const url = `${window.location.origin}/shared/${result.token}`
+      setShareUrl(url)
+      setShareModalOpen(true)
+    } catch {
+      message.error('Error creating share link')
+    } finally {
+      setShareLoading(false)
+    }
+  }
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(shareUrl)
+    message.success(t('feedback.linkCopied'))
+  }
 
   const { data, isLoading } = useQuery({
     queryKey: ['interview', 'report', id],
@@ -173,8 +199,28 @@ export default function FeedbackPage() {
           >
             CSV
           </Button>
+          <Button
+            icon={<ShareAltOutlined />}
+            onClick={handleShare}
+            loading={shareLoading}
+          >
+            {t('feedback.share')}
+          </Button>
         </Space>
       </div>
+
+      <Modal
+        title={t('feedback.shareTitle')}
+        open={shareModalOpen}
+        onCancel={() => setShareModalOpen(false)}
+        footer={null}
+      >
+        <p>{t('feedback.shareDescription')}</p>
+        <Input.Group compact>
+          <Input style={{ width: 'calc(100% - 40px)' }} value={shareUrl} readOnly />
+          <Button icon={<CopyOutlined />} onClick={handleCopyLink} />
+        </Input.Group>
+      </Modal>
 
       {avg && (
         <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>

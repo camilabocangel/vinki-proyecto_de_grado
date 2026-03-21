@@ -19,11 +19,15 @@ import { RegisterDto } from './dto/register.dto.js';
 import { LoginDto } from './dto/login.dto.js';
 import { UpdateProfileDto } from './dto/update-profile.dto.js';
 import { ChangePasswordDto } from './dto/change-password.dto.js';
+import { AuditService } from '../common/audit.service.js';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private auditService: AuditService,
+  ) {}
 
   @Post('register')
   async register(
@@ -32,6 +36,7 @@ export class AuthController {
   ) {
     const result = await this.authService.register(dto);
     this.setTokenCookies(res, result.accessToken, result.refreshToken);
+    await this.auditService.log(result.user.id, 'register', 'user', result.user.id);
     return { user: result.user };
   }
 
@@ -44,6 +49,7 @@ export class AuthController {
   ) {
     const result = await this.authService.login(req.user as any);
     this.setTokenCookies(res, result.accessToken, result.refreshToken);
+    await this.auditService.log(result.user.id, 'login', 'user', result.user.id);
     return { user: result.user };
   }
 

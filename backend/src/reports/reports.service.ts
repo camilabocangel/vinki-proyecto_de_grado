@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../common/prisma.service.js';
 
+const ShareLinkStore = new Map<string, { interviewId: number; expiresAt: number }>();
+
 @Injectable()
 export class ReportsService {
   constructor(private prisma: PrismaService) {}
@@ -569,5 +571,99 @@ export class ReportsService {
       where: { id },
       data: { evaluationNotificationSeen: true },
     });
+  }
+
+  async getAdminAnalytics() {
+    const totalUsers = await this.prisma.user.count();
+    const totalStudents = await this.prisma.user.count({ where: { role: 'student' } });
+    const totalInterviews = await this.prisma.interview.count();
+    const completedInterviews = await this.prisma.interview.count({ where: { evaluationStatus: 'completed' } });
+
+    // Interviews per day (last 30 days)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const recentInterviews = await this.prisma.interview.findMany({
+      where: { startedAt: { gte: thirtyDaysAgo } },
+      select: { startedAt: true },
+    });
+
+    const interviewsPerDay: Record<string, number> = {};
+    for (const iv of recentInterviews) {
+      const day = iv.startedAt.toISOString().split('T')[0];
+      interviewsPerDay[day] = (interviewsPerDay[day] ?? 0) + 1;
+    }
+
+    // Level distribution
+    const levelDist = await this.prisma.interview.groupBy({
+      by: ['chosenLevelId'],
+      _count: true,
+    });
+    const levels = await this.prisma.level.findMany();
+    const levelDistribution = levelDist.map((d) => ({
+      level: levels.find((l) => l.id === d.chosenLevelId)?.name ?? 'Unknown',
+      count: d._count,
+    }));
+
+    // Total questions
+    const totalQuestions = await this.prisma.question.count();
+
+    return {
+      totalUsers,
+      totalStudents,
+      totalInterviews,
+      completedInterviews,
+      totalQuestions,
+      interviewsPerDay,
+      levelDistribution,
+    };
+  }
+
+  async createShareLink(interviewId: number, userId: number) {
+    const interview = await this.prisma.interview.findUnique({ where: { id: interviewId } });
+    if (!interview) throw new NotFoundException();
+    if (interview.userId !== userId) throw new ForbiddenException();
+
+    // Generate a random token
+    const { randomBytes } = await import('crypto');
+    const token = randomBytes(16).toString('hex');
+
+    // Store the token in a Map (in production, use DB)
+    ShareLinkStore.set(token, { interviewId, expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000 });
+
+    return { token, expiresIn: '7 days' };
+  }
+
+  async getSharedReport(token: string) {
+    const link = ShareLinkStore.get(token);
+    if (!link || link.expiresAt < Date.now()) {
+      throw new NotFoundException('Link expired or invalid');
+    }
+    // Get report without userId check
+    const interview = await this.prisma.interview.findUnique({
+      where: { id: link.interviewId },
+      include: {
+        user: { select: { name: true } },
+        questions: {
+          orderBy: { orderNumber: 'asc' },
+          include: {
+            question: { include: { skill: true } },
+            answers: { include: { evaluation: { include: { detectedLevel: true } } } },
+          },
+        },
+      },
+    });
+    if (!interview) throw new NotFoundException();
+    return {
+      studentName: interview.user.name,
+      interview,
+      evaluations: interview.questions.map((q) => ({
+        interviewQuestionId: q.id,
+        orderNumber: q.orderNumber,
+        questionTextSnapshot: q.questionTextSnapshot,
+        skillName: q.question?.skill?.name ?? null,
+        answer: q.answers[0] ?? null,
+        evaluation: q.answers[0]?.evaluation ?? null,
+      })),
+    };
   }
 }

@@ -20,7 +20,9 @@
     "total": "Total",
     "interviews": "entrevistas",
     "notFound": "La página que buscas no existe",
-    "goHome": "Ir al inicio"
+    "goHome": "Ir al inicio",
+    "new": "Nuevo",
+    "rateLimited": "Demasiadas solicitudes. Espera un momento."
   },
   "roles": {
     "student": "Estudiante",
@@ -45,7 +47,8 @@
     "noAccount": "¿No tienes cuenta?",
     "hasAccount": "¿Ya tienes cuenta?",
     "signUp": "Regístrate",
-    "signIn": "Inicia sesión"
+    "signIn": "Inicia sesión",
+    "sessionExpiring": "Tu sesión se renovará automáticamente..."
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -62,7 +65,9 @@
     "studyPlan": "Plan de estudio",
     "notifications": "Notificaciones",
     "noNotifications": "Sin notificaciones pendientes",
-    "markAllSeen": "Marcar todas como vistas"
+    "markAllSeen": "Marcar todas como vistas",
+    "auditLogs": "Auditoría",
+    "analytics": "Analíticas"
   },
   "dashboard": {
     "greeting": "Hola, {{name}}",
@@ -171,7 +176,12 @@
     "aiFeedback": "Feedback IA",
     "recommendedAnswers": "Respuestas recomendadas por nivel",
     "notFound": "No se encontró el reporte.",
-    "skill": "Habilidad"
+    "skill": "Habilidad",
+    "share": "Compartir",
+    "shareTitle": "Enlace para compartir",
+    "shareDescription": "Comparte este enlace. Expira en 7 días.",
+    "copyLink": "Copiar enlace",
+    "linkCopied": "Enlace copiado"
   },
   "metrics": {
     "technicalCorrectness": "Corrección técnica",
@@ -222,7 +232,18 @@
     "noQuestionsSelected": "Selecciona al menos una pregunta",
     "importQuestions": "Importar preguntas",
     "importFormat": "Pega un array JSON de preguntas",
-    "importSuccess": "{{created}} creadas, {{errors}} errores"
+    "importSuccess": "{{created}} creadas, {{errors}} errores",
+    "exportQuestions": "Exportar preguntas",
+    "auditTitle": "Registro de auditoría",
+    "action": "Acción",
+    "entity": "Entidad",
+    "details": "Detalles",
+    "totalUsers": "Total usuarios",
+    "totalInterviews": "Total entrevistas",
+    "completedInterviews": "Completadas",
+    "totalQuestions": "Total preguntas",
+    "interviewsPerDay": "Entrevistas por día",
+    "levelDistribution": "Distribución por nivel"
   },
   "recruiter": {
     "panel": "Panel de reclutador",
@@ -263,6 +284,11 @@
   },
   "history": {
     "filterByStatus": "Filtrar por estado"
+  },
+  "search": {
+    "placeholder": "Buscar entrevistas, preguntas...",
+    "noResults": "Sin resultados",
+    "hint": "Escribe para buscar (Cmd+K)"
   },
   "onboarding": {
     "welcome": "¡Bienvenido a Vinki!",

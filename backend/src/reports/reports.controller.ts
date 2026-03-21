@@ -125,4 +125,17 @@ export class ReportsController {
     const user = (req as any).user;
     return this.reportsService.markSeen(id, user.userId);
   }
+
+  @Get('admin/analytics')
+  @Roles('admin')
+  getAdminAnalytics() {
+    return this.reportsService.getAdminAnalytics();
+  }
+
+  @Post('interviews/:id/share')
+  @Roles('student')
+  createShareLink(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
+    const user = (req as any).user;
+    return this.reportsService.createShareLink(id, user.userId);
+  }
 }

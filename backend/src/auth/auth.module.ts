@@ -9,6 +9,7 @@ import { LocalStrategy } from './strategies/local.strategy.js';
 import { JwtCookieGuard } from './guards/jwt-cookie.guard.js';
 import { RolesGuard } from './guards/roles.guard.js';
 import { PrismaService } from '../common/prisma.service.js';
+import { AuditService } from '../common/audit.service.js';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { PrismaService } from '../common/prisma.service.js';
   providers: [
     AuthService,
     PrismaService,
+    AuditService,
     JwtCookieStrategy,
     LocalStrategy,
     JwtCookieGuard,
