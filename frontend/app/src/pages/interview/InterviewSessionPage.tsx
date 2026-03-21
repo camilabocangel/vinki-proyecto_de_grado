@@ -2,15 +2,43 @@ import { useEffect, useState, useRef, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Card, Button, Input, Typography, Progress, Space, App, Skeleton } from 'antd'
-import { AudioOutlined, PauseOutlined, RobotOutlined } from '@ant-design/icons'
+import {
+  Card,
+  Button,
+  Input,
+  Typography,
+  Progress,
+  Space,
+  App,
+  Skeleton,
+  Spin,
+} from 'antd'
+import {
+  AudioOutlined,
+  PauseOutlined,
+  RobotOutlined,
+  CodeOutlined,
+} from '@ant-design/icons'
 import { useInterviewStore, type Interview } from '../../store/interview.store'
 import { api } from '../../api/client'
+import { CodeEditor } from '../../components/CodeEditor'
 
 const { Title, Text } = Typography
 const { TextArea } = Input
 
 const QUESTION_TIME_LIMIT = 300
+
+interface PracticeEvaluation {
+  technicalCorrectness: number | null
+  clarityOfExplanation: number | null
+  communication: number | null
+  confidence: number | null
+  problemSolving: number | null
+  feedbackText: string | null
+  juniorAnswer: string | null
+  midAnswer: string | null
+  seniorAnswer: string | null
+}
 
 export default function InterviewSessionPage() {
   const { t } = useTranslation()
@@ -29,12 +57,20 @@ export default function InterviewSessionPage() {
   const [timeLeft, setTimeLeft] = useState(QUESTION_TIME_LIMIT)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
+  const [useCode, setUseCode] = useState(false)
+  const codeRef = useRef('')
+
   const [isRecording, setIsRecording] = useState(false)
   const [isTranscribing, setIsTranscribing] = useState(false)
   const [followUpQuestion, setFollowUpQuestion] = useState<string | null>(null)
   const [showFollowUp, setShowFollowUp] = useState(false)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const audioChunksRef = useRef<Blob[]>([])
+
+  // Practice mode state
+  const [practiceEvaluation, setPracticeEvaluation] = useState<PracticeEvaluation | null>(
+    null,
+  )
 
   const { data, isLoading } = useQuery({
     queryKey: ['interview', id],
@@ -45,6 +81,8 @@ export default function InterviewSessionPage() {
   useEffect(() => {
     if (data) setInterview(data)
   }, [data, setInterview])
+
+  const isPracticeMode = currentInterview?.mode === 'practice'
 
   const submitAnswer = useMutation({
     mutationFn: ({
@@ -63,6 +101,19 @@ export default function InterviewSessionPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['interview', id] })
       message.success(t('interview.answerSaved'))
+    },
+  })
+
+  const evaluateNow = useMutation({
+    mutationFn: (questionId: number) =>
+      api.post<PracticeEvaluation>(
+        `/interviews/${id}/questions/${questionId}/evaluate-now`,
+      ),
+    onSuccess: (data) => {
+      setPracticeEvaluation(data)
+    },
+    onError: (err: Error) => {
+      message.error(err.message)
     },
   })
 
@@ -96,26 +147,55 @@ export default function InterviewSessionPage() {
   const handleSubmitAnswer = useCallback(() => {
     if (!currentInterview) return
     const question = currentInterview.questions[currentQuestionIndex]
-    const textarea = document.getElementById('answer-text') as HTMLTextAreaElement
-    if (textarea?.value.trim()) {
-      const answeredInSeconds = QUESTION_TIME_LIMIT - timeLeft
-      submitAnswer.mutate({
-        questionId: question.id,
-        answerText: textarea.value,
-        answeredInSeconds,
-      })
+    let answerText: string
+    if (useCode) {
+      answerText = codeRef.current
+    } else {
+      const textarea = document.getElementById('answer-text') as HTMLTextAreaElement
+      answerText = textarea?.value ?? ''
     }
-  }, [currentInterview, currentQuestionIndex, timeLeft, submitAnswer])
+    if (answerText.trim()) {
+      const answeredInSeconds = QUESTION_TIME_LIMIT - timeLeft
+      submitAnswer.mutate(
+        {
+          questionId: question.id,
+          answerText,
+          answeredInSeconds,
+        },
+        {
+          onSuccess: () => {
+            // In practice mode, auto-trigger evaluation after saving
+            if (isPracticeMode) {
+              evaluateNow.mutate(question.id)
+            }
+          },
+        },
+      )
+    }
+  }, [
+    currentInterview,
+    currentQuestionIndex,
+    timeLeft,
+    submitAnswer,
+    useCode,
+    isPracticeMode,
+    evaluateNow,
+  ])
 
   const handleGetFollowUp = useCallback(() => {
     if (!currentInterview) return
     const question = currentInterview.questions[currentQuestionIndex]
-    const textarea = document.getElementById('answer-text') as HTMLTextAreaElement
-    const answerText = textarea?.value.trim()
+    let answerText: string
+    if (useCode) {
+      answerText = codeRef.current.trim()
+    } else {
+      const textarea = document.getElementById('answer-text') as HTMLTextAreaElement
+      answerText = textarea?.value.trim() ?? ''
+    }
     if (answerText) {
       requestFollowUp.mutate({ questionId: question.id, answerText })
     }
-  }, [currentInterview, currentQuestionIndex, requestFollowUp])
+  }, [currentInterview, currentQuestionIndex, requestFollowUp, useCode])
 
   const handleSubmitFollowUpAnswer = useCallback(() => {
     if (!currentInterview) return
@@ -187,10 +267,11 @@ export default function InterviewSessionPage() {
     setIsRecording(false)
   }, [])
 
-  // Reset follow-up state on question change
+  // Reset follow-up and practice evaluation state on question change
   useEffect(() => {
     setFollowUpQuestion(null)
     setShowFollowUp(false)
+    setPracticeEvaluation(null)
   }, [currentQuestionIndex])
 
   // Countdown timer: reset on each question change, auto-advance on expiry
@@ -251,6 +332,26 @@ export default function InterviewSessionPage() {
     .padStart(2, '0')
   const seconds = (timeLeft % 60).toString().padStart(2, '0')
 
+  const renderMetricBar = (label: string, value: number | null) => {
+    if (value === null || value === undefined) return null
+    const percent = (value / 5) * 100
+    return (
+      <div style={{ marginBottom: 8 }}>
+        <div
+          style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}
+        >
+          <Text type="secondary" style={{ fontSize: 13 }}>
+            {label}
+          </Text>
+          <Text strong style={{ fontSize: 13 }}>
+            {value.toFixed(1)} / 5
+          </Text>
+        </div>
+        <Progress percent={percent} showInfo={false} size="small" />
+      </div>
+    )
+  }
+
   return (
     <div className="vinki-page" style={{ maxWidth: 800, margin: '0 auto' }}>
       <div
@@ -272,19 +373,55 @@ export default function InterviewSessionPage() {
         >
           {t('interview.timeRemaining')}: {minutes}:{seconds}
         </Text>
+        {isPracticeMode && (
+          <Text
+            type="secondary"
+            style={{
+              background: '#e6f4ff',
+              padding: '2px 8px',
+              borderRadius: 4,
+              fontSize: 12,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {t('interview.practiceMode')}
+          </Text>
+        )}
       </div>
 
       <Card>
         <Text type="secondary">Pregunta {question.orderNumber}</Text>
         <Title level={3}>{question.questionTextSnapshot}</Title>
 
-        <TextArea
-          id="answer-text"
-          rows={8}
-          placeholder={t('interview.answerPlaceholder')}
-          defaultValue={question.answer?.answerText || ''}
-          style={{ marginBottom: 16 }}
-        />
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
+          <Button
+            icon={<CodeOutlined />}
+            size="small"
+            type={useCode ? 'primary' : 'default'}
+            onClick={() => setUseCode((prev) => !prev)}
+          >
+            {useCode ? t('interview.useTextEditor') : t('interview.useCodeEditor')}
+          </Button>
+        </div>
+
+        {useCode ? (
+          <div style={{ marginBottom: 16 }}>
+            <CodeEditor
+              defaultValue={question.answer?.answerText || ''}
+              onChange={(value) => {
+                codeRef.current = value
+              }}
+            />
+          </div>
+        ) : (
+          <TextArea
+            id="answer-text"
+            rows={8}
+            placeholder={t('interview.answerPlaceholder')}
+            defaultValue={question.answer?.answerText || ''}
+            style={{ marginBottom: 16 }}
+          />
+        )}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
           {!isRecording ? (
@@ -346,6 +483,114 @@ export default function InterviewSessionPage() {
           )}
         </Space>
       </Card>
+
+      {/* Practice mode: inline evaluation feedback */}
+      {isPracticeMode && evaluateNow.isPending && (
+        <Card style={{ marginTop: 16, textAlign: 'center' }}>
+          <Spin />
+          <Text type="secondary" style={{ marginLeft: 8 }}>
+            {t('interview.evaluatingAnswer')}
+          </Text>
+        </Card>
+      )}
+
+      {isPracticeMode && practiceEvaluation && (
+        <Card
+          title={t('interview.instantFeedback')}
+          style={{
+            marginTop: 16,
+            borderLeft: '4px solid #52c41a',
+          }}
+        >
+          {renderMetricBar(
+            t('metrics.technicalCorrectness'),
+            practiceEvaluation.technicalCorrectness,
+          )}
+          {renderMetricBar(
+            t('metrics.clarityOfExplanation'),
+            practiceEvaluation.clarityOfExplanation,
+          )}
+          {renderMetricBar(t('metrics.communication'), practiceEvaluation.communication)}
+          {renderMetricBar(t('metrics.confidence'), practiceEvaluation.confidence)}
+          {renderMetricBar(
+            t('metrics.problemSolving'),
+            practiceEvaluation.problemSolving,
+          )}
+
+          {practiceEvaluation.feedbackText && (
+            <div style={{ marginTop: 16 }}>
+              <Text strong>{t('feedback.aiFeedback')}</Text>
+              <div
+                style={{
+                  marginTop: 8,
+                  padding: 12,
+                  background: '#f6ffed',
+                  borderRadius: 6,
+                  whiteSpace: 'pre-wrap',
+                }}
+              >
+                <Text>{practiceEvaluation.feedbackText}</Text>
+              </div>
+            </div>
+          )}
+
+          {(practiceEvaluation.juniorAnswer ||
+            practiceEvaluation.midAnswer ||
+            practiceEvaluation.seniorAnswer) && (
+            <div style={{ marginTop: 16 }}>
+              <Text strong>{t('feedback.recommendedAnswers')}</Text>
+              {practiceEvaluation.juniorAnswer && (
+                <div
+                  style={{
+                    marginTop: 8,
+                    padding: 12,
+                    background: '#fff7e6',
+                    borderRadius: 6,
+                  }}
+                >
+                  <Text type="secondary">Junior</Text>
+                  <br />
+                  <Text style={{ whiteSpace: 'pre-wrap' }}>
+                    {practiceEvaluation.juniorAnswer}
+                  </Text>
+                </div>
+              )}
+              {practiceEvaluation.midAnswer && (
+                <div
+                  style={{
+                    marginTop: 8,
+                    padding: 12,
+                    background: '#e6f4ff',
+                    borderRadius: 6,
+                  }}
+                >
+                  <Text type="secondary">Mid</Text>
+                  <br />
+                  <Text style={{ whiteSpace: 'pre-wrap' }}>
+                    {practiceEvaluation.midAnswer}
+                  </Text>
+                </div>
+              )}
+              {practiceEvaluation.seniorAnswer && (
+                <div
+                  style={{
+                    marginTop: 8,
+                    padding: 12,
+                    background: '#f6ffed',
+                    borderRadius: 6,
+                  }}
+                >
+                  <Text type="secondary">Senior</Text>
+                  <br />
+                  <Text style={{ whiteSpace: 'pre-wrap' }}>
+                    {practiceEvaluation.seniorAnswer}
+                  </Text>
+                </div>
+              )}
+            </div>
+          )}
+        </Card>
+      )}
 
       {showFollowUp && followUpQuestion && (
         <Card

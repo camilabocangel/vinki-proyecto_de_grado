@@ -1,4 +1,4 @@
-import { IsInt, IsOptional } from 'class-validator';
+import { IsInt, IsOptional, IsString, IsIn } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateInterviewDto {
@@ -19,4 +19,10 @@ export class CreateInterviewDto {
   @ApiProperty()
   @IsInt()
   chosenLevelId!: number;
+
+  @ApiProperty({ required: false, default: 'evaluation' })
+  @IsOptional()
+  @IsString()
+  @IsIn(['practice', 'evaluation'])
+  mode?: string;
 }

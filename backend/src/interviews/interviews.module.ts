@@ -10,11 +10,13 @@ import { FollowUpService } from './services/followup.service.js';
 import { AnswersController } from './answers/answers.controller.js';
 import { AnswersService } from './answers/answers.service.js';
 import { PrismaService } from '../common/prisma.service.js';
+import { EvaluationModule } from '../evaluation/evaluation.module.js';
 
 @Module({
   imports: [
     BullModule.registerQueue({ name: 'evaluation' }),
     MulterModule.register({ limits: { fileSize: 25 * 1024 * 1024 } }),
+    EvaluationModule,
   ],
   controllers: [InterviewsController, AnswersController],
   providers: [

@@ -64,6 +64,7 @@ export class InterviewsService {
           languageId: dto.languageId,
           frameworkId: dto.frameworkId,
           chosenLevelId: dto.chosenLevelId,
+          mode: dto.mode ?? 'evaluation',
         },
       });
 

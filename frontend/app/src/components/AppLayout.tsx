@@ -9,6 +9,7 @@ import {
   LogoutOutlined,
   UserOutlined,
   LineChartOutlined,
+  BookOutlined,
   SettingOutlined,
   MoonOutlined,
   SunOutlined,
@@ -42,6 +43,7 @@ export function AppLayout() {
     { key: '/dashboard', icon: <DashboardOutlined />, label: t('nav.dashboard') },
     { key: '/interview/new', icon: <ThunderboltOutlined />, label: t('nav.interview') },
     { key: '/history', icon: <LineChartOutlined />, label: t('nav.history') },
+    { key: '/study-plan', icon: <BookOutlined />, label: t('nav.studyPlan') },
   ]
 
   const roleMenuItems: { key: string; icon: React.ReactNode; label: string }[] = []

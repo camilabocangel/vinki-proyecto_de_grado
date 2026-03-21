@@ -23,6 +23,7 @@ export interface Interview {
   startedAt: string
   finishedAt: string | null
   evaluationStatus: string
+  mode: string
   questions: InterviewQuestion[]
 }
 

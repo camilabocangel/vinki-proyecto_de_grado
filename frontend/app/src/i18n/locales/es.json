@@ -55,7 +55,8 @@
     "management": "Gestión",
     "general": "General",
     "myProfile": "Mi perfil",
-    "closeMenu": "Cerrar menú"
+    "closeMenu": "Cerrar menú",
+    "studyPlan": "Plan de estudio"
   },
   "dashboard": {
     "greeting": "Hola, {{name}}",
@@ -133,7 +134,20 @@
     "recordAnswer": "Grabar respuesta",
     "followUp": "Pregunta de seguimiento",
     "getFollowUp": "Profundizar con IA",
-    "followUpAnswer": "Responde al seguimiento..."
+    "followUpAnswer": "Responde al seguimiento...",
+    "mode": "Modo",
+    "practiceMode": "Modo práctica",
+    "evaluationMode": "Modo evaluación",
+    "practiceModeDesc": "Recibe feedback inmediato por pregunta",
+    "evaluationModeDesc": "Feedback completo al finalizar",
+    "evaluatingAnswer": "Evaluando respuesta...",
+    "instantFeedback": "Feedback instantáneo",
+    "useCodeEditor": "Usar editor de código",
+    "useTextEditor": "Usar texto"
+  },
+  "code": {
+    "editor": "Editor de código",
+    "copy": "Copiar"
   },
   "feedback": {
     "reportTitle": "Reporte de entrevista",
@@ -187,15 +201,43 @@
     "import": "Importar",
     "searchByText": "Buscar por texto...",
     "deleteQuestion": "¿Eliminar pregunta?",
-    "questionDeleted": "Pregunta eliminada"
+    "questionDeleted": "Pregunta eliminada",
+    "generateWithAI": "Generar con IA",
+    "topic": "Tema",
+    "count": "Cantidad",
+    "generating": "Generando...",
+    "addSelected": "Agregar seleccionadas",
+    "questionsGenerated": "Preguntas generadas",
+    "selectLevel": "Selecciona un nivel",
+    "selectLanguage": "Selecciona un lenguaje",
+    "noQuestionsSelected": "Selecciona al menos una pregunta"
   },
   "recruiter": {
     "panel": "Panel de reclutador",
     "filterByLevel": "Filtrar por nivel",
+    "filterByLanguage": "Filtrar por lenguaje",
     "exportCSV": "Exportar CSV",
     "studentNotFound": "Estudiante no encontrado",
     "registered": "Registrado",
-    "recentInterviews": "Entrevistas recientes"
+    "recentInterviews": "Entrevistas recientes",
+    "ranking": "Ranking",
+    "totalStudents": "Total estudiantes",
+    "averageScore": "Puntaje promedio",
+    "activeLastMonth": "Activos último mes",
+    "clearFilters": "Limpiar filtros",
+    "exportShortlist": "Exportar shortlist",
+    "lastInterview": "Última entrevista",
+    "skills": "Habilidades",
+    "noScore": "Sin puntaje"
+  },
+  "studyPlan": {
+    "title": "Tu plan de mejora",
+    "strengths": "Tus fortalezas",
+    "improvements": "Áreas a mejorar",
+    "article": "Artículo",
+    "video": "Video",
+    "exercise": "Ejercicio",
+    "noData": "Completa al menos una entrevista para generar tu plan"
   },
   "audio": {
     "record": "Grabar audio",

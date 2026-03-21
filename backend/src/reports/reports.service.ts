@@ -378,6 +378,113 @@ export class ReportsService {
     return { progress };
   }
 
+  async getRecruiterDashboard(filters?: { levelName?: string; skillName?: string; languageName?: string }) {
+    const students = await this.prisma.user.findMany({
+      where: { role: 'student' },
+      include: {
+        skillScores: { include: { skill: true } },
+        interviews: {
+          orderBy: { startedAt: 'desc' },
+          take: 1,
+          include: { level: true, language: true },
+        },
+      },
+    });
+
+    let mapped = students.map((s) => {
+      const avgScore = s.skillScores.length > 0
+        ? s.skillScores.reduce((sum, ss) => sum + ss.score, 0) / s.skillScores.length
+        : null;
+      const lastInterview = s.interviews[0] ?? null;
+      return {
+        id: s.id,
+        name: s.name,
+        email: s.email,
+        interviewCount: s.interviews.length,
+        avgScore,
+        levelName: lastInterview?.level?.name ?? null,
+        languageName: lastInterview?.language?.name ?? null,
+        skills: s.skillScores.map((ss) => ({ name: ss.skill.name, score: ss.score })),
+        lastInterviewDate: lastInterview?.startedAt ?? null,
+      };
+    });
+
+    // Apply filters
+    if (filters?.levelName) {
+      mapped = mapped.filter((s) => s.levelName === filters.levelName);
+    }
+    if (filters?.languageName) {
+      mapped = mapped.filter((s) => s.languageName === filters.languageName);
+    }
+
+    // Sort by avgScore descending (ranking)
+    mapped.sort((a, b) => (b.avgScore ?? 0) - (a.avgScore ?? 0));
+
+    return { students: mapped, total: mapped.length };
+  }
+
+  async generateStudyPlan(userId: number) {
+    const skillScores = await this.prisma.userSkillScore.findMany({
+      where: { userId },
+      include: { skill: true },
+    });
+
+    if (skillScores.length === 0) return null;
+
+    // Find weakest skills (below 60%)
+    const weakSkills = skillScores
+      .filter((s) => s.score < 60)
+      .sort((a, b) => a.score - b.score)
+      .map((s) => ({ name: s.skill.name, score: s.score }));
+
+    const strongSkills = skillScores
+      .filter((s) => s.score >= 60)
+      .sort((a, b) => b.score - a.score)
+      .map((s) => ({ name: s.skill.name, score: s.score }));
+
+    // Use OpenAI to generate a study plan
+    const OpenAI = (await import('openai')).default;
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || '' });
+
+    const sandbox = process.env.LLM_SANDBOX === 'true';
+
+    let plan: any;
+    if (sandbox) {
+      plan = {
+        summary: 'Plan de estudio personalizado basado en tus resultados.',
+        strengths: strongSkills.map((s) => s.name),
+        improvements: weakSkills.map((s) => ({
+          skill: s.name,
+          currentScore: s.score,
+          recommendations: [
+            { type: 'article', title: `Guía completa de ${s.name}`, url: '#' },
+            { type: 'video', title: `Tutorial de ${s.name}`, url: '#' },
+            { type: 'exercise', title: `Práctica de ${s.name}`, url: '#' },
+          ],
+        })),
+      };
+    } else {
+      const response = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: 'Eres un mentor técnico. Genera un plan de estudio personalizado en JSON con recursos reales (artículos, videos, ejercicios) para mejorar las habilidades débiles del candidato.',
+          },
+          {
+            role: 'user',
+            content: `El candidato tiene estas habilidades débiles (score de 0-100): ${JSON.stringify(weakSkills)}. Y estas fortalezas: ${JSON.stringify(strongSkills)}. Genera un plan en JSON: { "summary": "resumen", "strengths": ["skill1"], "improvements": [{ "skill": "name", "currentScore": N, "recommendations": [{ "type": "article|video|exercise", "title": "titulo", "url": "url real" }] }] }`,
+          },
+        ],
+        response_format: { type: 'json_object' },
+        temperature: 0.7,
+      });
+      plan = JSON.parse(response.choices[0]?.message?.content || '{}');
+    }
+
+    return plan;
+  }
+
   async markSeen(id: number, userId: number) {
     const interview = await this.prisma.interview.findUnique({ where: { id } });
     if (!interview) throw new NotFoundException();

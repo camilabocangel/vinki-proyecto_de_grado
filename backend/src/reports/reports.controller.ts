@@ -75,6 +75,25 @@ export class ReportsController {
     }
   }
 
+  @Get('recruiter/students')
+  @Roles('recruiter', 'admin')
+  getRecruiterDashboard(
+    @Query('level') level?: string,
+    @Query('language') language?: string,
+  ) {
+    return this.reportsService.getRecruiterDashboard({
+      levelName: level,
+      languageName: language,
+    });
+  }
+
+  @Get('study-plan')
+  @Roles('student')
+  getStudyPlan(@Req() req: any) {
+    const user = (req as any).user;
+    return this.reportsService.generateStudyPlan(user.userId);
+  }
+
   @Post('interviews/:id/mark-seen')
   @Roles('student')
   @HttpCode(HttpStatus.NO_CONTENT)

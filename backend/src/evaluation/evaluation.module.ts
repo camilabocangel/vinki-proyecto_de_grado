@@ -26,5 +26,6 @@ import { PrismaService } from '../common/prisma.service.js';
       inject: [ConfigService, OpenaiEvaluatorService, MockEvaluatorService],
     },
   ],
+  exports: [EVALUATOR_SERVICE],
 })
 export class EvaluationModule {}

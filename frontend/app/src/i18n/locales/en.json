@@ -55,7 +55,8 @@
     "management": "Management",
     "general": "General",
     "myProfile": "My profile",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "studyPlan": "Study Plan"
   },
   "dashboard": {
     "greeting": "Hello, {{name}}",
@@ -133,7 +134,20 @@
     "recordAnswer": "Record answer",
     "followUp": "Follow-up question",
     "getFollowUp": "Dig deeper with AI",
-    "followUpAnswer": "Answer the follow-up..."
+    "followUpAnswer": "Answer the follow-up...",
+    "useCodeEditor": "Use code editor",
+    "useTextEditor": "Use text editor",
+    "mode": "Mode",
+    "practiceMode": "Practice mode",
+    "evaluationMode": "Evaluation mode",
+    "practiceModeDesc": "Get instant feedback per question",
+    "evaluationModeDesc": "Full feedback after finishing",
+    "evaluatingAnswer": "Evaluating answer...",
+    "instantFeedback": "Instant feedback"
+  },
+  "code": {
+    "editor": "Code editor",
+    "copy": "Copy"
   },
   "feedback": {
     "reportTitle": "Interview report",
@@ -187,15 +201,43 @@
     "import": "Import",
     "searchByText": "Search by text...",
     "deleteQuestion": "Delete question?",
-    "questionDeleted": "Question deleted"
+    "questionDeleted": "Question deleted",
+    "generateWithAI": "Generate with AI",
+    "topic": "Topic",
+    "count": "Count",
+    "generating": "Generating...",
+    "addSelected": "Add selected",
+    "questionsGenerated": "Questions generated",
+    "selectLevel": "Select a level",
+    "selectLanguage": "Select a language",
+    "noQuestionsSelected": "Select at least one question"
   },
   "recruiter": {
     "panel": "Recruiter panel",
     "filterByLevel": "Filter by level",
+    "filterByLanguage": "Filter by language",
     "exportCSV": "Export CSV",
     "studentNotFound": "Student not found",
     "registered": "Registered",
-    "recentInterviews": "Recent interviews"
+    "recentInterviews": "Recent interviews",
+    "ranking": "Ranking",
+    "totalStudents": "Total students",
+    "averageScore": "Average score",
+    "activeLastMonth": "Active last month",
+    "clearFilters": "Clear filters",
+    "exportShortlist": "Export shortlist",
+    "lastInterview": "Last interview",
+    "skills": "Skills",
+    "noScore": "No score"
+  },
+  "studyPlan": {
+    "title": "Your improvement plan",
+    "strengths": "Your strengths",
+    "improvements": "Areas to improve",
+    "article": "Article",
+    "video": "Video",
+    "exercise": "Exercise",
+    "noData": "Complete at least one interview to generate your plan"
   },
   "audio": {
     "record": "Record audio",

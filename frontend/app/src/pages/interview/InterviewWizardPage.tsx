@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Steps, Card, Select, Button, Typography, Space, App } from 'antd'
+import { Steps, Card, Select, Button, Typography, Space, App, Radio } from 'antd'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { api } from '../../api/client'
 
@@ -21,6 +21,7 @@ export default function InterviewWizardPage() {
   const [languageId, setLanguageId] = useState<number>()
   const [frameworkId, setFrameworkId] = useState<number>()
   const [levelId, setLevelId] = useState<number>()
+  const [mode, setMode] = useState<string>('evaluation')
 
   const { data: roles } = useQuery({
     queryKey: ['catalogs', 'roles'],
@@ -50,6 +51,7 @@ export default function InterviewWizardPage() {
         languageId,
         frameworkId,
         chosenLevelId: levelId,
+        mode,
       }),
     onSuccess: (data) => {
       navigate(`/interview/${data.id}`)
@@ -116,6 +118,45 @@ export default function InterviewWizardPage() {
           style={{ width: '100%' }}
           size="large"
         />
+      ),
+    },
+    {
+      title: t('interview.mode'),
+      content: (
+        <Radio.Group
+          value={mode}
+          onChange={(e) => setMode(e.target.value)}
+          style={{ width: '100%' }}
+        >
+          <Space direction="vertical" style={{ width: '100%' }}>
+            <Radio.Button
+              value="practice"
+              style={{
+                display: 'block',
+                height: 'auto',
+                padding: '12px 16px',
+                whiteSpace: 'normal',
+              }}
+            >
+              <Text strong>{t('interview.practiceMode')}</Text>
+              <br />
+              <Text type="secondary">{t('interview.practiceModeDesc')}</Text>
+            </Radio.Button>
+            <Radio.Button
+              value="evaluation"
+              style={{
+                display: 'block',
+                height: 'auto',
+                padding: '12px 16px',
+                whiteSpace: 'normal',
+              }}
+            >
+              <Text strong>{t('interview.evaluationMode')}</Text>
+              <br />
+              <Text type="secondary">{t('interview.evaluationModeDesc')}</Text>
+            </Radio.Button>
+          </Space>
+        </Radio.Group>
       ),
     },
   ]

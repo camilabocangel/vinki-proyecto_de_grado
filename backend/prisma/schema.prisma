@@ -126,6 +126,7 @@ model Interview {
   finishedAt                 DateTime?        @map("finished_at") @db.Timestamptz()
   evaluationStatus           EvaluationStatus @default(pending) @map("evaluation_status")
   evaluationNotificationSeen Boolean          @default(false) @map("evaluation_notification_seen")
+  mode                       String           @default("evaluation") @db.VarChar(20)
 
   user      User        @relation(fields: [userId], references: [id])
   role      Role        @relation(fields: [roleId], references: [id])

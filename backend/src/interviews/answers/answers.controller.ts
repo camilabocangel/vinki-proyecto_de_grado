@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  Get,
   Param,
   Body,
   UseGuards,
@@ -73,6 +74,17 @@ export class AnswersController {
     );
 
     return { ...answer, transcription };
+  }
+
+  @Post('evaluate-now')
+  @Roles('student')
+  evaluateNow(
+    @Req() req: any,
+    @Param('interviewId', ParseIntPipe) interviewId: number,
+    @Param('questionId', ParseIntPipe) questionId: number,
+  ) {
+    const user = (req as any).user;
+    return this.answersService.evaluateNow(interviewId, questionId, user.userId);
   }
 
   @Post('followup')
