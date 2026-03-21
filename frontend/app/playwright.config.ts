@@ -6,12 +6,12 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   reporter: [['list'], ['html', { outputFolder: 'coverage/e2e' }]],
   use: {
-    baseURL: 'http://127.0.0.1:5173',
+    baseURL: 'http://localhost:5174',
     trace: 'retain-on-failure',
   },
   webServer: {
     command: 'npm run dev -- --host',
-    port: 5173,
+    port: 5174,
     reuseExistingServer: !process.env.CI,
   },
   projects: [

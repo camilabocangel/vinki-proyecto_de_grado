@@ -8,23 +8,39 @@ body {
   margin: 0;
   min-height: 100vh;
   font-family: var(--font-body);
-  background: radial-gradient(circle at 20% 20%, #fcefdc, var(--color-bg) 45%);
-  color: var(--color-secondary);
+  background: var(--color-bg);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 #root {
   min-height: 100vh;
-  background: transparent;
 }
 
 a {
-  color: inherit;
+  color: var(--color-primary);
+  text-decoration: none;
 }
 
-.grid-pattern {
-  background-image:
-    linear-gradient(0deg, rgba(255, 255, 255, 0.12) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.12) 1px, transparent 1px);
-  background-size: 40px 40px;
-  border-radius: var(--radius-lg);
+a:hover {
+  color: var(--color-primary-dark);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-muted);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-secondary);
 }

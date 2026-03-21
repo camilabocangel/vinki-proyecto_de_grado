@@ -1,0 +1,639 @@
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import {
+  Table,
+  Card,
+  Typography,
+  Button,
+  Space,
+  Input,
+  App,
+  Popconfirm,
+  Modal,
+  Select,
+  InputNumber,
+  Checkbox,
+  List,
+  Spin,
+  Form,
+  Tag,
+  Dropdown,
+} from 'antd'
+import {
+  PlusOutlined,
+  UploadOutlined,
+  DownloadOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  RobotOutlined,
+} from '@ant-design/icons'
+import { api } from '../../api/client'
+import { usePageTitle } from '../../hooks/usePageTitle'
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
+
+const { Title, Text } = Typography
+
+interface Question {
+  id: number
+  questionText: string
+  type: string
+  languageId: number
+  frameworkId: number | null
+  levelId: number
+  skillId: number
+  createdAt: string
+  language?: { id: number; name: string }
+  level?: { id: number; name: string }
+  skill?: { id: number; name: string }
+}
+
+interface PaginatedQuestions {
+  data: Question[]
+  total: number
+  page: number
+  limit: number
+}
+
+interface CatalogItem {
+  id: number
+  name: string
+}
+
+export default function AdminQuestionsPage() {
+  const { t } = useTranslation()
+  usePageTitle(t('admin.questionCatalog'))
+  const queryClient = useQueryClient()
+  const { message } = App.useApp()
+  const [page, setPage] = useState(1)
+  const [search, setSearch] = useState('')
+
+  // Import modal state
+  const [importModalOpen, setImportModalOpen] = useState(false)
+  const [importJson, setImportJson] = useState('')
+  const [importPreview, setImportPreview] = useState<Record<string, unknown>[] | null>(
+    null,
+  )
+  const [importParseError, setImportParseError] = useState<string | null>(null)
+
+  // AI Generation modal state
+  const [aiModalOpen, setAiModalOpen] = useState(false)
+  const [topic, setTopic] = useState('')
+  const [level, setLevel] = useState<string | undefined>(undefined)
+  const [language, setLanguage] = useState<string | undefined>(undefined)
+  const [count, setCount] = useState(5)
+  const [generatedQuestions, setGeneratedQuestions] = useState<string[]>([])
+  const [selectedQuestions, setSelectedQuestions] = useState<Set<number>>(new Set())
+
+  // Create/Edit modal
+  const [editModalOpen, setEditModalOpen] = useState(false)
+  const [editingQuestion, setEditingQuestion] = useState<Question | null>(null)
+  const [form] = Form.useForm()
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['admin', 'questions', page, search],
+    queryFn: () =>
+      api.get<PaginatedQuestions>('/admin/questions', {
+        page: String(page),
+        limit: '20',
+        ...(search && { q: search }),
+      }),
+  })
+
+  const { data: levels } = useQuery({
+    queryKey: ['catalogs', 'levels'],
+    queryFn: () => api.get<CatalogItem[]>('/catalogs/levels'),
+  })
+
+  const { data: languages } = useQuery({
+    queryKey: ['catalogs', 'languages'],
+    queryFn: () => api.get<CatalogItem[]>('/catalogs/languages'),
+  })
+
+  const { data: skills } = useQuery({
+    queryKey: ['catalogs', 'skills'],
+    queryFn: () => api.get<CatalogItem[]>('/catalogs/skills'),
+  })
+
+  const createMutation = useMutation({
+    mutationFn: (values: Record<string, unknown>) => api.post('/admin/questions', values),
+    onSuccess: () => {
+      message.success(t('common.success'))
+      queryClient.invalidateQueries({ queryKey: ['admin', 'questions'] })
+      setEditModalOpen(false)
+      form.resetFields()
+    },
+    onError: (err: Error) => message.error(err.message),
+  })
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, ...values }: { id: number } & Record<string, unknown>) =>
+      api.put(`/admin/questions/${id}`, values),
+    onSuccess: () => {
+      message.success(t('common.success'))
+      queryClient.invalidateQueries({ queryKey: ['admin', 'questions'] })
+      setEditModalOpen(false)
+      setEditingQuestion(null)
+      form.resetFields()
+    },
+    onError: (err: Error) => message.error(err.message),
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => api.delete(`/admin/questions/${id}`),
+    onSuccess: () => {
+      message.success(t('admin.questionDeleted'))
+      queryClient.invalidateQueries({ queryKey: ['admin', 'questions'] })
+    },
+  })
+
+  const generateMutation = useMutation({
+    mutationFn: (params: {
+      topic: string
+      level: string
+      language: string
+      count: number
+    }) => api.post<{ questions: string[] }>('/catalogs/questions/generate', params),
+    onSuccess: (data) => {
+      setGeneratedQuestions(data.questions)
+      setSelectedQuestions(new Set(data.questions.map((_, i) => i)))
+      message.success(t('admin.questionsGenerated'))
+    },
+  })
+
+  const addQuestionsMutation = useMutation({
+    mutationFn: (questions: string[]) =>
+      Promise.all(
+        questions.map((q) =>
+          api.post('/admin/questions', {
+            questionText: q,
+            type: 'open',
+            levelId: levels?.find((l) => l.name === level)?.id,
+            languageId: languages?.find((l) => l.name === language)?.id,
+          }),
+        ),
+      ),
+    onSuccess: () => {
+      message.success(t('common.success'))
+      queryClient.invalidateQueries({ queryKey: ['admin', 'questions'] })
+      handleCloseModal()
+    },
+  })
+
+  const importMutation = useMutation({
+    mutationFn: (questions: Record<string, unknown>[]) =>
+      api.post<{ created: number; errors: number }>('/admin/questions/import', {
+        questions,
+      }),
+    onSuccess: (data) => {
+      message.success(
+        t('admin.importSuccess', { created: data.created, errors: data.errors }),
+      )
+      queryClient.invalidateQueries({ queryKey: ['admin', 'questions'] })
+      handleCloseImportModal()
+    },
+    onError: (err: Error) => message.error(err.message),
+  })
+
+  const handleParseImport = () => {
+    try {
+      const parsed = JSON.parse(importJson)
+      if (!Array.isArray(parsed)) {
+        setImportParseError('JSON must be an array')
+        setImportPreview(null)
+        return
+      }
+      setImportPreview(parsed)
+      setImportParseError(null)
+    } catch {
+      setImportParseError('Invalid JSON')
+      setImportPreview(null)
+    }
+  }
+
+  const handleConfirmImport = () => {
+    if (importPreview) {
+      importMutation.mutate(importPreview)
+    }
+  }
+
+  const handleCloseImportModal = () => {
+    setImportModalOpen(false)
+    setImportJson('')
+    setImportPreview(null)
+    setImportParseError(null)
+  }
+
+  const handleGenerate = () => {
+    if (!topic || !level || !language) return
+    generateMutation.mutate({ topic, level, language, count })
+  }
+
+  const handleAddSelected = () => {
+    const selected = generatedQuestions.filter((_, i) => selectedQuestions.has(i))
+    if (selected.length === 0) {
+      message.warning(t('admin.noQuestionsSelected'))
+      return
+    }
+    addQuestionsMutation.mutate(selected)
+  }
+
+  const handleCloseModal = () => {
+    setAiModalOpen(false)
+    setTopic('')
+    setLevel(undefined)
+    setLanguage(undefined)
+    setCount(5)
+    setGeneratedQuestions([])
+    setSelectedQuestions(new Set())
+  }
+
+  const toggleQuestion = (index: number) => {
+    setSelectedQuestions((prev) => {
+      const next = new Set(prev)
+      if (next.has(index)) {
+        next.delete(index)
+      } else {
+        next.add(index)
+      }
+      return next
+    })
+  }
+
+  const openCreateModal = () => {
+    setEditingQuestion(null)
+    form.resetFields()
+    setEditModalOpen(true)
+  }
+
+  const openEditModal = (record: Question) => {
+    setEditingQuestion(record)
+    form.setFieldsValue({
+      questionText: record.questionText,
+      type: record.type,
+      languageId: record.languageId,
+      levelId: record.levelId,
+      skillId: record.skillId,
+    })
+    setEditModalOpen(true)
+  }
+
+  const handleSaveQuestion = (values: Record<string, unknown>) => {
+    if (editingQuestion) {
+      updateMutation.mutate({ id: editingQuestion.id, ...values })
+    } else {
+      createMutation.mutate(values)
+    }
+  }
+
+  const columns = [
+    { title: t('table.id'), dataIndex: 'id', width: 60 },
+    { title: t('table.question'), dataIndex: 'questionText', ellipsis: true },
+    { title: t('table.type'), dataIndex: 'type', width: 80 },
+    {
+      title: t('interview.level'),
+      width: 90,
+      render: (_: unknown, r: Question) =>
+        r.level?.name ? <Tag>{r.level.name}</Tag> : '-',
+    },
+    {
+      title: t('interview.language'),
+      width: 110,
+      render: (_: unknown, r: Question) =>
+        r.language?.name ? <Tag color="blue">{r.language.name}</Tag> : '-',
+    },
+    {
+      title: t('feedback.skill'),
+      width: 120,
+      render: (_: unknown, r: Question) =>
+        r.skill?.name ? (
+          <Tag color="geekblue" style={{ textTransform: 'capitalize' }}>
+            {r.skill.name.replace(/-/g, ' ')}
+          </Tag>
+        ) : (
+          '-'
+        ),
+    },
+    {
+      title: t('table.actions'),
+      width: 120,
+      render: (_: unknown, record: Question) => (
+        <Space>
+          <Button
+            type="text"
+            icon={<EditOutlined />}
+            size="small"
+            onClick={() => openEditModal(record)}
+          />
+          <Popconfirm
+            title={t('admin.deleteQuestion')}
+            onConfirm={() => deleteMutation.mutate(record.id)}
+          >
+            <Button type="text" danger icon={<DeleteOutlined />} size="small" />
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ]
+
+  return (
+    <div className="vinki-page">
+      <Space style={{ marginBottom: 16, width: '100%', justifyContent: 'space-between' }}>
+        <Title level={3} className="vinki-page-title">
+          {t('admin.questionCatalog')}
+        </Title>
+        <Space>
+          <Button icon={<RobotOutlined />} onClick={() => setAiModalOpen(true)}>
+            {t('admin.generateWithAI')}
+          </Button>
+          <Button type="primary" icon={<PlusOutlined />} onClick={openCreateModal}>
+            {t('admin.newQuestion')}
+          </Button>
+          <Button icon={<UploadOutlined />} onClick={() => setImportModalOpen(true)}>
+            {t('admin.import')}
+          </Button>
+          <Dropdown
+            menu={{
+              items: [
+                {
+                  key: 'csv',
+                  label: 'CSV',
+                  onClick: () =>
+                    window.open(`${API_URL}/admin/questions/export?format=csv`),
+                },
+                {
+                  key: 'json',
+                  label: 'JSON',
+                  onClick: () =>
+                    window.open(`${API_URL}/admin/questions/export?format=json`),
+                },
+              ],
+            }}
+          >
+            <Button icon={<DownloadOutlined />}>{t('common.export')}</Button>
+          </Dropdown>
+        </Space>
+      </Space>
+
+      <Input.Search
+        placeholder={t('admin.searchByText')}
+        onSearch={setSearch}
+        style={{ marginBottom: 16, maxWidth: 400 }}
+        allowClear
+      />
+
+      <Card>
+        <Table
+          dataSource={data?.data}
+          columns={columns}
+          rowKey="id"
+          loading={isLoading}
+          pagination={{
+            current: page,
+            total: data?.total,
+            pageSize: 20,
+            onChange: setPage,
+          }}
+        />
+      </Card>
+
+      {/* Create/Edit Question Modal */}
+      <Modal
+        title={editingQuestion ? t('common.edit') : t('admin.newQuestion')}
+        open={editModalOpen}
+        onCancel={() => {
+          setEditModalOpen(false)
+          setEditingQuestion(null)
+          form.resetFields()
+        }}
+        footer={null}
+        width={560}
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSaveQuestion}
+          initialValues={{ type: 'open' }}
+        >
+          <Form.Item
+            name="questionText"
+            label={t('table.question')}
+            rules={[{ required: true, message: t('auth.nameRequired') }]}
+          >
+            <Input.TextArea rows={3} />
+          </Form.Item>
+          <Form.Item name="type" label={t('table.type')}>
+            <Select
+              options={[
+                { value: 'open', label: 'Open' },
+                { value: 'code', label: 'Code' },
+                { value: 'conceptual', label: 'Conceptual' },
+              ]}
+            />
+          </Form.Item>
+          <Form.Item name="languageId" label={t('interview.language')}>
+            <Select
+              placeholder={t('interview.selectLanguage')}
+              options={languages?.map((l) => ({ label: l.name, value: l.id }))}
+              allowClear
+            />
+          </Form.Item>
+          <Form.Item name="levelId" label={t('interview.level')}>
+            <Select
+              placeholder={t('interview.selectLevel')}
+              options={levels?.map((l) => ({ label: l.name, value: l.id }))}
+              allowClear
+            />
+          </Form.Item>
+          <Form.Item name="skillId" label={t('feedback.skill')}>
+            <Select
+              placeholder={t('feedback.skill')}
+              options={skills?.map((s) => ({
+                label: s.name.replace(/-/g, ' '),
+                value: s.id,
+              }))}
+              allowClear
+              style={{ textTransform: 'capitalize' }}
+            />
+          </Form.Item>
+          <Button
+            type="primary"
+            htmlType="submit"
+            loading={createMutation.isPending || updateMutation.isPending}
+            block
+          >
+            {editingQuestion ? t('common.save') : t('admin.newQuestion')}
+          </Button>
+        </Form>
+      </Modal>
+
+      {/* Import Modal */}
+      <Modal
+        title={t('admin.importQuestions')}
+        open={importModalOpen}
+        onCancel={handleCloseImportModal}
+        width={640}
+        footer={null}
+      >
+        <Space direction="vertical" style={{ width: '100%' }} size="middle">
+          <div>
+            <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>
+              {t('admin.importFormat')}
+            </Text>
+            <Input.TextArea
+              rows={8}
+              value={importJson}
+              onChange={(e) => setImportJson(e.target.value)}
+              placeholder={
+                '[\n  { "questionText": "...", "type": "open", "levelId": 1, "languageId": 1 }\n]'
+              }
+              style={{ fontFamily: 'monospace', fontSize: 13 }}
+            />
+          </div>
+
+          {importParseError && <Text type="danger">{importParseError}</Text>}
+
+          <Button onClick={handleParseImport} disabled={!importJson.trim()} block>
+            Parse &amp; Preview
+          </Button>
+
+          {importPreview && (
+            <>
+              <List
+                bordered
+                size="small"
+                dataSource={importPreview}
+                renderItem={(q, index) => (
+                  <List.Item>
+                    <Text>
+                      {index + 1}.{' '}
+                      {((q as Record<string, unknown>).questionText as string) ??
+                        JSON.stringify(q)}
+                    </Text>
+                  </List.Item>
+                )}
+              />
+              <Button
+                type="primary"
+                onClick={handleConfirmImport}
+                loading={importMutation.isPending}
+                block
+              >
+                {t('admin.import')} ({importPreview.length})
+              </Button>
+            </>
+          )}
+        </Space>
+      </Modal>
+
+      {/* AI Generation Modal */}
+      <Modal
+        title={t('admin.generateWithAI')}
+        open={aiModalOpen}
+        onCancel={handleCloseModal}
+        width={640}
+        footer={null}
+      >
+        <Space direction="vertical" style={{ width: '100%' }} size="middle">
+          <div>
+            <label style={{ display: 'block', marginBottom: 4 }}>
+              {t('admin.topic')}
+            </label>
+            <Input
+              placeholder="React hooks, SQL optimization..."
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', marginBottom: 4 }}>
+              {t('interview.level')}
+            </label>
+            <Select
+              placeholder={t('admin.selectLevel')}
+              style={{ width: '100%' }}
+              value={level}
+              onChange={setLevel}
+              options={levels?.map((l) => ({ label: l.name, value: l.name }))}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', marginBottom: 4 }}>
+              {t('interview.language')}
+            </label>
+            <Select
+              placeholder={t('admin.selectLanguage')}
+              style={{ width: '100%' }}
+              value={language}
+              onChange={setLanguage}
+              options={languages?.map((l) => ({ label: l.name, value: l.name }))}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', marginBottom: 4 }}>
+              {t('admin.count')}
+            </label>
+            <InputNumber
+              min={1}
+              max={10}
+              value={count}
+              onChange={(v) => setCount(v ?? 5)}
+              style={{ width: '100%' }}
+            />
+          </div>
+
+          <Button
+            type="primary"
+            onClick={handleGenerate}
+            loading={generateMutation.isPending}
+            disabled={!topic || !level || !language}
+            block
+          >
+            {generateMutation.isPending
+              ? t('admin.generating')
+              : t('admin.generateWithAI')}
+          </Button>
+
+          {generateMutation.isPending && (
+            <div style={{ textAlign: 'center', padding: 16 }}>
+              <Spin />
+            </div>
+          )}
+
+          {generatedQuestions.length > 0 && (
+            <>
+              <Title level={5}>{t('admin.questionsGenerated')}</Title>
+              <List
+                bordered
+                dataSource={generatedQuestions}
+                renderItem={(q, index) => (
+                  <List.Item>
+                    <Checkbox
+                      checked={selectedQuestions.has(index)}
+                      onChange={() => toggleQuestion(index)}
+                      style={{ marginRight: 8 }}
+                    />
+                    <span style={{ flex: 1 }}>{q}</span>
+                  </List.Item>
+                )}
+              />
+              <Button
+                type="primary"
+                onClick={handleAddSelected}
+                loading={addQuestionsMutation.isPending}
+                disabled={selectedQuestions.size === 0}
+                block
+              >
+                {t('admin.addSelected')} ({selectedQuestions.size})
+              </Button>
+            </>
+          )}
+        </Space>
+      </Modal>
+    </div>
+  )
+}
