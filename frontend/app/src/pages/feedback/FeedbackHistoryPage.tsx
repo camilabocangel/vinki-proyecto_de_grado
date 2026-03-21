@@ -5,6 +5,7 @@ import { Table, Card, Typography, Tag, Skeleton, Select, Button, Row, Col } from
 import { ArrowRightOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../../api/client'
+import { usePageTitle } from '../../hooks/usePageTitle'
 
 const { Title, Text } = Typography
 
@@ -41,6 +42,7 @@ const levelColors: Record<string, string> = {
 
 export default function FeedbackHistoryPage() {
   const { t } = useTranslation()
+  usePageTitle(t('nav.history'))
   const navigate = useNavigate()
 
   const [statusFilter, setStatusFilter] = useState<string | null>(null)

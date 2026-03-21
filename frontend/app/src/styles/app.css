@@ -312,6 +312,30 @@
   display: none;
 }
 
+/* Fade-in animation for page content */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.vinki-page {
+  animation: fadeInUp 0.3s ease;
+}
+
+.vinki-card {
+  animation: fadeInUp 0.4s ease;
+}
+
+.vinki-stat-card {
+  animation: fadeInUp 0.35s ease;
+}
+
 /* ==========================================
    Responsive
    ========================================== */

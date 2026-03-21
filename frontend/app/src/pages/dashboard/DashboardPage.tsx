@@ -21,6 +21,7 @@ import { ThunderboltFilled, ArrowRightOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../../api/client'
 import { useSSE } from '../../hooks/useSSE'
+import { usePageTitle } from '../../hooks/usePageTitle'
 import ProgressChart from '../../components/ProgressChart'
 import type { ProgressDataPoint } from '../../components/ProgressChart'
 
@@ -92,6 +93,7 @@ const levelColors: Record<string, string> = {
 
 export default function DashboardPage() {
   const { t } = useTranslation()
+  usePageTitle(t('nav.dashboard'))
   const navigate = useNavigate()
   useSSE()
 

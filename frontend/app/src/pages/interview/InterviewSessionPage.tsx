@@ -24,6 +24,7 @@ import {
 import { useInterviewStore, type Interview } from '../../store/interview.store'
 import { api } from '../../api/client'
 import { CodeEditor } from '../../components/CodeEditor'
+import { usePageTitle } from '../../hooks/usePageTitle'
 
 const { Title, Text } = Typography
 const { TextArea } = Input
@@ -44,6 +45,7 @@ interface PracticeEvaluation {
 
 export default function InterviewSessionPage() {
   const { t } = useTranslation()
+  usePageTitle(t('nav.interview'))
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { message, modal } = App.useApp()
@@ -270,6 +272,15 @@ export default function InterviewSessionPage() {
   const stopRecording = useCallback(() => {
     mediaRecorderRef.current?.stop()
     setIsRecording(false)
+  }, [])
+
+  // Warn before closing tab during active interview
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault()
+    }
+    window.addEventListener('beforeunload', handler)
+    return () => window.removeEventListener('beforeunload', handler)
   }, [])
 
   // Reset follow-up and practice evaluation state on question change

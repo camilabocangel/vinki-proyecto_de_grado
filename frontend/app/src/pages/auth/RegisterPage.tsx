@@ -9,11 +9,13 @@ import {
   CheckCircleOutlined,
 } from '@ant-design/icons'
 import { useAuth } from '../../hooks/useAuth'
+import { usePageTitle } from '../../hooks/usePageTitle'
 
 const { Title, Text } = Typography
 
 export default function RegisterPage() {
   const { t } = useTranslation()
+  usePageTitle(t('auth.register'))
   const navigate = useNavigate()
   const { register, registerError } = useAuth()
   const [loading, setLoading] = useState(false)

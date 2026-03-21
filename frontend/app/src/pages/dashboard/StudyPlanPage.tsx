@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Typography, Card, Tag, Progress, List, Spin, Empty, Space } from 'antd'
 import { BookOutlined, PlayCircleOutlined, CodeOutlined } from '@ant-design/icons'
 import { api } from '../../api/client'
+import { usePageTitle } from '../../hooks/usePageTitle'
 
 const { Title, Text, Paragraph } = Typography
 
@@ -32,6 +33,7 @@ const typeIcons: Record<string, React.ReactNode> = {
 
 export default function StudyPlanPage() {
   const { t } = useTranslation()
+  usePageTitle(t('nav.studyPlan'))
 
   const { data, isLoading } = useQuery({
     queryKey: ['study-plan'],

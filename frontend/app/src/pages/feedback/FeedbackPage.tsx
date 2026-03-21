@@ -20,6 +20,7 @@ import {
 import { DownloadOutlined, ShareAltOutlined, CopyOutlined } from '@ant-design/icons'
 import { api } from '../../api/client'
 import { SkillRadarChart } from '../../components/SkillRadarChart'
+import { usePageTitle } from '../../hooks/usePageTitle'
 
 const { Title, Paragraph, Text } = Typography
 
@@ -70,6 +71,7 @@ const metricColors: Record<string, string> = {
 
 export default function FeedbackPage() {
   const { t } = useTranslation()
+  usePageTitle(t('feedback.reportTitle'))
   const { id } = useParams<{ id: string }>()
   const [shareModalOpen, setShareModalOpen] = useState(false)
   const [shareUrl, setShareUrl] = useState('')
@@ -405,9 +407,28 @@ export default function FeedbackPage() {
                                 borderRadius: 8,
                               }}
                             >
-                              <Tag color="green" style={{ marginBottom: 6 }}>
-                                Junior
-                              </Tag>
+                              <div
+                                style={{
+                                  display: 'flex',
+                                  justifyContent: 'space-between',
+                                  alignItems: 'flex-start',
+                                }}
+                              >
+                                <Tag color="green" style={{ marginBottom: 6 }}>
+                                  Junior
+                                </Tag>
+                                <Button
+                                  type="text"
+                                  size="small"
+                                  icon={<CopyOutlined />}
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(
+                                      item.evaluation!.juniorAnswer || '',
+                                    )
+                                    message.success(t('code.copied'))
+                                  }}
+                                />
+                              </div>
                               <Paragraph style={{ marginBottom: 0, fontSize: 13 }}>
                                 {item.evaluation.juniorAnswer}
                               </Paragraph>
@@ -424,9 +445,28 @@ export default function FeedbackPage() {
                                 borderRadius: 8,
                               }}
                             >
-                              <Tag color="blue" style={{ marginBottom: 6 }}>
-                                Mid
-                              </Tag>
+                              <div
+                                style={{
+                                  display: 'flex',
+                                  justifyContent: 'space-between',
+                                  alignItems: 'flex-start',
+                                }}
+                              >
+                                <Tag color="blue" style={{ marginBottom: 6 }}>
+                                  Mid
+                                </Tag>
+                                <Button
+                                  type="text"
+                                  size="small"
+                                  icon={<CopyOutlined />}
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(
+                                      item.evaluation!.midAnswer || '',
+                                    )
+                                    message.success(t('code.copied'))
+                                  }}
+                                />
+                              </div>
                               <Paragraph style={{ marginBottom: 0, fontSize: 13 }}>
                                 {item.evaluation.midAnswer}
                               </Paragraph>
@@ -443,9 +483,28 @@ export default function FeedbackPage() {
                                 borderRadius: 8,
                               }}
                             >
-                              <Tag color="gold" style={{ marginBottom: 6 }}>
-                                Senior
-                              </Tag>
+                              <div
+                                style={{
+                                  display: 'flex',
+                                  justifyContent: 'space-between',
+                                  alignItems: 'flex-start',
+                                }}
+                              >
+                                <Tag color="gold" style={{ marginBottom: 6 }}>
+                                  Senior
+                                </Tag>
+                                <Button
+                                  type="text"
+                                  size="small"
+                                  icon={<CopyOutlined />}
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(
+                                      item.evaluation!.seniorAnswer || '',
+                                    )
+                                    message.success(t('code.copied'))
+                                  }}
+                                />
+                              </div>
                               <Paragraph style={{ marginBottom: 0, fontSize: 13 }}>
                                 {item.evaluation.seniorAnswer}
                               </Paragraph>

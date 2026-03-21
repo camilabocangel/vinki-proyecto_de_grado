@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { Steps, Card, Select, Button, Typography, App, Row, Col, Tag } from 'antd'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { api } from '../../api/client'
+import { usePageTitle } from '../../hooks/usePageTitle'
 import {
   LaptopOutlined,
   CloudServerOutlined,
@@ -81,6 +82,7 @@ const stepIcons = [
 
 export default function InterviewWizardPage() {
   const { t } = useTranslation()
+  usePageTitle(t('interview.configure'))
   const navigate = useNavigate()
   const { message } = App.useApp()
   const [current, setCurrent] = useState(0)

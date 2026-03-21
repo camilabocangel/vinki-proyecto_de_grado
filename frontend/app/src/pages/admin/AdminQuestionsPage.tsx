@@ -29,6 +29,7 @@ import {
   RobotOutlined,
 } from '@ant-design/icons'
 import { api } from '../../api/client'
+import { usePageTitle } from '../../hooks/usePageTitle'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
 
@@ -62,6 +63,7 @@ interface CatalogItem {
 
 export default function AdminQuestionsPage() {
   const { t } = useTranslation()
+  usePageTitle(t('admin.questionCatalog'))
   const queryClient = useQueryClient()
   const { message } = App.useApp()
   const [page, setPage] = useState(1)

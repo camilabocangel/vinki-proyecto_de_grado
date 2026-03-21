@@ -23,6 +23,7 @@ import {
 } from '@ant-design/icons'
 import { useAuth } from '../../hooks/useAuth'
 import { api } from '../../api/client'
+import { usePageTitle } from '../../hooks/usePageTitle'
 
 const { Title, Text } = Typography
 
@@ -40,6 +41,7 @@ const roleColors: Record<string, string> = {
 
 export default function ProfilePage() {
   const { t } = useTranslation()
+  usePageTitle(t('profile.title'))
   const { user } = useAuth()
   const queryClient = useQueryClient()
   const [profileForm] = Form.useForm()

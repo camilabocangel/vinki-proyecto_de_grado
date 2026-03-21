@@ -4,11 +4,13 @@ import { useTranslation } from 'react-i18next'
 import { Form, Input, Button, Card, Typography, Alert, Space } from 'antd'
 import { MailOutlined, LockOutlined, CheckCircleOutlined } from '@ant-design/icons'
 import { useAuth } from '../../hooks/useAuth'
+import { usePageTitle } from '../../hooks/usePageTitle'
 
 const { Title, Text } = Typography
 
 export default function LoginPage() {
   const { t } = useTranslation()
+  usePageTitle(t('auth.login'))
   const navigate = useNavigate()
   const { login, loginError } = useAuth()
   const [loading, setLoading] = useState(false)

@@ -168,7 +168,8 @@
   },
   "code": {
     "editor": "Editor de código",
-    "copy": "Copiar"
+    "copy": "Copiar",
+    "copied": "Copiado al portapapeles"
   },
   "feedback": {
     "reportTitle": "Reporte de entrevista",
