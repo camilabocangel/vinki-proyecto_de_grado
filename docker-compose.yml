@@ -100,6 +100,19 @@ services:
       - ./frontend/app/src:/app/src
       - ./frontend/app/public:/app/public
 
+  storybook:
+    build:
+      context: ./frontend/app
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - '6006:6006'
+    command: npx storybook dev -p 6006 --host 0.0.0.0 --no-open
+    volumes:
+      - ./frontend/app/src:/app/src
+      - ./frontend/app/public:/app/public
+      - ./frontend/app/.storybook:/app/.storybook
+
 volumes:
   pgdata:
   redisdata:
