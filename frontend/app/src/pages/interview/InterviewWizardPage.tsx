@@ -33,6 +33,7 @@ const roleIcons: Record<string, React.ReactNode> = {
   'Backend Engineer': <CloudServerOutlined style={{ fontSize: 28 }} />,
   'Frontend Engineer': <LaptopOutlined style={{ fontSize: 28 }} />,
   'Full Stack Engineer': <AppstoreOutlined style={{ fontSize: 28 }} />,
+  'Fullstack Engineer': <AppstoreOutlined style={{ fontSize: 28 }} />,
   'DevOps Engineer': <ToolOutlined style={{ fontSize: 28 }} />,
   'Data Engineer': <DatabaseOutlined style={{ fontSize: 28 }} />,
 }
@@ -41,6 +42,7 @@ const roleDescriptions: Record<string, string> = {
   'Backend Engineer': 'APIs, databases, server logic',
   'Frontend Engineer': 'UI, UX, client-side frameworks',
   'Full Stack Engineer': 'End-to-end web development',
+  'Fullstack Engineer': 'End-to-end web development',
   'DevOps Engineer': 'CI/CD, infrastructure, cloud',
   'Data Engineer': 'ETL, data pipelines, analytics',
 }
@@ -142,8 +144,18 @@ export default function InterviewWizardPage() {
               cursor: 'pointer',
               background: roleId === role.id ? 'var(--color-primary-bg)' : undefined,
               transition: 'all 0.25s ease',
+              height: '100%',
             }}
-            styles={{ body: { padding: 16 } }}
+            styles={{
+              body: {
+                padding: 16,
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+              },
+            }}
           >
             <div
               style={{
@@ -153,10 +165,10 @@ export default function InterviewWizardPage() {
             >
               {roleIcons[role.name] || <UserOutlined style={{ fontSize: 28 }} />}
             </div>
-            <Text strong style={{ display: 'block' }}>
+            <Text strong style={{ display: 'block', marginBottom: 4 }}>
               {role.name}
             </Text>
-            <Text type="secondary" style={{ fontSize: 12 }}>
+            <Text type="secondary" style={{ fontSize: 12, minHeight: 18 }}>
               {roleDescriptions[role.name] || ''}
             </Text>
           </Card>
@@ -184,8 +196,18 @@ export default function InterviewWizardPage() {
               cursor: 'pointer',
               background: languageId === lang.id ? 'var(--color-primary-bg)' : undefined,
               transition: 'all 0.25s ease',
+              height: '100%',
             }}
-            styles={{ body: { padding: 12 } }}
+            styles={{
+              body: {
+                padding: 12,
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+              },
+            }}
           >
             <div
               style={{
