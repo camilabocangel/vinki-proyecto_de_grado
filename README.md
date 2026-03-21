@@ -86,58 +86,194 @@ Vinki es una plataforma web que permite a estudiantes practicar entrevistas téc
 ## Requisitos
 
 - Node.js 20+
-- Docker & Docker Compose
+- Docker & Docker Compose (para el setup con Docker)
+- PostgreSQL 15 + pgvector, Redis 7 (para setup local sin Docker)
 
-## Instalación rápida
+---
+
+## Opcion 1: Levantar con Docker (recomendado)
+
+Docker levanta los 5 servicios automaticamente (PostgreSQL, Redis, MinIO, Backend, Frontend).
 
 ```bash
-# Clonar el repositorio
+# 1. Clonar el repositorio
 git clone https://github.com/camilabocangel/vinki-proyecto_de_grado.git
 cd vinki-proyecto_de_grado
 
-# Copiar variables de entorno
+# 2. Configurar variables de entorno
+cp .env.example .env
 cp backend/.env.example backend/.env
-cp .env.example .env  # (si existe)
 
-# Levantar con Docker
+# 3. Generar claves JWT (si no tienes)
+openssl genpkey -algorithm RSA -out jwt.key -pkeyopt rsa_keygen_bits:2048
+openssl rsa -pubout -in jwt.key -out jwt.pub
+# Luego copia el contenido de jwt.key y jwt.pub en .env
+# reemplazando saltos de linea con \n
+
+# 4. Levantar todos los servicios
 docker compose up -d
 
-# Aplicar migraciones y seeds
+# 5. Esperar que los servicios esten saludables (~15 seg)
+docker compose ps
+
+# 6. Aplicar migraciones de base de datos
 docker compose exec backend npx prisma migrate deploy
+
+# 7. Cargar datos de prueba (61 preguntas, 5 roles, 7 lenguajes, 5 usuarios)
 docker compose exec backend npx prisma db seed
 
-# Acceder
-# Frontend: http://localhost:5174
-# Backend API: http://localhost:3001/api
-# Swagger: http://localhost:3001/docs
-# MinIO Console: http://localhost:9001
+# 8. Acceder a la aplicacion
+# Frontend:      http://localhost:5174
+# Backend API:   http://localhost:3001/api
+# Swagger Docs:  http://localhost:3001/docs
+# MinIO Console: http://localhost:9001 (minioadmin/minioadmin)
 ```
+
+### Puertos Docker
+
+| Servicio | Puerto local | Puerto interno |
+|----------|-------------|----------------|
+| Frontend | 5174 | 5173 |
+| Backend | 3001 | 3000 |
+| PostgreSQL | 5433 | 5432 |
+| Redis | 6380 | 6379 |
+| MinIO | 9000, 9001 | 9000, 9001 |
+
+---
+
+## Opcion 2: Levantar en local (sin Docker)
+
+Necesitas PostgreSQL 15 con pgvector y Redis 7 instalados localmente.
+
+### Requisitos previos
+
+```bash
+# macOS con Homebrew
+brew install postgresql@15 redis
+brew install pgvector  # extension para PostgreSQL
+
+# Iniciar servicios
+brew services start postgresql@15
+brew services start redis
+
+# Crear base de datos
+createdb vinki
+psql vinki -c "CREATE EXTENSION IF NOT EXISTS vector;"
+psql vinki -c "CREATE USER vinki WITH PASSWORD 'vinki_dev';"
+psql vinki -c "GRANT ALL PRIVILEGES ON DATABASE vinki TO vinki;"
+```
+
+### Backend
+
+```bash
+cd backend
+
+# 1. Configurar variables de entorno
+cp .env.example .env
+# Editar .env:
+#   DATABASE_URL=postgresql://vinki:vinki_dev@localhost:5432/vinki?schema=public
+#   REDIS_URL=redis://localhost:6379
+#   FRONTEND_URL=http://localhost:5173
+
+# 2. Generar claves JWT y pegarlas en .env
+openssl genpkey -algorithm RSA -out jwt.key -pkeyopt rsa_keygen_bits:2048
+openssl rsa -pubout -in jwt.key -out jwt.pub
+
+# 3. Instalar dependencias
+npm install
+
+# 4. Aplicar migraciones
+npx prisma migrate deploy
+
+# 5. Generar Prisma Client
+npx prisma generate
+
+# 6. Cargar datos de prueba
+npx prisma db seed
+
+# 7. Iniciar en modo desarrollo (hot reload)
+npm run start:dev
+# Backend disponible en http://localhost:3000/api
+# Swagger en http://localhost:3000/docs
+```
+
+### Frontend
+
+```bash
+cd frontend/app
+
+# 1. Configurar variables de entorno
+cp .env.example .env
+# Editar .env:
+#   VITE_API_URL=http://localhost:3000/api  (nota: puerto 3000, no 3001)
+
+# 2. Instalar dependencias
+npm install
+
+# 3. Iniciar en modo desarrollo
+npm run dev
+# Frontend disponible en http://localhost:5173
+```
+
+---
 
 ## Usuarios de prueba
 
-| Rol | Email | Contraseña |
-|-----|-------|------------|
-| Estudiante | student@vinki.dev | password123 |
-| Reclutador | recruiter@vinki.dev | password123 |
-| Admin | admin@vinki.dev | password123 |
+Todos los usuarios usan la contrasena `password123`.
 
-## Desarrollo
+| Rol | Email | Nombre | Acceso |
+|-----|-------|--------|--------|
+| Estudiante | student@vinki.dev | Ana Garcia | Dashboard, entrevistas, feedback, plan de estudio |
+| Estudiante | luis@vinki.dev | Luis Fernandez | Dashboard, entrevistas, feedback |
+| Estudiante | sofia@vinki.dev | Sofia Ramirez | Dashboard, entrevistas, feedback |
+| Reclutador | recruiter@vinki.dev | Carlos Mendez | Panel de reclutador, perfiles de estudiantes |
+| Admin | admin@vinki.dev | Maria Torres | Todo + admin preguntas, analytics, auditoria |
+
+---
+
+## Tests
 
 ```bash
-# Backend (sin Docker)
-cd backend
-npm install
-npm run start:dev
+# Backend (62 tests)
+cd backend && npm test
 
-# Frontend (sin Docker)
-cd frontend/app
-npm install
-npm run dev
+# Frontend (31 tests)
+cd frontend/app && npx vitest run
 
-# Tests
-cd backend && npm test          # 62 tests
-cd frontend/app && npm run test:unit  # 14 tests
-cd frontend/app && npm run test:e2e   # 9 E2E tests (requiere app corriendo)
+# E2E - Playwright (9 tests, requiere app corriendo)
+cd frontend/app && npx playwright test
+```
+
+| Modulo | Tests | Cubre |
+|--------|-------|-------|
+| AuthService | 14 | registro, login, perfil, contrasena |
+| EvaluationProcessor | 8 | persistencia, EMA, eventos, reintentos |
+| MockEvaluator | 6 | scores, niveles, feedback |
+| InterviewsService | 12 | crear, buscar, finalizar |
+| AnswersService | 9 | enviar, actualizar, validaciones |
+| ReportsService | 13 | dashboard, reporte, percentiles |
+| Frontend hooks | 10 | useTheme, usePageTitle, interviewStore |
+| Frontend pages | 10 | Login, Register, Breadcrumbs, ErrorBoundary, API |
+| Frontend components | 3 | ProgressChart, App |
+| E2E (Playwright) | 9 | auth, interview, smoke |
+| **Total** | **94** | |
+
+---
+
+## Activar evaluacion con IA real
+
+Por defecto, `LLM_SANDBOX=true` usa respuestas simuladas (no consume API de OpenAI).
+
+Para activar la evaluacion real con `gpt-4o-mini`:
+
+```bash
+# En backend/.env (local) o .env (Docker):
+OPENAI_API_KEY=sk-tu-key-real
+LLM_SANDBOX=false
+
+# Reiniciar el backend
+docker compose restart backend  # Docker
+# o Ctrl+C y npm run start:dev  # local
 ```
 
 ## Arquitectura
