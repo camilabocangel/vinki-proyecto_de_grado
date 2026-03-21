@@ -372,6 +372,15 @@ export default function InterviewWizardPage() {
     </Row>
   )
 
+  // Validation: which steps require a selection before proceeding
+  const canProceed = [
+    !!roleId, // Step 0: Role required
+    true, // Step 1: Language optional
+    true, // Step 2: Framework optional
+    !!levelId, // Step 3: Level required
+    true, // Step 4: Mode has default
+  ]
+
   const steps = [
     { title: t('interview.role'), content: roleStep },
     { title: t('interview.language'), content: languageStep },
@@ -434,6 +443,7 @@ export default function InterviewWizardPage() {
             <Button
               type="primary"
               onClick={() => setCurrent(current + 1)}
+              disabled={!canProceed[current]}
               style={{ minWidth: 120 }}
             >
               {t('common.next')} <ArrowRightOutlined />
