@@ -9,6 +9,7 @@ import { PrismaService } from '../common/prisma.service.js';
 
 @Module({
   imports: [
+    ConfigModule,
     BullModule.registerQueue({ name: 'evaluation' }),
   ],
   providers: [
@@ -19,7 +20,8 @@ import { PrismaService } from '../common/prisma.service.js';
     {
       provide: EVALUATOR_SERVICE,
       useFactory: (config: ConfigService, openai: OpenaiEvaluatorService, mock: MockEvaluatorService) => {
-        return config.get<string>('LLM_SANDBOX', 'true') === 'true' ? mock : openai;
+        const sandbox = config.get<string>('LLM_SANDBOX', 'true');
+        return sandbox === 'true' ? mock : openai;
       },
       inject: [ConfigService, OpenaiEvaluatorService, MockEvaluatorService],
     },

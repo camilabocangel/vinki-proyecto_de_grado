@@ -51,11 +51,15 @@ import { NotificationsModule } from './notifications/notifications.module.js';
     BullModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        connection: {
-          url: config.get<string>('REDIS_URL'),
-        },
-      }),
+      useFactory: (config: ConfigService) => {
+        const redisUrl = new URL(config.get<string>('REDIS_URL', 'redis://localhost:6379'));
+        return {
+          connection: {
+            host: redisUrl.hostname,
+            port: Number(redisUrl.port) || 6379,
+          },
+        };
+      },
     }),
 
     // Events

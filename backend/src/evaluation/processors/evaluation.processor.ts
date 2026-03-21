@@ -80,9 +80,22 @@ export class EvaluationProcessor extends WorkerHost {
       for (const result of results) {
         const detectedLevelId = levelByName.get(result.detectedLevel) ?? null;
 
-        await this.prisma.answerEvaluation.create({
-          data: {
+        await this.prisma.answerEvaluation.upsert({
+          where: { answerId: result.answerId },
+          create: {
             answerId: result.answerId,
+            technicalCorrectness: result.technicalCorrectness,
+            clarityOfExplanation: result.clarityOfExplanation,
+            communication: result.communication,
+            confidence: result.confidence,
+            problemSolving: result.problemSolving,
+            detectedLevelId,
+            feedbackText: result.feedbackText,
+            juniorAnswer: result.juniorAnswer,
+            midAnswer: result.midAnswer,
+            seniorAnswer: result.seniorAnswer,
+          },
+          update: {
             technicalCorrectness: result.technicalCorrectness,
             clarityOfExplanation: result.clarityOfExplanation,
             communication: result.communication,
@@ -144,7 +157,7 @@ export class EvaluationProcessor extends WorkerHost {
 
       this.logger.log(`Evaluation completed for interview ${interviewId}`);
     } catch (error) {
-      this.logger.error(`Evaluation failed for interview ${interviewId}`, error);
+      this.logger.error(`Evaluation failed for interview ${interviewId}: ${(error as Error).message}`, (error as Error).stack);
 
       if (job.attemptsMade >= (job.opts.attempts ?? 3) - 1) {
         await this.prisma.interview.update({
