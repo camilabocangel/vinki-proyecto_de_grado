@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Put,
   Delete,
   Param,
   Body,
@@ -76,6 +77,32 @@ export class AdminQuestionsController {
         frameworkId: body.frameworkId,
         levelId,
         skillId,
+      },
+    });
+  }
+
+  @Put(':id')
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body()
+    body: {
+      questionText?: string;
+      type?: string;
+      languageId?: number;
+      frameworkId?: number;
+      levelId?: number;
+      skillId?: number;
+    },
+  ) {
+    return this.prisma.question.update({
+      where: { id },
+      data: {
+        ...(body.questionText !== undefined && { questionText: body.questionText }),
+        ...(body.type !== undefined && { type: body.type }),
+        ...(body.languageId !== undefined && { languageId: body.languageId }),
+        ...(body.frameworkId !== undefined && { frameworkId: body.frameworkId }),
+        ...(body.levelId !== undefined && { levelId: body.levelId }),
+        ...(body.skillId !== undefined && { skillId: body.skillId }),
       },
     });
   }

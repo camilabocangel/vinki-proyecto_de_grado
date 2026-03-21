@@ -16,6 +16,8 @@ import {
   Checkbox,
   List,
   Spin,
+  Form,
+  Tag,
 } from 'antd'
 import {
   PlusOutlined,
@@ -37,6 +39,9 @@ interface Question {
   levelId: number
   skillId: number
   createdAt: string
+  language?: { id: number; name: string }
+  level?: { id: number; name: string }
+  skill?: { id: number; name: string }
 }
 
 interface PaginatedQuestions {
@@ -67,6 +72,11 @@ export default function AdminQuestionsPage() {
   const [generatedQuestions, setGeneratedQuestions] = useState<string[]>([])
   const [selectedQuestions, setSelectedQuestions] = useState<Set<number>>(new Set())
 
+  // Create/Edit modal
+  const [editModalOpen, setEditModalOpen] = useState(false)
+  const [editingQuestion, setEditingQuestion] = useState<Question | null>(null)
+  const [form] = Form.useForm()
+
   const { data, isLoading } = useQuery({
     queryKey: ['admin', 'questions', page, search],
     queryFn: () =>
@@ -85,6 +95,35 @@ export default function AdminQuestionsPage() {
   const { data: languages } = useQuery({
     queryKey: ['catalogs', 'languages'],
     queryFn: () => api.get<CatalogItem[]>('/catalogs/languages'),
+  })
+
+  const { data: skills } = useQuery({
+    queryKey: ['catalogs', 'skills'],
+    queryFn: () => api.get<CatalogItem[]>('/catalogs/skills'),
+  })
+
+  const createMutation = useMutation({
+    mutationFn: (values: Record<string, unknown>) => api.post('/admin/questions', values),
+    onSuccess: () => {
+      message.success(t('common.success'))
+      queryClient.invalidateQueries({ queryKey: ['admin', 'questions'] })
+      setEditModalOpen(false)
+      form.resetFields()
+    },
+    onError: (err: Error) => message.error(err.message),
+  })
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, ...values }: { id: number } & Record<string, unknown>) =>
+      api.put(`/admin/questions/${id}`, values),
+    onSuccess: () => {
+      message.success(t('common.success'))
+      queryClient.invalidateQueries({ queryKey: ['admin', 'questions'] })
+      setEditModalOpen(false)
+      setEditingQuestion(null)
+      form.resetFields()
+    },
+    onError: (err: Error) => message.error(err.message),
   })
 
   const deleteMutation = useMutation({
@@ -164,16 +203,71 @@ export default function AdminQuestionsPage() {
     })
   }
 
+  const openCreateModal = () => {
+    setEditingQuestion(null)
+    form.resetFields()
+    setEditModalOpen(true)
+  }
+
+  const openEditModal = (record: Question) => {
+    setEditingQuestion(record)
+    form.setFieldsValue({
+      questionText: record.questionText,
+      type: record.type,
+      languageId: record.languageId,
+      levelId: record.levelId,
+      skillId: record.skillId,
+    })
+    setEditModalOpen(true)
+  }
+
+  const handleSaveQuestion = (values: Record<string, unknown>) => {
+    if (editingQuestion) {
+      updateMutation.mutate({ id: editingQuestion.id, ...values })
+    } else {
+      createMutation.mutate(values)
+    }
+  }
+
   const columns = [
     { title: t('table.id'), dataIndex: 'id', width: 60 },
     { title: t('table.question'), dataIndex: 'questionText', ellipsis: true },
-    { title: t('table.type'), dataIndex: 'type', width: 100 },
+    { title: t('table.type'), dataIndex: 'type', width: 80 },
+    {
+      title: t('interview.level'),
+      width: 90,
+      render: (_: unknown, r: Question) =>
+        r.level?.name ? <Tag>{r.level.name}</Tag> : '-',
+    },
+    {
+      title: t('interview.language'),
+      width: 110,
+      render: (_: unknown, r: Question) =>
+        r.language?.name ? <Tag color="blue">{r.language.name}</Tag> : '-',
+    },
+    {
+      title: t('feedback.skill'),
+      width: 120,
+      render: (_: unknown, r: Question) =>
+        r.skill?.name ? (
+          <Tag color="geekblue" style={{ textTransform: 'capitalize' }}>
+            {r.skill.name.replace(/-/g, ' ')}
+          </Tag>
+        ) : (
+          '-'
+        ),
+    },
     {
       title: t('table.actions'),
       width: 120,
       render: (_: unknown, record: Question) => (
         <Space>
-          <Button type="text" icon={<EditOutlined />} size="small" />
+          <Button
+            type="text"
+            icon={<EditOutlined />}
+            size="small"
+            onClick={() => openEditModal(record)}
+          />
           <Popconfirm
             title={t('admin.deleteQuestion')}
             onConfirm={() => deleteMutation.mutate(record.id)}
@@ -195,7 +289,7 @@ export default function AdminQuestionsPage() {
           <Button icon={<RobotOutlined />} onClick={() => setAiModalOpen(true)}>
             {t('admin.generateWithAI')}
           </Button>
-          <Button type="primary" icon={<PlusOutlined />}>
+          <Button type="primary" icon={<PlusOutlined />} onClick={openCreateModal}>
             {t('admin.newQuestion')}
           </Button>
           <Button icon={<UploadOutlined />}>{t('admin.import')}</Button>
@@ -224,6 +318,77 @@ export default function AdminQuestionsPage() {
         />
       </Card>
 
+      {/* Create/Edit Question Modal */}
+      <Modal
+        title={editingQuestion ? t('common.edit') : t('admin.newQuestion')}
+        open={editModalOpen}
+        onCancel={() => {
+          setEditModalOpen(false)
+          setEditingQuestion(null)
+          form.resetFields()
+        }}
+        footer={null}
+        width={560}
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSaveQuestion}
+          initialValues={{ type: 'open' }}
+        >
+          <Form.Item
+            name="questionText"
+            label={t('table.question')}
+            rules={[{ required: true, message: t('auth.nameRequired') }]}
+          >
+            <Input.TextArea rows={3} />
+          </Form.Item>
+          <Form.Item name="type" label={t('table.type')}>
+            <Select
+              options={[
+                { value: 'open', label: 'Open' },
+                { value: 'code', label: 'Code' },
+                { value: 'conceptual', label: 'Conceptual' },
+              ]}
+            />
+          </Form.Item>
+          <Form.Item name="languageId" label={t('interview.language')}>
+            <Select
+              placeholder={t('interview.selectLanguage')}
+              options={languages?.map((l) => ({ label: l.name, value: l.id }))}
+              allowClear
+            />
+          </Form.Item>
+          <Form.Item name="levelId" label={t('interview.level')}>
+            <Select
+              placeholder={t('interview.selectLevel')}
+              options={levels?.map((l) => ({ label: l.name, value: l.id }))}
+              allowClear
+            />
+          </Form.Item>
+          <Form.Item name="skillId" label={t('feedback.skill')}>
+            <Select
+              placeholder={t('feedback.skill')}
+              options={skills?.map((s) => ({
+                label: s.name.replace(/-/g, ' '),
+                value: s.id,
+              }))}
+              allowClear
+              style={{ textTransform: 'capitalize' }}
+            />
+          </Form.Item>
+          <Button
+            type="primary"
+            htmlType="submit"
+            loading={createMutation.isPending || updateMutation.isPending}
+            block
+          >
+            {editingQuestion ? t('common.save') : t('admin.newQuestion')}
+          </Button>
+        </Form>
+      </Modal>
+
+      {/* AI Generation Modal */}
       <Modal
         title={t('admin.generateWithAI')}
         open={aiModalOpen}

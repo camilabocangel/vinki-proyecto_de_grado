@@ -23,4 +23,8 @@ export class CatalogsService {
   getRoles() {
     return this.prisma.role.findMany({ orderBy: { name: 'asc' } });
   }
+
+  getSkills() {
+    return this.prisma.skill.findMany({ orderBy: { name: 'asc' } });
+  }
 }

@@ -35,6 +35,11 @@ export class CatalogsController {
     return this.catalogsService.getRoles();
   }
 
+  @Get('skills')
+  getSkills() {
+    return this.catalogsService.getSkills();
+  }
+
   @Post('questions/generate')
   @UseGuards(JwtCookieGuard, RolesGuard)
   @Roles('admin')
