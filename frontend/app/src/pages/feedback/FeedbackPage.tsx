@@ -1,4 +1,5 @@
 import { useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
 import {
   Card,
@@ -46,12 +47,12 @@ interface ReportData {
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
 
-const metricLabels: Record<string, string> = {
-  technicalCorrectness: 'Corrección técnica',
-  clarityOfExplanation: 'Claridad',
-  communication: 'Comunicación',
-  confidence: 'Confianza',
-  problemSolving: 'Resolución',
+const metricLabelKeys: Record<string, string> = {
+  technicalCorrectness: 'metrics.technicalCorrectness',
+  clarityOfExplanation: 'metrics.clarityOfExplanation',
+  communication: 'metrics.communication',
+  confidence: 'metrics.confidence',
+  problemSolving: 'metrics.problemSolving',
 }
 
 const metricColors: Record<string, string> = {
@@ -63,6 +64,7 @@ const metricColors: Record<string, string> = {
 }
 
 export default function FeedbackPage() {
+  const { t } = useTranslation()
   const { id } = useParams<{ id: string }>()
 
   const { data, isLoading } = useQuery({
@@ -80,7 +82,7 @@ export default function FeedbackPage() {
   if (!data)
     return (
       <div className="vinki-page">
-        <Paragraph>No se encontró el reporte.</Paragraph>
+        <Paragraph>{t('feedback.notFound')}</Paragraph>
       </div>
     )
 
@@ -123,19 +125,19 @@ export default function FeedbackPage() {
       <div className="vinki-page-header">
         <div>
           <Title level={3} className="vinki-page-title">
-            Reporte de entrevista
+            {t('feedback.reportTitle')}
           </Title>
           <div style={{ display: 'flex', gap: 8, marginTop: 4, flexWrap: 'wrap' }}>
             <Tag
               color={data.interview.evaluationStatus === 'completed' ? 'green' : 'purple'}
             >
               {data.interview.evaluationStatus === 'completed'
-                ? 'Evaluación completada'
-                : 'En proceso'}
+                ? t('feedback.evaluationCompleted')
+                : t('feedback.inProcess')}
             </Tag>
             {dominantLevel && (
               <Tag color={levelColor} style={{ fontWeight: 700, fontSize: 13 }}>
-                Nivel detectado: {dominantLevel}
+                {t('feedback.detectedLevel', { level: dominantLevel })}
               </Tag>
             )}
           </div>
@@ -159,20 +161,26 @@ export default function FeedbackPage() {
       {avg && (
         <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
           <Col xs={24} md={12}>
-            <Card className="vinki-card" title="Métricas promedio">
+            <Card className="vinki-card" title={t('feedback.avgMetrics')}>
               <SkillRadarChart
                 data={[
-                  { metric: 'Corrección', value: avg.technicalCorrectness },
-                  { metric: 'Claridad', value: avg.clarityOfExplanation },
-                  { metric: 'Comunicación', value: avg.communication },
-                  { metric: 'Confianza', value: avg.confidence },
-                  { metric: 'Resolución', value: avg.problemSolving },
+                  {
+                    metric: t('metrics.technicalCorrectness'),
+                    value: avg.technicalCorrectness,
+                  },
+                  {
+                    metric: t('metrics.clarityOfExplanation'),
+                    value: avg.clarityOfExplanation,
+                  },
+                  { metric: t('metrics.communication'), value: avg.communication },
+                  { metric: t('metrics.confidence'), value: avg.confidence },
+                  { metric: t('metrics.problemSolving'), value: avg.problemSolving },
                 ]}
               />
             </Card>
           </Col>
           <Col xs={24} md={12}>
-            <Card className="vinki-card" title="Desglose por métrica">
+            <Card className="vinki-card" title={t('feedback.metricBreakdown')}>
               <div
                 style={{
                   display: 'flex',
@@ -190,7 +198,7 @@ export default function FeedbackPage() {
                         marginBottom: 6,
                       }}
                     >
-                      <Text style={{ fontWeight: 500 }}>{metricLabels[key]}</Text>
+                      <Text style={{ fontWeight: 500 }}>{t(metricLabelKeys[key])}</Text>
                       <Text strong>{((value / 5) * 100).toFixed(0)}%</Text>
                     </div>
                     <Progress
@@ -207,7 +215,7 @@ export default function FeedbackPage() {
         </Row>
       )}
 
-      <Card className="vinki-card" title="Detalle por pregunta">
+      <Card className="vinki-card" title={t('feedback.questionDetail')}>
         <Collapse
           expandIconPosition="end"
           items={data.evaluations.map((item) => ({
@@ -248,14 +256,14 @@ export default function FeedbackPage() {
                     type="secondary"
                     style={{ fontSize: 12, display: 'block', marginBottom: 4 }}
                   >
-                    Tu respuesta
+                    {t('feedback.yourAnswer')}
                   </Text>
-                  <Text>{item.answer?.answerText || 'Sin respuesta escrita'}</Text>
+                  <Text>{item.answer?.answerText || t('feedback.noAnswer')}</Text>
                 </div>
                 {item.evaluation && (
                   <>
                     <Row gutter={[12, 12]} style={{ marginBottom: 16 }}>
-                      {Object.entries(metricLabels).map(([key, label]) => (
+                      {Object.entries(metricLabelKeys).map(([key, labelKey]) => (
                         <Col xs={12} sm={8} key={key}>
                           <div
                             style={{
@@ -269,7 +277,7 @@ export default function FeedbackPage() {
                               type="secondary"
                               style={{ fontSize: 11, display: 'block' }}
                             >
-                              {label}
+                              {t(labelKey)}
                             </Text>
                             <Text
                               strong
@@ -299,7 +307,7 @@ export default function FeedbackPage() {
                         type="secondary"
                         style={{ fontSize: 12, display: 'block', marginBottom: 4 }}
                       >
-                        Feedback IA
+                        {t('feedback.aiFeedback')}
                       </Text>
                       <Paragraph style={{ marginBottom: 0 }}>
                         {item.evaluation.feedbackText}
@@ -311,7 +319,7 @@ export default function FeedbackPage() {
                       item.evaluation.seniorAnswer) && (
                       <Card
                         size="small"
-                        title="Respuestas recomendadas por nivel"
+                        title={t('feedback.recommendedAnswers')}
                         style={{ borderRadius: 8 }}
                       >
                         <div

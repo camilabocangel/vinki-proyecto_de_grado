@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Table, Card, Typography, Button, Space, Input, App, Popconfirm } from 'antd'
 import {
@@ -30,6 +31,7 @@ interface PaginatedQuestions {
 }
 
 export default function AdminQuestionsPage() {
+  const { t } = useTranslation()
   const queryClient = useQueryClient()
   const { message } = App.useApp()
   const [page, setPage] = useState(1)
@@ -48,23 +50,23 @@ export default function AdminQuestionsPage() {
   const deleteMutation = useMutation({
     mutationFn: (id: number) => api.delete(`/admin/questions/${id}`),
     onSuccess: () => {
-      message.success('Pregunta eliminada')
+      message.success(t('admin.questionDeleted'))
       queryClient.invalidateQueries({ queryKey: ['admin', 'questions'] })
     },
   })
 
   const columns = [
-    { title: 'ID', dataIndex: 'id', width: 60 },
-    { title: 'Pregunta', dataIndex: 'questionText', ellipsis: true },
-    { title: 'Tipo', dataIndex: 'type', width: 100 },
+    { title: t('table.id'), dataIndex: 'id', width: 60 },
+    { title: t('table.question'), dataIndex: 'questionText', ellipsis: true },
+    { title: t('table.type'), dataIndex: 'type', width: 100 },
     {
-      title: 'Acciones',
+      title: t('table.actions'),
       width: 120,
       render: (_: unknown, record: Question) => (
         <Space>
           <Button type="text" icon={<EditOutlined />} size="small" />
           <Popconfirm
-            title="¿Eliminar pregunta?"
+            title={t('admin.deleteQuestion')}
             onConfirm={() => deleteMutation.mutate(record.id)}
           >
             <Button type="text" danger icon={<DeleteOutlined />} size="small" />
@@ -78,18 +80,18 @@ export default function AdminQuestionsPage() {
     <div className="vinki-page">
       <Space style={{ marginBottom: 16, width: '100%', justifyContent: 'space-between' }}>
         <Title level={3} className="vinki-page-title">
-          Catálogo de preguntas
+          {t('admin.questionCatalog')}
         </Title>
         <Space>
           <Button type="primary" icon={<PlusOutlined />}>
-            Nueva pregunta
+            {t('admin.newQuestion')}
           </Button>
-          <Button icon={<UploadOutlined />}>Importar</Button>
+          <Button icon={<UploadOutlined />}>{t('admin.import')}</Button>
         </Space>
       </Space>
 
       <Input.Search
-        placeholder="Buscar por texto..."
+        placeholder={t('admin.searchByText')}
         onSearch={setSearch}
         style={{ marginBottom: 16, maxWidth: 400 }}
         allowClear

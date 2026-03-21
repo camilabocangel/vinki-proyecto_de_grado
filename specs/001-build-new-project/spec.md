@@ -257,7 +257,7 @@ correcta para una nueva simulación.
 ## Assumptions
 
 - Las sesiones de simulación tienen exactamente 5 preguntas por defecto (configurable por el equipo en futuras iteraciones).
-- La plataforma opera íntegramente en español en su primera versión.
+- La plataforma soporta español (es) e inglés (en) mediante `react-i18next`. El idioma por defecto es español. Todos los textos del frontend están externalizados en `src/i18n/locales/{es,en}.json`.
 - La integración SSO con UPB queda fuera del alcance de v1; la autenticación es nativa por email/contraseña.
 - Los archivos de audio se almacenan en un servicio S3-compatible como registro complementario únicamente. **El pipeline de evaluación IA evalúa solo la respuesta escrita**; no existe transcripción automática audio→texto en v1. Esta decisión reduce dependencias externas y mantiene el alcance del proyecto de grado manejable. La transcripción automática se considera para v2.
 - El catálogo de preguntas se pre-carga con los seeds definidos en `docs/db.sql`; el administrador puede ampliar el banco desde el panel.

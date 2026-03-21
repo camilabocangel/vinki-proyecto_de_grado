@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Card, Button, Input, Typography, Progress, Space, App, Skeleton } from 'antd'
 import { useInterviewStore, type Interview } from '../../store/interview.store'
@@ -9,6 +10,7 @@ const { Title, Text } = Typography
 const { TextArea } = Input
 
 export default function InterviewSessionPage() {
+  const { t } = useTranslation()
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { message, modal } = App.useApp()
@@ -41,7 +43,7 @@ export default function InterviewSessionPage() {
     }) => api.post(`/interviews/${id}/questions/${questionId}/answer`, { answerText }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['interview', id] })
-      message.success('Respuesta guardada')
+      message.success(t('interview.answerSaved'))
     },
   })
 
@@ -71,11 +73,10 @@ export default function InterviewSessionPage() {
 
   const handleFinish = () => {
     modal.confirm({
-      title: '¿Finalizar entrevista?',
-      content:
-        'Se enviará tu entrevista para evaluación. Esta acción no se puede deshacer.',
-      okText: 'Finalizar',
-      cancelText: 'Cancelar',
+      title: t('interview.finishConfirmTitle'),
+      content: t('interview.finishConfirmMessage'),
+      okText: t('interview.finish'),
+      cancelText: t('common.cancel'),
       onOk: () => finishInterview.mutate(),
     })
   }
@@ -95,27 +96,27 @@ export default function InterviewSessionPage() {
         <TextArea
           id="answer-text"
           rows={8}
-          placeholder="Escribe tu respuesta aquí..."
+          placeholder={t('interview.answerPlaceholder')}
           defaultValue={question.answer?.answerText || ''}
           style={{ marginBottom: 16 }}
         />
 
         <Space wrap>
           <Button disabled={currentQuestionIndex === 0} onClick={prevQuestion}>
-            Anterior
+            {t('common.back')}
           </Button>
           <Button
             type="primary"
             onClick={handleSubmitAnswer}
             loading={submitAnswer.isPending}
           >
-            Guardar respuesta
+            {t('interview.saveAnswer')}
           </Button>
           {currentQuestionIndex < totalQuestions - 1 ? (
-            <Button onClick={nextQuestion}>Siguiente</Button>
+            <Button onClick={nextQuestion}>{t('common.next')}</Button>
           ) : (
             <Button danger onClick={handleFinish} loading={finishInterview.isPending}>
-              Finalizar entrevista
+              {t('interview.finishInterview')}
             </Button>
           )}
         </Space>

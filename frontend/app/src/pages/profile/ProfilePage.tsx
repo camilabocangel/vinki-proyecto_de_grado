@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   Card,
@@ -25,10 +26,10 @@ import { api } from '../../api/client'
 
 const { Title, Text } = Typography
 
-const roleLabels: Record<string, string> = {
-  student: 'Estudiante',
-  recruiter: 'Reclutador',
-  admin: 'Administrador',
+const roleLabelKeys: Record<string, string> = {
+  student: 'roles.student',
+  recruiter: 'roles.recruiter',
+  admin: 'roles.admin',
 }
 
 const roleColors: Record<string, string> = {
@@ -38,6 +39,7 @@ const roleColors: Record<string, string> = {
 }
 
 export default function ProfilePage() {
+  const { t } = useTranslation()
   const { user } = useAuth()
   const queryClient = useQueryClient()
   const [profileForm] = Form.useForm()
@@ -57,10 +59,10 @@ export default function ProfilePage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['auth'] })
       setEditingProfile(false)
-      messageApi.success('Perfil actualizado correctamente')
+      messageApi.success(t('profile.profileUpdated'))
     },
     onError: (err: Error) => {
-      messageApi.error(err.message || 'Error al actualizar perfil')
+      messageApi.error(err.message || t('profile.updateError'))
     },
   })
 
@@ -69,10 +71,10 @@ export default function ProfilePage() {
       api.post('/auth/change-password', values),
     onSuccess: () => {
       passwordForm.resetFields()
-      messageApi.success('Contraseña cambiada correctamente')
+      messageApi.success(t('profile.passwordChanged'))
     },
     onError: (err: Error) => {
-      messageApi.error(err.message || 'Error al cambiar contraseña')
+      messageApi.error(err.message || t('profile.passwordError'))
     },
   })
 
@@ -89,7 +91,7 @@ export default function ProfilePage() {
       {contextHolder}
       <div className="vinki-page-header">
         <Title level={3} className="vinki-page-title">
-          Mi perfil
+          {t('profile.title')}
         </Title>
       </div>
 
@@ -116,7 +118,7 @@ export default function ProfilePage() {
                   {user.email}
                 </Text>
                 <Tag color={roleColors[user.role]} style={{ marginTop: 8 }}>
-                  {roleLabels[user.role] ?? user.role}
+                  {t(roleLabelKeys[user.role]) ?? user.role}
                 </Tag>
               </div>
             </div>
@@ -130,7 +132,7 @@ export default function ProfilePage() {
                     <UserOutlined style={{ fontSize: 16, color: '#7C3AED' }} />
                     <div>
                       <Text type="secondary" style={{ fontSize: 12, display: 'block' }}>
-                        Nombre
+                        {t('profile.name')}
                       </Text>
                       <Text strong>{user.name}</Text>
                     </div>
@@ -139,7 +141,7 @@ export default function ProfilePage() {
                     <MailOutlined style={{ fontSize: 16, color: '#7C3AED' }} />
                     <div>
                       <Text type="secondary" style={{ fontSize: 12, display: 'block' }}>
-                        Correo electrónico
+                        {t('profile.email')}
                       </Text>
                       <Text strong>{user.email}</Text>
                     </div>
@@ -148,16 +150,16 @@ export default function ProfilePage() {
                     <SafetyOutlined style={{ fontSize: 16, color: '#7C3AED' }} />
                     <div>
                       <Text type="secondary" style={{ fontSize: 12, display: 'block' }}>
-                        Rol
+                        {t('profile.role')}
                       </Text>
-                      <Text strong>{roleLabels[user.role] ?? user.role}</Text>
+                      <Text strong>{t(roleLabelKeys[user.role]) ?? user.role}</Text>
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     <CalendarOutlined style={{ fontSize: 16, color: '#7C3AED' }} />
                     <div>
                       <Text type="secondary" style={{ fontSize: 12, display: 'block' }}>
-                        Miembro desde
+                        {t('profile.memberSince')}
                       </Text>
                       <Text strong>{createdDate}</Text>
                     </div>
@@ -171,7 +173,7 @@ export default function ProfilePage() {
                     setEditingProfile(true)
                   }}
                 >
-                  Editar perfil
+                  {t('profile.editProfile')}
                 </Button>
               </div>
             ) : (
@@ -183,17 +185,17 @@ export default function ProfilePage() {
               >
                 <Form.Item
                   name="name"
-                  label="Nombre"
-                  rules={[{ required: true, message: 'Ingresa tu nombre' }]}
+                  label={t('profile.name')}
+                  rules={[{ required: true, message: t('profile.enterName') }]}
                 >
                   <Input prefix={<UserOutlined />} />
                 </Form.Item>
                 <Form.Item
                   name="email"
-                  label="Correo electrónico"
+                  label={t('profile.email')}
                   rules={[
-                    { required: true, message: 'Ingresa tu correo' },
-                    { type: 'email', message: 'Correo no válido' },
+                    { required: true, message: t('profile.enterEmail') },
+                    { type: 'email', message: t('profile.invalidEmail') },
                   ]}
                 >
                   <Input prefix={<MailOutlined />} />
@@ -204,7 +206,7 @@ export default function ProfilePage() {
                     htmlType="submit"
                     loading={updateProfileMutation.isPending}
                   >
-                    Guardar cambios
+                    {t('profile.saveChanges')}
                   </Button>
                   <Button onClick={() => setEditingProfile(false)}>Cancelar</Button>
                 </div>
@@ -215,7 +217,7 @@ export default function ProfilePage() {
 
         {/* Change password card */}
         <Col xs={24} lg={10}>
-          <Card className="vinki-card" title="Cambiar contraseña">
+          <Card className="vinki-card" title={t('profile.changePassword')}>
             <Form
               form={passwordForm}
               layout="vertical"
@@ -223,16 +225,16 @@ export default function ProfilePage() {
             >
               <Form.Item
                 name="currentPassword"
-                label="Contraseña actual"
-                rules={[{ required: true, message: 'Ingresa tu contraseña actual' }]}
+                label={t('profile.currentPassword')}
+                rules={[{ required: true, message: t('profile.enterCurrentPassword') }]}
               >
                 <Input.Password prefix={<LockOutlined />} />
               </Form.Item>
               <Form.Item
                 name="newPassword"
-                label="Nueva contraseña"
+                label={t('profile.newPassword')}
                 rules={[
-                  { required: true, message: 'Ingresa la nueva contraseña' },
+                  { required: true, message: t('profile.enterNewPassword') },
                   { min: 6, message: 'Mínimo 6 caracteres' },
                 ]}
               >
@@ -240,16 +242,16 @@ export default function ProfilePage() {
               </Form.Item>
               <Form.Item
                 name="confirmPassword"
-                label="Confirmar nueva contraseña"
+                label={t('profile.confirmNewPassword')}
                 dependencies={['newPassword']}
                 rules={[
-                  { required: true, message: 'Confirma la nueva contraseña' },
+                  { required: true, message: t('profile.confirmNewPasswordPlaceholder') },
                   ({ getFieldValue }) => ({
                     validator(_, value) {
                       if (!value || getFieldValue('newPassword') === value) {
                         return Promise.resolve()
                       }
-                      return Promise.reject(new Error('Las contraseñas no coinciden'))
+                      return Promise.reject(new Error(t('profile.passwordsNoMatch')))
                     },
                   }),
                 ]}
@@ -262,7 +264,7 @@ export default function ProfilePage() {
                 loading={changePasswordMutation.isPending}
                 block
               >
-                Cambiar contraseña
+                {t('profile.changePassword')}
               </Button>
             </Form>
           </Card>

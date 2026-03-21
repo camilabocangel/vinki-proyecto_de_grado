@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Steps, Card, Select, Button, Typography, Space, App } from 'antd'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { api } from '../../api/client'
@@ -12,6 +13,7 @@ interface CatalogItem {
 }
 
 export default function InterviewWizardPage() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { message } = App.useApp()
   const [current, setCurrent] = useState(0)
@@ -59,10 +61,10 @@ export default function InterviewWizardPage() {
 
   const steps = [
     {
-      title: 'Rol',
+      title: t('interview.role'),
       content: (
         <Select
-          placeholder="Selecciona un rol"
+          placeholder={t('interview.selectRole')}
           value={roleId}
           onChange={setRoleId}
           options={roles?.map((r) => ({ label: r.name, value: r.id }))}
@@ -72,10 +74,10 @@ export default function InterviewWizardPage() {
       ),
     },
     {
-      title: 'Lenguaje',
+      title: t('interview.language'),
       content: (
         <Select
-          placeholder="Selecciona un lenguaje"
+          placeholder={t('interview.selectLanguage')}
           value={languageId}
           onChange={(v) => {
             setLanguageId(v)
@@ -89,10 +91,10 @@ export default function InterviewWizardPage() {
       ),
     },
     {
-      title: 'Framework',
+      title: t('interview.framework'),
       content: (
         <Select
-          placeholder="Selecciona un framework (opcional)"
+          placeholder={t('interview.selectFramework')}
           value={frameworkId}
           onChange={setFrameworkId}
           options={frameworks?.map((f) => ({ label: f.name, value: f.id }))}
@@ -104,10 +106,10 @@ export default function InterviewWizardPage() {
       ),
     },
     {
-      title: 'Nivel',
+      title: t('interview.level'),
       content: (
         <Select
-          placeholder="Selecciona tu nivel"
+          placeholder={t('interview.selectLevel')}
           value={levelId}
           onChange={setLevelId}
           options={levels?.map((l) => ({ label: l.name, value: l.id }))}
@@ -121,10 +123,10 @@ export default function InterviewWizardPage() {
   return (
     <div className="vinki-page" style={{ maxWidth: 640, margin: '0 auto' }}>
       <Title level={3} className="vinki-page-title">
-        Configurar entrevista
+        {t('interview.configure')}
       </Title>
       <Text type="secondary" style={{ display: 'block', marginBottom: 24 }}>
-        Selecciona los parámetros de tu sesión de práctica.
+        {t('interview.configureSubtitle')}
       </Text>
 
       <Steps
@@ -138,10 +140,12 @@ export default function InterviewWizardPage() {
       </Card>
 
       <Space>
-        {current > 0 && <Button onClick={() => setCurrent(current - 1)}>Anterior</Button>}
+        {current > 0 && (
+          <Button onClick={() => setCurrent(current - 1)}>{t('common.back')}</Button>
+        )}
         {current < steps.length - 1 && (
           <Button type="primary" onClick={() => setCurrent(current + 1)}>
-            Siguiente
+            {t('common.next')}
           </Button>
         )}
         {current === steps.length - 1 && (
@@ -151,7 +155,7 @@ export default function InterviewWizardPage() {
             loading={createInterview.isPending}
             disabled={!roleId || !levelId}
           >
-            Iniciar entrevista
+            {t('interview.startInterview')}
           </Button>
         )}
       </Space>

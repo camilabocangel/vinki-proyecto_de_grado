@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Form, Input, Button, Card, Typography, Alert } from 'antd'
 import { MailOutlined, LockOutlined } from '@ant-design/icons'
 import { useAuth } from '../../hooks/useAuth'
@@ -7,6 +8,7 @@ import { useAuth } from '../../hooks/useAuth'
 const { Title, Text } = Typography
 
 export default function LoginPage() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { login, loginError } = useAuth()
   const [loading, setLoading] = useState(false)
@@ -29,9 +31,9 @@ export default function LoginPage() {
         <div className="vinki-auth-logo">
           <div className="vinki-auth-logo-icon">V</div>
           <Title level={3} style={{ marginBottom: 4 }}>
-            Bienvenido a Vinki
+            {t('auth.welcomeTo')}
           </Title>
-          <Text type="secondary">Inicia sesión para continuar</Text>
+          <Text type="secondary">{t('auth.loginSubtitle')}</Text>
         </div>
 
         {loginError && (
@@ -46,8 +48,8 @@ export default function LoginPage() {
         <Form layout="vertical" onFinish={onFinish} size="large">
           <Form.Item
             name="email"
-            label="Email"
-            rules={[{ required: true, type: 'email', message: 'Email válido requerido' }]}
+            label={t('auth.email')}
+            rules={[{ required: true, type: 'email', message: t('auth.emailRequired') }]}
           >
             <Input
               prefix={<MailOutlined style={{ color: '#9CA3AF' }} />}
@@ -56,8 +58,8 @@ export default function LoginPage() {
           </Form.Item>
           <Form.Item
             name="password"
-            label="Contraseña"
-            rules={[{ required: true, message: 'Contraseña requerida' }]}
+            label={t('auth.password')}
+            rules={[{ required: true, message: t('auth.passwordRequired') }]}
           >
             <Input.Password
               prefix={<LockOutlined style={{ color: '#9CA3AF' }} />}
@@ -73,14 +75,14 @@ export default function LoginPage() {
               size="large"
               style={{ height: 46 }}
             >
-              Iniciar sesión
+              {t('auth.login')}
             </Button>
           </Form.Item>
         </Form>
         <div style={{ textAlign: 'center' }}>
-          <Text type="secondary">¿No tienes cuenta? </Text>
+          <Text type="secondary">{t('auth.noAccount')} </Text>
           <Link to="/register" style={{ fontWeight: 600 }}>
-            Regístrate
+            {t('auth.signUp')}
           </Link>
         </div>
       </Card>

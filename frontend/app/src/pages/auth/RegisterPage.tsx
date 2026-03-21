@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Form, Input, Button, Card, Typography, Alert } from 'antd'
 import { UserOutlined, MailOutlined, LockOutlined } from '@ant-design/icons'
 import { useAuth } from '../../hooks/useAuth'
@@ -7,6 +8,7 @@ import { useAuth } from '../../hooks/useAuth'
 const { Title, Text } = Typography
 
 export default function RegisterPage() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { register, registerError } = useAuth()
   const [loading, setLoading] = useState(false)
@@ -29,9 +31,9 @@ export default function RegisterPage() {
         <div className="vinki-auth-logo">
           <div className="vinki-auth-logo-icon">V</div>
           <Title level={3} style={{ marginBottom: 4 }}>
-            Crea tu cuenta
+            {t('auth.register')}
           </Title>
-          <Text type="secondary">Comienza a practicar entrevistas técnicas</Text>
+          <Text type="secondary">{t('auth.registerSubtitle')}</Text>
         </div>
 
         {registerError && (
@@ -46,8 +48,8 @@ export default function RegisterPage() {
         <Form layout="vertical" onFinish={onFinish} size="large">
           <Form.Item
             name="name"
-            label="Nombre completo"
-            rules={[{ required: true, message: 'Nombre requerido' }]}
+            label={t('auth.fullName')}
+            rules={[{ required: true, message: t('auth.nameRequired') }]}
           >
             <Input
               prefix={<UserOutlined style={{ color: '#9CA3AF' }} />}
@@ -56,8 +58,8 @@ export default function RegisterPage() {
           </Form.Item>
           <Form.Item
             name="email"
-            label="Email"
-            rules={[{ required: true, type: 'email', message: 'Email válido requerido' }]}
+            label={t('auth.email')}
+            rules={[{ required: true, type: 'email', message: t('auth.emailRequired') }]}
           >
             <Input
               prefix={<MailOutlined style={{ color: '#9CA3AF' }} />}
@@ -66,12 +68,14 @@ export default function RegisterPage() {
           </Form.Item>
           <Form.Item
             name="password"
-            label="Contraseña"
-            rules={[{ required: true, min: 8, message: 'Mínimo 8 caracteres' }]}
+            label={t('auth.password')}
+            rules={[
+              { required: true, min: 8, message: t('auth.minChars', { count: 8 }) },
+            ]}
           >
             <Input.Password
               prefix={<LockOutlined style={{ color: '#9CA3AF' }} />}
-              placeholder="Mínimo 8 caracteres"
+              placeholder={t('auth.minChars', { count: 8 })}
             />
           </Form.Item>
           <Form.Item style={{ marginBottom: 16 }}>
@@ -83,14 +87,14 @@ export default function RegisterPage() {
               size="large"
               style={{ height: 46 }}
             >
-              Crear cuenta
+              {t('auth.register')}
             </Button>
           </Form.Item>
         </Form>
         <div style={{ textAlign: 'center' }}>
-          <Text type="secondary">¿Ya tienes cuenta? </Text>
+          <Text type="secondary">{t('auth.hasAccount')} </Text>
           <Link to="/login" style={{ fontWeight: 600 }}>
-            Inicia sesión
+            {t('auth.signIn')}
           </Link>
         </div>
       </Card>

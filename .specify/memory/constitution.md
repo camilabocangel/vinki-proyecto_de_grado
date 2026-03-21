@@ -1,15 +1,13 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: [unversioned template] → 1.0.0
-Bump rationale: MAJOR — first concrete version; all placeholders replaced with project-specific content.
+Version change: 1.0.0 → 1.1.0
+Bump rationale: MINOR — added Principle VII (Internacionalización / i18n)
 
-Modified principles: N/A (initial creation, all principles are new)
+Modified principles: N/A
 Added sections:
-  - Core Principles (6 principles)
-  - Stack Tecnológico y Restricciones
-  - Flujo de Desarrollo y Puertas de Calidad
-  - Governance
+  - Principle VII: Internacionalización (i18n) — react-i18next, es/en support
+  - Stack Tecnológico: added i18n tooling (react-i18next)
 Removed sections: N/A
 
 Templates reviewed and aligned:
@@ -108,6 +106,27 @@ síncrono; la asincronía además mejora la resiliencia ante fallos del proveedo
 **Rationale**: Vinki está dirigido a estudiantes y reclutadores de UPB;
 la experiencia inclusiva y rápida es un requisito de calidad académica.
 
+### VII. Internacionalización (i18n)
+
+Todo texto visible al usuario en el frontend DEBE estar externalizado en
+archivos de traducción (`src/i18n/locales/{lang}.json`) y accedido mediante
+`useTranslation()` de `react-i18next`. No se permiten cadenas hardcoded en
+componentes React.
+
+- Los idiomas soportados son **español (es)** e **inglés (en)**.
+  El idioma por defecto es español.
+- Nuevas claves de traducción DEBEN añadirse en **todos** los archivos de
+  idioma simultáneamente. Un PR que agregue claves solo en un idioma será
+  rechazado.
+- El selector de idioma DEBE estar accesible en el header de la aplicación.
+- Las traducciones dinámicas (datos del servidor como nombres de roles, niveles
+  o skills) se manejan en el backend y se devuelven en el idioma de la sesión
+  del usuario en futuras iteraciones.
+
+**Rationale**: La internacionalización permite demostrar escalabilidad de la
+plataforma más allá del mercado hispanohablante, y es un diferenciador en la
+defensa del proyecto de grado.
+
 ### VI. Seguridad (NO NEGOCIABLE)
 
 - Los tokens JWT DEBEN transmitirse **exclusivamente** en cookies `httpOnly`;
@@ -143,6 +162,8 @@ la privacidad y la integridad de los datos son obligaciones éticas y legales.
 - Framework: React 18 + TypeScript con Vite como bundler.
 - UI: Ant Design con tokens de identidad UPB/Vinki
   (`src/theme/tokens.ts` + CSS custom properties).
+- i18n: `react-i18next` con detección automática de idioma del navegador.
+  Traducciones en `src/i18n/locales/{es,en}.json`.
 - Estado global: Zustand o Redux Toolkit para entrevistas y sesión de usuario.
 - Fetching / Caché: TanStack Query (react-query).
 - Testing: Vitest + React Testing Library (unit) + Playwright (E2E, contra
@@ -216,4 +237,4 @@ constitution check (ver sección homónima en
 `.specify/templates/plan-template.md`) y el checklist generado por
 `/speckit.checklist`.
 
-**Version**: 1.0.0 | **Ratified**: 2026-03-19 | **Last Amended**: 2026-03-19
+**Version**: 1.1.0 | **Ratified**: 2026-03-19 | **Last Amended**: 2026-03-21

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
-import { Layout, Menu, Typography, Avatar, Dropdown, Button } from 'antd'
+import { Layout, Menu, Typography, Avatar, Dropdown, Button, Select } from 'antd'
 import {
   DashboardOutlined,
   ThunderboltOutlined,
@@ -11,6 +11,7 @@ import {
   LineChartOutlined,
   SettingOutlined,
 } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../hooks/useAuth'
 
 const { Header, Content, Sider } = Layout
@@ -22,6 +23,7 @@ export function AppLayout() {
   const navigate = useNavigate()
   const location = useLocation()
   const { user, logout } = useAuth()
+  const { t, i18n } = useTranslation()
   const isMobile = () => window.innerWidth < 992
   const [collapsed, setCollapsed] = useState(isMobile)
 
@@ -33,25 +35,29 @@ export function AppLayout() {
   }, [])
 
   const mainMenuItems = [
-    { key: '/dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
-    { key: '/interview/new', icon: <ThunderboltOutlined />, label: 'Entrevista' },
-    { key: '/history', icon: <LineChartOutlined />, label: 'Historial' },
+    { key: '/dashboard', icon: <DashboardOutlined />, label: t('nav.dashboard') },
+    { key: '/interview/new', icon: <ThunderboltOutlined />, label: t('nav.interview') },
+    { key: '/history', icon: <LineChartOutlined />, label: t('nav.history') },
   ]
 
   const roleMenuItems: { key: string; icon: React.ReactNode; label: string }[] = []
   if (user?.role === 'recruiter' || user?.role === 'admin') {
-    roleMenuItems.push({ key: '/recruiter', icon: <TeamOutlined />, label: 'Talento' })
+    roleMenuItems.push({
+      key: '/recruiter',
+      icon: <TeamOutlined />,
+      label: t('nav.talent'),
+    })
   }
   if (user?.role === 'admin') {
     roleMenuItems.push({
       key: '/admin/questions',
       icon: <DatabaseOutlined />,
-      label: 'Preguntas',
+      label: t('nav.questions'),
     })
   }
 
   const generalMenuItems = [
-    { key: '/settings', icon: <SettingOutlined />, label: 'Configuración' },
+    { key: '/settings', icon: <SettingOutlined />, label: t('nav.settings') },
   ]
 
   return (
@@ -76,7 +82,7 @@ export function AppLayout() {
           <span className="vinki-logo-text">Vinki</span>
         </div>
 
-        <div className="vinki-menu-label">Main Menu</div>
+        <div className="vinki-menu-label">{t('nav.mainMenu')}</div>
         <Menu
           theme="dark"
           mode="inline"
@@ -87,7 +93,7 @@ export function AppLayout() {
 
         {roleMenuItems.length > 0 && (
           <>
-            <div className="vinki-menu-label">Gestión</div>
+            <div className="vinki-menu-label">{t('nav.management')}</div>
             <Menu
               theme="dark"
               mode="inline"
@@ -98,7 +104,7 @@ export function AppLayout() {
           </>
         )}
 
-        <div className="vinki-menu-label">General</div>
+        <div className="vinki-menu-label">{t('nav.general')}</div>
         <Menu
           theme="dark"
           mode="inline"
@@ -109,7 +115,7 @@ export function AppLayout() {
 
         <div className="vinki-logout">
           <Button icon={<LogoutOutlined />} onClick={() => logout()}>
-            Cerrar sesión
+            {t('auth.logout')}
           </Button>
         </div>
       </Sider>
@@ -136,20 +142,29 @@ export function AppLayout() {
             />
           </div>
           <div className="vinki-header-right">
+            <Select
+              defaultValue={i18n.language?.startsWith('en') ? 'en' : 'es'}
+              style={{ width: 70 }}
+              onChange={(value) => i18n.changeLanguage(value)}
+              options={[
+                { value: 'es', label: 'ES' },
+                { value: 'en', label: 'EN' },
+              ]}
+            />
             <Dropdown
               menu={{
                 items: [
                   {
                     key: 'profile',
                     icon: <UserOutlined />,
-                    label: 'Mi perfil',
+                    label: t('nav.myProfile'),
                     onClick: () => navigate('/settings'),
                   },
                   { type: 'divider' },
                   {
                     key: 'logout',
                     icon: <LogoutOutlined />,
-                    label: 'Cerrar sesión',
+                    label: t('auth.logout'),
                     danger: true,
                     onClick: () => logout(),
                   },
@@ -167,10 +182,10 @@ export function AppLayout() {
                   </Text>
                   <Text style={{ fontSize: 12, color: '#9CA3AF' }}>
                     {user?.role === 'student'
-                      ? 'Estudiante'
+                      ? t('roles.student')
                       : user?.role === 'recruiter'
-                        ? 'Reclutador'
-                        : 'Admin'}
+                        ? t('roles.recruiter')
+                        : t('roles.admin')}
                   </Text>
                 </div>
                 <Avatar
@@ -197,7 +212,7 @@ export function AppLayout() {
           }}
           role="button"
           tabIndex={0}
-          aria-label="Cerrar menú"
+          aria-label={t('nav.closeMenu')}
         />
       )}
     </Layout>

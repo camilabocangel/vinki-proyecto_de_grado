@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
 import {
   Card,
@@ -47,11 +48,11 @@ interface DashboardData {
   }>
 }
 
-const statusConfig: Record<string, { color: string; label: string }> = {
-  pending: { color: 'default', label: 'Pendiente' },
-  processing: { color: 'purple', label: 'Procesando' },
-  completed: { color: 'green', label: 'Completada' },
-  failed: { color: 'red', label: 'Error' },
+const statusConfig: Record<string, { color: string; labelKey: string }> = {
+  pending: { color: 'default', labelKey: 'status.pending' },
+  processing: { color: 'purple', labelKey: 'status.processing' },
+  completed: { color: 'green', labelKey: 'status.completed' },
+  failed: { color: 'red', labelKey: 'status.failed' },
 }
 
 const levelColors: Record<string, string> = {
@@ -61,6 +62,7 @@ const levelColors: Record<string, string> = {
 }
 
 export default function DashboardPage() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   useSSE()
 
@@ -89,7 +91,7 @@ export default function DashboardPage() {
 
   const columns = [
     {
-      title: 'Fecha',
+      title: t('table.date'),
       dataIndex: 'startedAt',
       width: 120,
       render: (v: string) =>
@@ -100,19 +102,19 @@ export default function DashboardPage() {
         }),
     },
     {
-      title: 'Rol',
+      title: t('table.role'),
       dataIndex: 'roleName',
       width: 140,
       render: (v: string) => <Tag>{v}</Tag>,
     },
     {
-      title: 'Nivel elegido',
+      title: t('table.chosenLevel'),
       dataIndex: 'levelName',
       width: 110,
       render: (v: string) => <Tag color={levelColors[v] ?? 'default'}>{v}</Tag>,
     },
     {
-      title: 'Tecnología',
+      title: t('table.technology'),
       width: 160,
       render: (_: unknown, record: InterviewRow) => {
         const parts = [record.languageName, record.frameworkName].filter(Boolean)
@@ -120,13 +122,13 @@ export default function DashboardPage() {
       },
     },
     {
-      title: 'Preguntas',
+      title: t('table.questions'),
       dataIndex: 'questionCount',
       width: 90,
       align: 'center' as const,
     },
     {
-      title: 'Puntaje',
+      title: t('table.score'),
       dataIndex: 'avgScore',
       width: 90,
       align: 'center' as const,
@@ -143,7 +145,7 @@ export default function DashboardPage() {
         ),
     },
     {
-      title: 'Nivel IA',
+      title: t('table.aiLevel'),
       dataIndex: 'detectedLevel',
       width: 100,
       render: (v: string | null) =>
@@ -154,19 +156,20 @@ export default function DashboardPage() {
         ),
     },
     {
-      title: 'Estado',
+      title: t('table.status'),
       dataIndex: 'evaluationStatus',
       width: 110,
       render: (status: string) => {
         const cfg = statusConfig[status] || statusConfig.pending
-        return <Tag color={cfg.color}>{cfg.label}</Tag>
+        return <Tag color={cfg.color}>{t(cfg.labelKey)}</Tag>
       },
     },
     {
-      title: 'Duración',
+      title: t('table.duration'),
       width: 100,
       render: (_: unknown, record: InterviewRow) => {
-        if (!record.finishedAt) return <Text type="secondary">En curso</Text>
+        if (!record.finishedAt)
+          return <Text type="secondary">{t('table.inProgress')}</Text>
         const ms =
           new Date(record.finishedAt).getTime() - new Date(record.startedAt).getTime()
         const mins = Math.round(ms / 60000)
@@ -187,7 +190,9 @@ export default function DashboardPage() {
               : navigate(`/interview/${record.id}`)
           }
         >
-          {record.evaluationStatus === 'completed' ? 'Ver reporte' : 'Continuar'}
+          {record.evaluationStatus === 'completed'
+            ? t('table.viewReport')
+            : t('table.continue')}
         </Button>
       ),
     },
@@ -198,9 +203,9 @@ export default function DashboardPage() {
       <div className="vinki-page-header">
         <div>
           <Title level={3} className="vinki-page-title">
-            Hola, {data?.user.name?.split(' ')[0]}
+            {t('dashboard.greeting', { name: data?.user.name?.split(' ')[0] })}
           </Title>
-          <Text type="secondary">Aquí tienes un resumen de tu progreso</Text>
+          <Text type="secondary">{t('dashboard.subtitle')}</Text>
         </div>
         <Badge count={data?.pendingNotifications} offset={[-5, 5]}>
           <Button
@@ -209,7 +214,7 @@ export default function DashboardPage() {
             size="large"
             onClick={() => navigate('/interview/new')}
           >
-            Iniciar simulación
+            {t('dashboard.startSimulation')}
           </Button>
         </Badge>
       </div>
@@ -232,7 +237,7 @@ export default function DashboardPage() {
               />
               <div>
                 <Text type="secondary" style={{ fontSize: 13 }}>
-                  Puntaje IA
+                  {t('dashboard.aiScore')}
                 </Text>
                 <div
                   style={{
@@ -242,7 +247,7 @@ export default function DashboardPage() {
                     marginTop: 2,
                   }}
                 >
-                  de 5.0
+                  {t('dashboard.outOf')}
                 </div>
               </div>
             </div>
@@ -268,7 +273,7 @@ export default function DashboardPage() {
               />
               <div>
                 <Text type="secondary" style={{ fontSize: 13 }}>
-                  Entrevistas
+                  {t('dashboard.interviewsDone')}
                 </Text>
                 <div
                   style={{
@@ -278,7 +283,7 @@ export default function DashboardPage() {
                     marginTop: 2,
                   }}
                 >
-                  realizadas
+                  {t('dashboard.done')}
                 </div>
               </div>
             </div>
@@ -300,7 +305,7 @@ export default function DashboardPage() {
               />
               <div>
                 <Text type="secondary" style={{ fontSize: 13 }}>
-                  Pendientes
+                  {t('dashboard.pending')}
                 </Text>
                 <div
                   style={{
@@ -310,7 +315,7 @@ export default function DashboardPage() {
                     marginTop: 2,
                   }}
                 >
-                  evaluaciones
+                  {t('dashboard.evaluations')}
                 </div>
               </div>
             </div>
@@ -320,7 +325,11 @@ export default function DashboardPage() {
 
       {/* Skills */}
       {data?.skillScores && data.skillScores.length > 0 && (
-        <Card className="vinki-card" title="Habilidades" style={{ marginBottom: 24 }}>
+        <Card
+          className="vinki-card"
+          title={t('dashboard.skills')}
+          style={{ marginBottom: 24 }}
+        >
           <Row gutter={[24, 16]}>
             {data.skillScores.map((skill) => (
               <Col xs={24} sm={12} key={skill.skillId}>
@@ -357,12 +366,12 @@ export default function DashboardPage() {
       {/* Recent interviews */}
       <Card
         className="vinki-card"
-        title="Historial de entrevistas"
+        title={t('dashboard.interviewHistory')}
         extra={
           roles.length > 1 && (
             <Select
               allowClear
-              placeholder="Filtrar por rol"
+              placeholder={t('dashboard.filterByRole')}
               style={{ width: 180 }}
               value={roleFilter}
               onChange={(v) => setRoleFilter(v ?? null)}
@@ -378,7 +387,7 @@ export default function DashboardPage() {
           pagination={{
             pageSize: 8,
             showSizeChanger: false,
-            showTotal: (t) => `${t} entrevistas`,
+            showTotal: (total) => `${total} ${t('common.interviews')}`,
           }}
           size="middle"
           scroll={{ x: 900 }}

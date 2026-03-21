@@ -1,4 +1,5 @@
 import { useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
 import { Card, Typography, Skeleton, Descriptions, Table, Tag } from 'antd'
 import { api } from '../../api/client'
@@ -18,6 +19,7 @@ interface StudentProfile {
 }
 
 export default function StudentProfilePage() {
+  const { t } = useTranslation()
   const { studentId } = useParams<{ studentId: string }>()
 
   const { data, isLoading } = useQuery({
@@ -27,21 +29,21 @@ export default function StudentProfilePage() {
   })
 
   if (isLoading) return <Skeleton active paragraph={{ rows: 8 }} />
-  if (!data) return <div>Estudiante no encontrado</div>
+  if (!data) return <div>{t('recruiter.studentNotFound')}</div>
 
   return (
     <div style={{ padding: 24 }}>
       <Title level={2}>{data.user.name}</Title>
 
       <Descriptions bordered column={2} style={{ marginBottom: 24 }}>
-        <Descriptions.Item label="Email">{data.user.email}</Descriptions.Item>
-        <Descriptions.Item label="Registrado">
+        <Descriptions.Item label={t('table.email')}>{data.user.email}</Descriptions.Item>
+        <Descriptions.Item label={t('recruiter.registered')}>
           {new Date(data.user.createdAt).toLocaleDateString('es')}
         </Descriptions.Item>
       </Descriptions>
 
       {data.skillScores.length > 0 && (
-        <Card title="Habilidades" style={{ marginBottom: 24 }}>
+        <Card title={t('dashboard.skills')} style={{ marginBottom: 24 }}>
           <SkillRadarChart
             data={data.skillScores.map((s) => ({
               metric: s.skillName,
@@ -51,23 +53,23 @@ export default function StudentProfilePage() {
         </Card>
       )}
 
-      <Card title="Entrevistas recientes">
+      <Card title={t('recruiter.recentInterviews')}>
         <Table
           dataSource={data.recentInterviews}
           rowKey="id"
           columns={[
             {
-              title: 'Fecha',
+              title: t('table.date'),
               dataIndex: 'startedAt',
               render: (v: string) => new Date(v).toLocaleDateString('es'),
             },
             {
-              title: 'Estado',
+              title: t('table.status'),
               dataIndex: 'evaluationStatus',
               render: (v: string) => <Tag>{v}</Tag>,
             },
             {
-              title: 'Puntaje',
+              title: t('table.score'),
               dataIndex: 'averageScore',
               render: (v: number | null) => v?.toFixed(1) ?? '-',
             },

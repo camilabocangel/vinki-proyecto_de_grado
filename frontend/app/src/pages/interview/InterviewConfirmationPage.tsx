@@ -1,8 +1,10 @@
 import { useNavigate, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Result, Button } from 'antd'
 import { CheckCircleFilled } from '@ant-design/icons'
 
 export default function InterviewConfirmationPage() {
+  const { t } = useTranslation()
   const { id } = useParams()
   const navigate = useNavigate()
 
@@ -10,14 +12,14 @@ export default function InterviewConfirmationPage() {
     <div className="vinki-page" style={{ maxWidth: 600, margin: '0 auto' }}>
       <Result
         icon={<CheckCircleFilled style={{ color: '#7C3AED' }} />}
-        title="¡Entrevista enviada!"
-        subTitle="Tu evaluación está siendo procesada por nuestra IA. Recibirás una notificación cuando esté lista."
+        title={t('interview.sent')}
+        subTitle={t('interview.sentMessage')}
         extra={[
           <Button type="primary" key="dashboard" onClick={() => navigate('/dashboard')}>
-            Ir al dashboard
+            {t('interview.goToDashboard')}
           </Button>,
           <Button key="feedback" onClick={() => navigate(`/feedback/${id}`)}>
-            Ver estado
+            {t('interview.viewStatus')}
           </Button>,
         ]}
       />

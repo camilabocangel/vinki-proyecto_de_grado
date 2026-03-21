@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
 import { Table, Card, Typography, Select, Space, Button } from 'antd'
 import { DownloadOutlined } from '@ant-design/icons'
@@ -24,6 +25,7 @@ interface PaginatedResponse {
 }
 
 export default function RecruiterDashboardPage() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [page, setPage] = useState(1)
   const [levelId, setLevelId] = useState<number>()
@@ -44,19 +46,19 @@ export default function RecruiterDashboardPage() {
   })
 
   const columns = [
-    { title: 'Nombre', dataIndex: 'name' },
-    { title: 'Email', dataIndex: 'email' },
-    { title: 'Entrevistas', dataIndex: 'totalInterviews' },
+    { title: t('table.name'), dataIndex: 'name' },
+    { title: t('table.email'), dataIndex: 'email' },
+    { title: t('table.interviews'), dataIndex: 'totalInterviews' },
     {
-      title: 'Puntaje promedio',
+      title: t('table.avgScore'),
       dataIndex: 'averageScore',
       render: (v: number | null) => (v != null ? v.toFixed(1) : '-'),
     },
     {
-      title: 'Acciones',
+      title: t('table.actions'),
       render: (_: unknown, record: StudentItem) => (
         <Button type="link" onClick={() => navigate(`/recruiter/students/${record.id}`)}>
-          Ver perfil
+          {t('table.viewProfile')}
         </Button>
       ),
     },
@@ -65,18 +67,18 @@ export default function RecruiterDashboardPage() {
   return (
     <div className="vinki-page">
       <Title level={3} className="vinki-page-title">
-        Panel de reclutador
+        {t('recruiter.panel')}
       </Title>
 
       <Space style={{ marginBottom: 16 }}>
         <Select
-          placeholder="Filtrar por nivel"
+          placeholder={t('recruiter.filterByLevel')}
           allowClear
           onChange={setLevelId}
           options={levels?.map((l) => ({ label: l.name, value: l.id }))}
           style={{ width: 200 }}
         />
-        <Button icon={<DownloadOutlined />}>Exportar CSV</Button>
+        <Button icon={<DownloadOutlined />}>{t('recruiter.exportCSV')}</Button>
       </Space>
 
       <Card>
