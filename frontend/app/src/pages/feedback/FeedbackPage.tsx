@@ -77,7 +77,24 @@ export default function FeedbackPage() {
   if (isLoading)
     return (
       <div className="vinki-page">
-        <Skeleton active paragraph={{ rows: 10 }} />
+        <Skeleton.Input active style={{ width: 240, marginBottom: 8 }} />
+        <Skeleton.Input active size="small" style={{ width: 180, marginBottom: 24 }} />
+        <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+          <Col xs={24} md={12}>
+            <Card>
+              <Skeleton.Node active style={{ width: '100%', height: 200 }} />
+            </Card>
+          </Col>
+          <Col xs={24} md={12}>
+            <Card>
+              <Skeleton active paragraph={{ rows: 5 }} />
+            </Card>
+          </Col>
+        </Row>
+        <Card>
+          <Skeleton active paragraph={{ rows: 4 }} />
+          <Skeleton active paragraph={{ rows: 4 }} style={{ marginTop: 16 }} />
+        </Card>
       </div>
     )
   if (!data)

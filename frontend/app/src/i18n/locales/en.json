@@ -17,7 +17,10 @@
     "noData": "No data",
     "of": "of",
     "min": "min",
-    "interviews": "interviews"
+    "total": "Total",
+    "interviews": "interviews",
+    "notFound": "The page you're looking for doesn't exist",
+    "goHome": "Go home"
   },
   "roles": {
     "student": "Student",
@@ -56,7 +59,10 @@
     "general": "General",
     "myProfile": "My profile",
     "closeMenu": "Close menu",
-    "studyPlan": "Study Plan"
+    "studyPlan": "Study Plan",
+    "notifications": "Notifications",
+    "noNotifications": "No pending notifications",
+    "markAllSeen": "Mark all as seen"
   },
   "dashboard": {
     "greeting": "Hello, {{name}}",
@@ -75,7 +81,9 @@
     "topPercent": "You're in the top {{percent}}% of candidates",
     "ofCandidates": "of {{total}} candidates",
     "progress": "Metrics evolution",
-    "progressSubtitle": "Your performance over time"
+    "progressSubtitle": "Your performance over time",
+    "emptyState": "You haven't done any interviews yet. Start your first simulation!",
+    "startFirst": "Take my first interview"
   },
   "table": {
     "date": "Date",
@@ -252,5 +260,16 @@
     "recordAgain": "Record again",
     "stop": "Stop",
     "recorded": "Audio recorded"
+  },
+  "history": {
+    "filterByStatus": "Filter by status"
+  },
+  "onboarding": {
+    "welcome": "Welcome to Vinki!",
+    "welcomeDesc": "Your AI-powered technical interview simulation platform",
+    "startSimulation": "Start simulation",
+    "startSimulationDesc": "Click here to begin your first interview",
+    "skills": "Your skills",
+    "skillsDesc": "Here you'll see your progress by skill after each interview"
   }
 }

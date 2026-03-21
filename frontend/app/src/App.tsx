@@ -22,6 +22,7 @@ const StudentProfilePage = lazy(() => import('./pages/recruiter/StudentProfilePa
 const AdminQuestionsPage = lazy(() => import('./pages/admin/AdminQuestionsPage'))
 const ProfilePage = lazy(() => import('./pages/profile/ProfilePage'))
 const StudyPlanPage = lazy(() => import('./pages/dashboard/StudyPlanPage'))
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -89,7 +90,7 @@ export default function App() {
 
             {/* Redirect */}
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>
       </BrowserRouter>

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
 import {
@@ -13,6 +13,8 @@ import {
   Badge,
   Progress,
   Select,
+  Empty,
+  Tour,
 } from 'antd'
 import { ThunderboltFilled, ArrowRightOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
@@ -93,6 +95,15 @@ export default function DashboardPage() {
   useSSE()
 
   const [roleFilter, setRoleFilter] = useState<string | null>(null)
+  const [tourOpen, setTourOpen] = useState(false)
+
+  useEffect(() => {
+    const seen = localStorage.getItem('vinki-onboarding-done')
+    if (!seen) {
+      const timer = setTimeout(() => setTourOpen(true), 1500)
+      return () => clearTimeout(timer)
+    }
+  }, [])
 
   const { data, isLoading } = useQuery({
     queryKey: ['dashboard'],
@@ -112,9 +123,56 @@ export default function DashboardPage() {
   if (isLoading)
     return (
       <div className="vinki-page">
-        <Skeleton active paragraph={{ rows: 8 }} />
+        <Skeleton.Input active style={{ width: 200, marginBottom: 8 }} />
+        <Skeleton.Input active size="small" style={{ width: 300, marginBottom: 24 }} />
+        <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+          <Col xs={24} sm={12} md={8}>
+            <Skeleton.Node active style={{ width: '100%', height: 100 }} />
+          </Col>
+          <Col xs={24} sm={12} md={8}>
+            <Skeleton.Node active style={{ width: '100%', height: 100 }} />
+          </Col>
+          <Col xs={24} sm={12} md={8}>
+            <Skeleton.Node active style={{ width: '100%', height: 100 }} />
+          </Col>
+        </Row>
+        <Card>
+          <Skeleton active paragraph={{ rows: 6 }} />
+        </Card>
       </div>
     )
+
+  if (data && data.recentInterviews.length === 0) {
+    return (
+      <div className="vinki-page">
+        <div style={{ textAlign: 'center', padding: '80px 0' }}>
+          <Empty
+            description={
+              <div>
+                <Title level={3}>
+                  {t('dashboard.greeting', { name: data.user.name?.split(' ')[0] })}
+                </Title>
+                <Text
+                  type="secondary"
+                  style={{ fontSize: 16, display: 'block', marginBottom: 24 }}
+                >
+                  {t('dashboard.emptyState')}
+                </Text>
+                <Button
+                  type="primary"
+                  size="large"
+                  icon={<ThunderboltFilled />}
+                  onClick={() => navigate('/interview/new')}
+                >
+                  {t('dashboard.startFirst')}
+                </Button>
+              </div>
+            }
+          />
+        </div>
+      </div>
+    )
+  }
 
   const scorePercent = data?.averageScore ? Math.round((data.averageScore / 5) * 100) : 0
 
@@ -248,6 +306,7 @@ export default function DashboardPage() {
             type="primary"
             icon={<ThunderboltFilled />}
             size="large"
+            data-tour="start-sim"
             onClick={() => navigate('/interview/new')}
           >
             {t('dashboard.startSimulation')}
@@ -365,6 +424,7 @@ export default function DashboardPage() {
           className="vinki-card"
           title={t('dashboard.skills')}
           style={{ marginBottom: 24 }}
+          data-tour="skills"
         >
           <Row gutter={[24, 16]}>
             {data.skillScores.map((skill) => (
@@ -506,6 +566,32 @@ export default function DashboardPage() {
           scroll={{ x: 900 }}
         />
       </Card>
+
+      <Tour
+        open={tourOpen}
+        onClose={() => {
+          setTourOpen(false)
+          localStorage.setItem('vinki-onboarding-done', 'true')
+        }}
+        steps={[
+          {
+            title: t('onboarding.welcome'),
+            description: t('onboarding.welcomeDesc'),
+            target: null,
+          },
+          {
+            title: t('onboarding.startSimulation'),
+            description: t('onboarding.startSimulationDesc'),
+            target: () =>
+              document.querySelector('[data-tour="start-sim"]') as HTMLElement,
+          },
+          {
+            title: t('onboarding.skills'),
+            description: t('onboarding.skillsDesc'),
+            target: () => document.querySelector('[data-tour="skills"]') as HTMLElement,
+          },
+        ]}
+      />
     </div>
   )
 }

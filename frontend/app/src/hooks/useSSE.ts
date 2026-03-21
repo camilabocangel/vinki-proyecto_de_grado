@@ -23,6 +23,7 @@ export function useSSE() {
       })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
       queryClient.invalidateQueries({ queryKey: ['interview'] })
+      queryClient.invalidateQueries({ queryKey: ['notifications', 'pending'] })
     })
 
     es.addEventListener('evaluation.failed', (event) => {

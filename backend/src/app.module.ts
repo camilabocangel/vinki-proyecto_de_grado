@@ -13,6 +13,7 @@ import { InterviewsModule } from './interviews/interviews.module.js';
 import { EvaluationModule } from './evaluation/evaluation.module.js';
 import { ReportsModule } from './reports/reports.module.js';
 import { NotificationsModule } from './notifications/notifications.module.js';
+import { HealthModule } from './health/health.module.js';
 
 @Module({
   imports: [
@@ -72,6 +73,7 @@ import { NotificationsModule } from './notifications/notifications.module.js';
     EvaluationModule,
     ReportsModule,
     NotificationsModule,
+    HealthModule,
   ],
   providers: [
     PrismaService,

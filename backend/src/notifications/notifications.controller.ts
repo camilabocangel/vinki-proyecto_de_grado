@@ -1,9 +1,10 @@
-import { Controller, Sse, UseGuards, Req } from '@nestjs/common';
+import { Controller, Sse, Get, Post, HttpCode, HttpStatus, UseGuards, Req } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import type { Request } from 'express';
 import { Observable, fromEvent, map, filter, takeUntil } from 'rxjs';
 import { JwtCookieGuard } from '../auth/guards/jwt-cookie.guard.js';
+import { PrismaService } from '../common/prisma.service.js';
 
 interface MessageEvent {
   data: string | object;
@@ -13,7 +14,62 @@ interface MessageEvent {
 @ApiTags('notifications')
 @Controller('notifications')
 export class NotificationsController {
-  constructor(private eventEmitter: EventEmitter2) {}
+  constructor(
+    private eventEmitter: EventEmitter2,
+    private prisma: PrismaService,
+  ) {}
+
+  @Get('pending')
+  @UseGuards(JwtCookieGuard)
+  async getPending(@Req() req: Request) {
+    const userId = (req as any).user.userId;
+
+    const interviews = await this.prisma.interview.findMany({
+      where: {
+        userId,
+        evaluationStatus: 'completed',
+        evaluationNotificationSeen: false,
+      },
+      orderBy: { finishedAt: 'desc' },
+      take: 10,
+      select: {
+        id: true,
+        finishedAt: true,
+      },
+    });
+
+    const count = await this.prisma.interview.count({
+      where: {
+        userId,
+        evaluationStatus: 'completed',
+        evaluationNotificationSeen: false,
+      },
+    });
+
+    return {
+      count,
+      items: interviews.map((iv) => ({
+        interviewId: iv.id,
+        completedAt: iv.finishedAt?.toISOString() ?? null,
+      })),
+    };
+  }
+
+  @Post('mark-all-seen')
+  @UseGuards(JwtCookieGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async markAllSeen(@Req() req: Request) {
+    const userId = (req as any).user.userId;
+
+    await this.prisma.interview.updateMany({
+      where: {
+        userId,
+        evaluationStatus: 'completed',
+        evaluationNotificationSeen: false,
+      },
+      data: { evaluationNotificationSeen: true },
+    });
+  }
 
   @Sse('stream')
   @UseGuards(JwtCookieGuard)

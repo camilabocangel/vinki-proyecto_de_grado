@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
-import { Layout, Menu, Typography, Avatar, Dropdown, Button, Select } from 'antd'
+import { Layout, Menu, Typography, Avatar, Dropdown, Button, Select, Badge } from 'antd'
 import {
   DashboardOutlined,
   ThunderboltOutlined,
@@ -13,10 +13,18 @@ import {
   SettingOutlined,
   MoonOutlined,
   SunOutlined,
+  BellOutlined,
 } from '@ant-design/icons'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../hooks/useAuth'
 import { useTheme } from '../hooks/useTheme'
+import { api } from '../api/client'
+
+interface PendingNotifications {
+  count: number
+  items: Array<{ interviewId: number; completedAt: string | null }>
+}
 
 const { Header, Content, Sider } = Layout
 const { Text } = Typography
@@ -29,8 +37,20 @@ export function AppLayout() {
   const { user, logout } = useAuth()
   const { t, i18n } = useTranslation()
   const { isDark, toggle: toggleTheme } = useTheme()
+  const queryClient = useQueryClient()
   const isMobile = () => window.innerWidth < 992
   const [collapsed, setCollapsed] = useState(isMobile)
+
+  const { data: notifications } = useQuery({
+    queryKey: ['notifications', 'pending'],
+    queryFn: () => api.get<PendingNotifications>('/notifications/pending'),
+    refetchInterval: 30000,
+  })
+
+  const handleMarkAllSeen = async () => {
+    await api.post('/notifications/mark-all-seen')
+    queryClient.invalidateQueries({ queryKey: ['notifications', 'pending'] })
+  }
 
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 991px)')
@@ -163,6 +183,41 @@ export function AppLayout() {
               onClick={toggleTheme}
               style={{ fontSize: 18 }}
             />
+            <Dropdown
+              menu={{
+                items: [
+                  ...(notifications?.items.length
+                    ? notifications.items.map((n) => ({
+                        key: String(n.interviewId),
+                        label: `${t('nav.notifications')}: #${n.interviewId}`,
+                        onClick: () => navigate(`/feedback/${n.interviewId}`),
+                      }))
+                    : [
+                        {
+                          key: 'empty',
+                          label: t('nav.noNotifications'),
+                          disabled: true,
+                        },
+                      ]),
+                  ...(notifications?.count
+                    ? [
+                        { type: 'divider' as const, key: 'divider' },
+                        {
+                          key: 'mark-all',
+                          label: t('nav.markAllSeen'),
+                          onClick: handleMarkAllSeen,
+                        },
+                      ]
+                    : []),
+                ],
+              }}
+              placement="bottomRight"
+              trigger={['click']}
+            >
+              <Badge count={notifications?.count ?? 0} size="small">
+                <Button type="text" icon={<BellOutlined style={{ fontSize: 18 }} />} />
+              </Badge>
+            </Dropdown>
             <Dropdown
               menu={{
                 items: [

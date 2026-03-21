@@ -43,11 +43,12 @@ async function bootstrap() {
   // Swagger
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Vinki API')
-    .setDescription('API para simulación de entrevistas técnicas')
+    .setDescription('API para la plataforma de simulación de entrevistas técnicas')
     .setVersion('1.0')
+    .addCookieAuth('access_token')
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api/docs', app, document);
+  SwaggerModule.setup('docs', app, document);
 
   const port = configService.get<number>('PORT', 3000);
   await app.listen(port);
