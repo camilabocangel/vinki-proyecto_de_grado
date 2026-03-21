@@ -1,4 +1,4 @@
-import { IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsOptional, IsString, IsNumber, MaxLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class SubmitAnswerDto {
@@ -12,4 +12,9 @@ export class SubmitAnswerDto {
   @IsString()
   @MaxLength(500)
   audioUrl?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsNumber()
+  answeredInSeconds?: number;
 }

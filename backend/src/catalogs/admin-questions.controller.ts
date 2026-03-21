@@ -52,6 +52,33 @@ export class AdminQuestionsController {
     return { data, total, page: p, pageSize: ps };
   }
 
+  @Post('import')
+  async importQuestions(
+    @Body() body: { questions: Array<{ questionText: string; type?: string; languageId?: number; levelId?: number; skillId?: number }> },
+  ) {
+    const results = { created: 0, errors: 0 };
+    for (const q of body.questions) {
+      try {
+        const languageId = q.languageId ?? (await this.prisma.language.findFirst())?.id ?? 1;
+        const levelId = q.levelId ?? (await this.prisma.level.findFirst())?.id ?? 1;
+        const skillId = q.skillId ?? (await this.prisma.skill.findFirst())?.id ?? 1;
+        await this.prisma.question.create({
+          data: {
+            questionText: q.questionText,
+            type: q.type || 'open',
+            languageId,
+            levelId,
+            skillId,
+          },
+        });
+        results.created++;
+      } catch {
+        results.errors++;
+      }
+    }
+    return results;
+  }
+
   @Post()
   async create(
     @Body()

@@ -4,6 +4,7 @@ import {
   Post,
   Param,
   Query,
+  Body,
   UseGuards,
   Req,
   Res,
@@ -73,6 +74,29 @@ export class ReportsController {
       pdf.pipe(res);
       pdf.end();
     }
+  }
+
+  @Get('recruiter/students/:studentId/notes')
+  @Roles('recruiter', 'admin')
+  getStudentNotes(@Param('studentId', ParseIntPipe) studentId: number) {
+    return this.reportsService.getNotes(studentId);
+  }
+
+  @Post('recruiter/students/:studentId/notes')
+  @Roles('recruiter', 'admin')
+  addStudentNote(
+    @Req() req: any,
+    @Param('studentId', ParseIntPipe) studentId: number,
+    @Body() body: { content: string },
+  ) {
+    const user = (req as any).user;
+    return this.reportsService.addNote(user.userId, studentId, body.content);
+  }
+
+  @Get('recruiter/students/:studentId')
+  @Roles('recruiter', 'admin')
+  getStudentProfile(@Param('studentId', ParseIntPipe) studentId: number) {
+    return this.reportsService.getStudentProfile(studentId);
   }
 
   @Get('recruiter/students')

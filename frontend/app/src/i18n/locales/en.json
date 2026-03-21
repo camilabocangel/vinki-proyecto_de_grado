@@ -143,7 +143,8 @@
     "practiceModeDesc": "Get instant feedback per question",
     "evaluationModeDesc": "Full feedback after finishing",
     "evaluatingAnswer": "Evaluating answer...",
-    "instantFeedback": "Instant feedback"
+    "instantFeedback": "Instant feedback",
+    "question": "Question {{num}}"
   },
   "code": {
     "editor": "Code editor",
@@ -210,7 +211,10 @@
     "questionsGenerated": "Questions generated",
     "selectLevel": "Select a level",
     "selectLanguage": "Select a language",
-    "noQuestionsSelected": "Select at least one question"
+    "noQuestionsSelected": "Select at least one question",
+    "importQuestions": "Import questions",
+    "importFormat": "Paste a JSON array of questions",
+    "importSuccess": "{{created}} created, {{errors}} errors"
   },
   "recruiter": {
     "panel": "Recruiter panel",
@@ -228,7 +232,11 @@
     "exportShortlist": "Export shortlist",
     "lastInterview": "Last interview",
     "skills": "Skills",
-    "noScore": "No score"
+    "noScore": "No score",
+    "notes": "Notes",
+    "addNote": "Add note",
+    "notePlaceholder": "Write a note about this student...",
+    "noNotes": "No notes yet"
   },
   "studyPlan": {
     "title": "Your improvement plan",

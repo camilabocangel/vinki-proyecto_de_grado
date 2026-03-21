@@ -485,6 +485,81 @@ export class ReportsService {
     return plan;
   }
 
+  async getStudentProfile(studentId: number) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: studentId, role: 'student' },
+    });
+    if (!user) throw new NotFoundException('Student not found');
+
+    const interviews = await this.prisma.interview.findMany({
+      where: { userId: studentId },
+      orderBy: { startedAt: 'desc' },
+      include: {
+        role: true,
+        level: true,
+        language: true,
+        questions: {
+          include: {
+            answers: {
+              include: { evaluation: true },
+            },
+          },
+        },
+      },
+    });
+
+    const skillScores = await this.prisma.userSkillScore.findMany({
+      where: { userId: studentId },
+      include: { skill: true },
+    });
+
+    const mappedInterviews = interviews.map((iv) => {
+      const evals = iv.questions.flatMap((q) =>
+        q.answers.filter((a) => a.evaluation).map((a) => a.evaluation!),
+      );
+      const avgScore = evals.length > 0
+        ? evals.reduce((sum, e) =>
+            sum + ((e.technicalCorrectness ?? 0) + (e.clarityOfExplanation ?? 0) +
+              (e.communication ?? 0) + (e.confidence ?? 0) + (e.problemSolving ?? 0)) / 5, 0,
+          ) / evals.length
+        : null;
+      return {
+        id: iv.id,
+        startedAt: iv.startedAt,
+        finishedAt: iv.finishedAt,
+        evaluationStatus: iv.evaluationStatus,
+        roleName: iv.role.name,
+        levelName: iv.level.name,
+        languageName: iv.language?.name ?? null,
+        avgScore,
+      };
+    });
+
+    return {
+      user: { id: user.id, name: user.name, email: user.email, createdAt: user.createdAt },
+      interviews: mappedInterviews,
+      skillScores: skillScores.map((ss) => ({
+        skillId: ss.skillId,
+        skillName: ss.skill.name,
+        score: ss.score,
+      })),
+    };
+  }
+
+  async addNote(recruiterId: number, studentId: number, content: string) {
+    return this.prisma.recruiterNote.create({
+      data: { recruiterId, studentId, content },
+    });
+  }
+
+  async getNotes(studentId: number) {
+    return this.prisma.recruiterNote.findMany({
+      where: { studentId },
+      include: { recruiter: { select: { id: true, name: true } } },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
   async markSeen(id: number, userId: number) {
     const interview = await this.prisma.interview.findUnique({ where: { id } });
     if (!interview) throw new NotFoundException();

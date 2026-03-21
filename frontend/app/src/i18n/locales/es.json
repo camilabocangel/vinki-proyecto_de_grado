@@ -143,7 +143,8 @@
     "evaluatingAnswer": "Evaluando respuesta...",
     "instantFeedback": "Feedback instantáneo",
     "useCodeEditor": "Usar editor de código",
-    "useTextEditor": "Usar texto"
+    "useTextEditor": "Usar texto",
+    "question": "Pregunta {{num}}"
   },
   "code": {
     "editor": "Editor de código",
@@ -210,7 +211,10 @@
     "questionsGenerated": "Preguntas generadas",
     "selectLevel": "Selecciona un nivel",
     "selectLanguage": "Selecciona un lenguaje",
-    "noQuestionsSelected": "Selecciona al menos una pregunta"
+    "noQuestionsSelected": "Selecciona al menos una pregunta",
+    "importQuestions": "Importar preguntas",
+    "importFormat": "Pega un array JSON de preguntas",
+    "importSuccess": "{{created}} creadas, {{errors}} errores"
   },
   "recruiter": {
     "panel": "Panel de reclutador",
@@ -228,7 +232,11 @@
     "exportShortlist": "Exportar shortlist",
     "lastInterview": "Última entrevista",
     "skills": "Habilidades",
-    "noScore": "Sin puntaje"
+    "noScore": "Sin puntaje",
+    "notes": "Notas",
+    "addNote": "Agregar nota",
+    "notePlaceholder": "Escribe una nota sobre este estudiante...",
+    "noNotes": "Sin notas aún"
   },
   "studyPlan": {
     "title": "Tu plan de mejora",

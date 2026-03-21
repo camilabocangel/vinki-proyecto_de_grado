@@ -28,7 +28,7 @@ import {
 } from '@ant-design/icons'
 import { api } from '../../api/client'
 
-const { Title } = Typography
+const { Title, Text } = Typography
 
 interface Question {
   id: number
@@ -62,6 +62,14 @@ export default function AdminQuestionsPage() {
   const { message } = App.useApp()
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
+
+  // Import modal state
+  const [importModalOpen, setImportModalOpen] = useState(false)
+  const [importJson, setImportJson] = useState('')
+  const [importPreview, setImportPreview] = useState<Record<string, unknown>[] | null>(
+    null,
+  )
+  const [importParseError, setImportParseError] = useState<string | null>(null)
 
   // AI Generation modal state
   const [aiModalOpen, setAiModalOpen] = useState(false)
@@ -166,6 +174,50 @@ export default function AdminQuestionsPage() {
       handleCloseModal()
     },
   })
+
+  const importMutation = useMutation({
+    mutationFn: (questions: Record<string, unknown>[]) =>
+      api.post<{ created: number; errors: number }>('/admin/questions/import', {
+        questions,
+      }),
+    onSuccess: (data) => {
+      message.success(
+        t('admin.importSuccess', { created: data.created, errors: data.errors }),
+      )
+      queryClient.invalidateQueries({ queryKey: ['admin', 'questions'] })
+      handleCloseImportModal()
+    },
+    onError: (err: Error) => message.error(err.message),
+  })
+
+  const handleParseImport = () => {
+    try {
+      const parsed = JSON.parse(importJson)
+      if (!Array.isArray(parsed)) {
+        setImportParseError('JSON must be an array')
+        setImportPreview(null)
+        return
+      }
+      setImportPreview(parsed)
+      setImportParseError(null)
+    } catch {
+      setImportParseError('Invalid JSON')
+      setImportPreview(null)
+    }
+  }
+
+  const handleConfirmImport = () => {
+    if (importPreview) {
+      importMutation.mutate(importPreview)
+    }
+  }
+
+  const handleCloseImportModal = () => {
+    setImportModalOpen(false)
+    setImportJson('')
+    setImportPreview(null)
+    setImportParseError(null)
+  }
 
   const handleGenerate = () => {
     if (!topic || !level || !language) return
@@ -292,7 +344,9 @@ export default function AdminQuestionsPage() {
           <Button type="primary" icon={<PlusOutlined />} onClick={openCreateModal}>
             {t('admin.newQuestion')}
           </Button>
-          <Button icon={<UploadOutlined />}>{t('admin.import')}</Button>
+          <Button icon={<UploadOutlined />} onClick={() => setImportModalOpen(true)}>
+            {t('admin.import')}
+          </Button>
         </Space>
       </Space>
 
@@ -386,6 +440,65 @@ export default function AdminQuestionsPage() {
             {editingQuestion ? t('common.save') : t('admin.newQuestion')}
           </Button>
         </Form>
+      </Modal>
+
+      {/* Import Modal */}
+      <Modal
+        title={t('admin.importQuestions')}
+        open={importModalOpen}
+        onCancel={handleCloseImportModal}
+        width={640}
+        footer={null}
+      >
+        <Space direction="vertical" style={{ width: '100%' }} size="middle">
+          <div>
+            <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>
+              {t('admin.importFormat')}
+            </Text>
+            <Input.TextArea
+              rows={8}
+              value={importJson}
+              onChange={(e) => setImportJson(e.target.value)}
+              placeholder={
+                '[\n  { "questionText": "...", "type": "open", "levelId": 1, "languageId": 1 }\n]'
+              }
+              style={{ fontFamily: 'monospace', fontSize: 13 }}
+            />
+          </div>
+
+          {importParseError && <Text type="danger">{importParseError}</Text>}
+
+          <Button onClick={handleParseImport} disabled={!importJson.trim()} block>
+            Parse &amp; Preview
+          </Button>
+
+          {importPreview && (
+            <>
+              <List
+                bordered
+                size="small"
+                dataSource={importPreview}
+                renderItem={(q, index) => (
+                  <List.Item>
+                    <Text>
+                      {index + 1}.{' '}
+                      {((q as Record<string, unknown>).questionText as string) ??
+                        JSON.stringify(q)}
+                    </Text>
+                  </List.Item>
+                )}
+              />
+              <Button
+                type="primary"
+                onClick={handleConfirmImport}
+                loading={importMutation.isPending}
+                block
+              >
+                {t('admin.import')} ({importPreview.length})
+              </Button>
+            </>
+          )}
+        </Space>
       </Modal>
 
       {/* AI Generation Modal */}

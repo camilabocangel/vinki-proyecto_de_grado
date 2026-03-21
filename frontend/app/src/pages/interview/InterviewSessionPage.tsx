@@ -377,7 +377,7 @@ export default function InterviewSessionPage() {
           <Text
             type="secondary"
             style={{
-              background: '#e6f4ff',
+              background: 'var(--color-primary-bg)',
               padding: '2px 8px',
               borderRadius: 4,
               fontSize: 12,
@@ -390,7 +390,9 @@ export default function InterviewSessionPage() {
       </div>
 
       <Card>
-        <Text type="secondary">Pregunta {question.orderNumber}</Text>
+        <Text type="secondary">
+          {t('interview.question', { num: question.orderNumber })}
+        </Text>
         <Title level={3}>{question.questionTextSnapshot}</Title>
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
@@ -407,6 +409,7 @@ export default function InterviewSessionPage() {
         {useCode ? (
           <div style={{ marginBottom: 16 }}>
             <CodeEditor
+              key={question.id}
               defaultValue={question.answer?.answerText || ''}
               onChange={(value) => {
                 codeRef.current = value
@@ -415,6 +418,7 @@ export default function InterviewSessionPage() {
           </div>
         ) : (
           <TextArea
+            key={question.id}
             id="answer-text"
             rows={8}
             placeholder={t('interview.answerPlaceholder')}
@@ -524,7 +528,8 @@ export default function InterviewSessionPage() {
                 style={{
                   marginTop: 8,
                   padding: 12,
-                  background: '#f6ffed',
+                  background:
+                    'color-mix(in srgb, var(--color-success) 10%, var(--color-surface))',
                   borderRadius: 6,
                   whiteSpace: 'pre-wrap',
                 }}
@@ -544,7 +549,8 @@ export default function InterviewSessionPage() {
                   style={{
                     marginTop: 8,
                     padding: 12,
-                    background: '#fff7e6',
+                    background:
+                      'color-mix(in srgb, var(--color-warning) 10%, var(--color-surface))',
                     borderRadius: 6,
                   }}
                 >
@@ -560,7 +566,7 @@ export default function InterviewSessionPage() {
                   style={{
                     marginTop: 8,
                     padding: 12,
-                    background: '#e6f4ff',
+                    background: 'var(--color-primary-bg)',
                     borderRadius: 6,
                   }}
                 >
@@ -576,7 +582,8 @@ export default function InterviewSessionPage() {
                   style={{
                     marginTop: 8,
                     padding: 12,
-                    background: '#f6ffed',
+                    background:
+                      'color-mix(in srgb, var(--color-success) 10%, var(--color-surface))',
                     borderRadius: 6,
                   }}
                 >
@@ -597,7 +604,7 @@ export default function InterviewSessionPage() {
           style={{
             marginTop: 16,
             borderLeft: '4px solid #1677ff',
-            background: '#f0f5ff',
+            background: 'var(--color-primary-bg)',
           }}
         >
           <Text type="secondary">{t('interview.followUp')}</Text>
