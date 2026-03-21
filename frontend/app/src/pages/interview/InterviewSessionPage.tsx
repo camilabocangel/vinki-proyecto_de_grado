@@ -12,12 +12,14 @@ import {
   App,
   Skeleton,
   Spin,
+  Tag,
 } from 'antd'
 import {
   AudioOutlined,
   PauseOutlined,
   RobotOutlined,
   CodeOutlined,
+  CheckCircleFilled,
 } from '@ant-design/icons'
 import { useInterviewStore, type Interview } from '../../store/interview.store'
 import { api } from '../../api/client'
@@ -67,6 +69,8 @@ export default function InterviewSessionPage() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const audioChunksRef = useRef<Blob[]>([])
 
+  const [savedAt, setSavedAt] = useState<string | null>(null)
+
   // Practice mode state
   const [practiceEvaluation, setPracticeEvaluation] = useState<PracticeEvaluation | null>(
     null,
@@ -101,6 +105,7 @@ export default function InterviewSessionPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['interview', id] })
       message.success(t('interview.answerSaved'))
+      setSavedAt(new Date().toLocaleTimeString())
     },
   })
 
@@ -272,6 +277,7 @@ export default function InterviewSessionPage() {
     setFollowUpQuestion(null)
     setShowFollowUp(false)
     setPracticeEvaluation(null)
+    setSavedAt(null)
   }, [currentQuestionIndex])
 
   // Countdown timer: reset on each question change, auto-advance on expiry
@@ -395,9 +401,11 @@ export default function InterviewSessionPage() {
       </div>
 
       <Card>
-        <Text type="secondary">
-          {t('interview.question', { num: question.orderNumber })}
-        </Text>
+        <div style={{ marginBottom: 8 }}>
+          <Tag color="purple">
+            {t('interview.question', { num: question.orderNumber })}
+          </Tag>
+        </div>
         <Title level={3}>{question.questionTextSnapshot}</Title>
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
@@ -471,32 +479,49 @@ export default function InterviewSessionPage() {
           )}
         </div>
 
-        <Space wrap>
-          <Button disabled={currentQuestionIndex === 0} onClick={prevQuestion}>
-            {t('common.back')}
-          </Button>
-          <Button
-            type="primary"
-            onClick={handleSubmitAnswer}
-            loading={submitAnswer.isPending}
-          >
-            {t('interview.saveAnswer')}
-          </Button>
-          <Button
-            icon={<RobotOutlined />}
-            onClick={handleGetFollowUp}
-            loading={requestFollowUp.isPending}
-          >
-            {t('interview.getFollowUp')}
-          </Button>
-          {currentQuestionIndex < totalQuestions - 1 ? (
-            <Button onClick={nextQuestion}>{t('common.next')}</Button>
-          ) : (
-            <Button danger onClick={handleFinish} loading={finishInterview.isPending}>
-              {t('interview.finishInterview')}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: 8,
+          }}
+        >
+          <Space wrap>
+            <Button disabled={currentQuestionIndex === 0} onClick={prevQuestion}>
+              {t('common.back')}
             </Button>
-          )}
-        </Space>
+            <Button
+              type="primary"
+              onClick={handleSubmitAnswer}
+              loading={submitAnswer.isPending}
+            >
+              {t('interview.saveAnswer')}
+            </Button>
+            <Button
+              icon={<RobotOutlined />}
+              onClick={handleGetFollowUp}
+              loading={requestFollowUp.isPending}
+            >
+              {t('interview.getFollowUp')}
+            </Button>
+            {currentQuestionIndex < totalQuestions - 1 ? (
+              <Button onClick={nextQuestion}>{t('common.next')}</Button>
+            ) : (
+              <Button danger onClick={handleFinish} loading={finishInterview.isPending}>
+                {t('interview.finishInterview')}
+              </Button>
+            )}
+          </Space>
+          <Space>
+            {savedAt && (
+              <Text type="success" style={{ fontSize: 12 }}>
+                <CheckCircleFilled /> {t('interview.savedAt', { time: savedAt })}
+              </Text>
+            )}
+          </Space>
+        </div>
       </Card>
 
       {/* Practice mode: inline evaluation feedback */}

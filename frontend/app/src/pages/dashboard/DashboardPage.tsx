@@ -15,6 +15,7 @@ import {
   Select,
   Empty,
   Tour,
+  Space,
 } from 'antd'
 import { ThunderboltFilled, ArrowRightOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
@@ -439,7 +440,19 @@ export default function DashboardPage() {
                   <Text style={{ fontWeight: 500, textTransform: 'capitalize' }}>
                     {skill.skillName.replace(/-/g, ' ')}
                   </Text>
-                  <Text strong>{skill.score.toFixed(0)}%</Text>
+                  <Space size={4}>
+                    <Text strong>{skill.score.toFixed(0)}%</Text>
+                    {skill.score < 40 && (
+                      <Tag color="red" style={{ fontSize: 10 }}>
+                        {t('dashboard.needsWork')}
+                      </Tag>
+                    )}
+                    {skill.score >= 80 && (
+                      <Tag color="green" style={{ fontSize: 10 }}>
+                        {t('dashboard.excellent')}
+                      </Tag>
+                    )}
+                  </Space>
                 </div>
                 <Progress
                   percent={skill.score}

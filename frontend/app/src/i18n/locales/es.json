@@ -48,7 +48,11 @@
     "hasAccount": "¿Ya tienes cuenta?",
     "signUp": "Regístrate",
     "signIn": "Inicia sesión",
-    "sessionExpiring": "Tu sesión se renovará automáticamente..."
+    "sessionExpiring": "Tu sesión se renovará automáticamente...",
+    "tagline": "Tu coach de entrevistas con IA",
+    "feature1": "Evaluación IA con 5 métricas",
+    "feature2": "Detección de nivel Junior/Mid/Senior",
+    "feature3": "Plan de mejora personalizado"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -88,7 +92,9 @@
     "progress": "Evolución de métricas",
     "progressSubtitle": "Tu rendimiento a lo largo del tiempo",
     "emptyState": "Aún no has realizado ninguna entrevista. ¡Comienza tu primera simulación!",
-    "startFirst": "Realizar mi primera entrevista"
+    "startFirst": "Realizar mi primera entrevista",
+    "needsWork": "Necesita práctica",
+    "excellent": "Excelente"
   },
   "table": {
     "date": "Fecha",
@@ -157,7 +163,8 @@
     "instantFeedback": "Feedback instantáneo",
     "useCodeEditor": "Usar editor de código",
     "useTextEditor": "Usar texto",
-    "question": "Pregunta {{num}}"
+    "question": "Pregunta {{num}}",
+    "savedAt": "Guardado a las {{time}}"
   },
   "code": {
     "editor": "Editor de código",
@@ -289,6 +296,12 @@
     "placeholder": "Buscar entrevistas, preguntas...",
     "noResults": "Sin resultados",
     "hint": "Escribe para buscar (Cmd+K)"
+  },
+  "confirmation": {
+    "answered": "Respondidas",
+    "duration": "Duración",
+    "practiceComplete": "Tu sesión de práctica ha finalizado. Revisa tu feedback.",
+    "tryAnother": "Realizar otra entrevista"
   },
   "onboarding": {
     "welcome": "¡Bienvenido a Vinki!",

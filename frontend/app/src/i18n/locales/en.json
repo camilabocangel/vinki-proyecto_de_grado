@@ -48,7 +48,11 @@
     "hasAccount": "Already have an account?",
     "signUp": "Sign up",
     "signIn": "Sign in",
-    "sessionExpiring": "Your session will auto-refresh..."
+    "sessionExpiring": "Your session will auto-refresh...",
+    "tagline": "Your AI interview coach",
+    "feature1": "AI evaluation with 5 metrics",
+    "feature2": "Junior/Mid/Senior level detection",
+    "feature3": "Personalized improvement plan"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -88,7 +92,9 @@
     "progress": "Metrics evolution",
     "progressSubtitle": "Your performance over time",
     "emptyState": "You haven't done any interviews yet. Start your first simulation!",
-    "startFirst": "Take my first interview"
+    "startFirst": "Take my first interview",
+    "needsWork": "Needs practice",
+    "excellent": "Excellent"
   },
   "table": {
     "date": "Date",
@@ -157,7 +163,8 @@
     "evaluationModeDesc": "Full feedback after finishing",
     "evaluatingAnswer": "Evaluating answer...",
     "instantFeedback": "Instant feedback",
-    "question": "Question {{num}}"
+    "question": "Question {{num}}",
+    "savedAt": "Saved at {{time}}"
   },
   "code": {
     "editor": "Code editor",
@@ -289,6 +296,12 @@
     "placeholder": "Search interviews, questions...",
     "noResults": "No results",
     "hint": "Type to search (Cmd+K)"
+  },
+  "confirmation": {
+    "answered": "Answered",
+    "duration": "Duration",
+    "practiceComplete": "Your practice session is complete. Review your feedback.",
+    "tryAnother": "Take another interview"
   },
   "onboarding": {
     "welcome": "Welcome to Vinki!",

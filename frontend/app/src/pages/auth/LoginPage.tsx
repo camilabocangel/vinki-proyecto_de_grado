@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Form, Input, Button, Card, Typography, Alert } from 'antd'
-import { MailOutlined, LockOutlined } from '@ant-design/icons'
+import { Form, Input, Button, Card, Typography, Alert, Space } from 'antd'
+import { MailOutlined, LockOutlined, CheckCircleOutlined } from '@ant-design/icons'
 import { useAuth } from '../../hooks/useAuth'
 
 const { Title, Text } = Typography
@@ -34,6 +34,11 @@ export default function LoginPage() {
             {t('auth.welcomeTo')}
           </Title>
           <Text type="secondary">{t('auth.loginSubtitle')}</Text>
+          <div style={{ marginTop: 4 }}>
+            <Text type="secondary" style={{ fontStyle: 'italic', fontSize: 13 }}>
+              {t('auth.tagline')}
+            </Text>
+          </div>
         </div>
 
         {loginError && (
@@ -89,6 +94,29 @@ export default function LoginPage() {
           <Link to="/register" style={{ fontWeight: 600 }}>
             {t('auth.signUp')}
           </Link>
+        </div>
+
+        <div style={{ marginTop: 24, textAlign: 'left' }}>
+          <Space direction="vertical" size="small">
+            <Text>
+              <CheckCircleOutlined
+                style={{ color: 'var(--color-success)', marginRight: 8 }}
+              />
+              {t('auth.feature1')}
+            </Text>
+            <Text>
+              <CheckCircleOutlined
+                style={{ color: 'var(--color-success)', marginRight: 8 }}
+              />
+              {t('auth.feature2')}
+            </Text>
+            <Text>
+              <CheckCircleOutlined
+                style={{ color: 'var(--color-success)', marginRight: 8 }}
+              />
+              {t('auth.feature3')}
+            </Text>
+          </Space>
         </div>
       </Card>
     </div>
