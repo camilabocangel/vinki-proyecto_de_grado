@@ -278,7 +278,7 @@ export default function DashboardPage() {
                 <div
                   style={{
                     fontSize: 12,
-                    color: '#10B981',
+                    color: 'var(--color-success)',
                     fontWeight: 600,
                     marginTop: 2,
                   }}
@@ -314,7 +314,7 @@ export default function DashboardPage() {
                 <div
                   style={{
                     fontSize: 12,
-                    color: '#F97316',
+                    color: 'var(--color-accent)',
                     fontWeight: 600,
                     marginTop: 2,
                   }}
@@ -346,7 +346,7 @@ export default function DashboardPage() {
                 <div
                   style={{
                     fontSize: 12,
-                    color: '#6B7280',
+                    color: 'var(--color-muted)',
                     fontWeight: 600,
                     marginTop: 2,
                   }}

@@ -192,7 +192,7 @@ export function AppLayout() {
                   >
                     {user?.name}
                   </Text>
-                  <Text style={{ fontSize: 12, color: '#9CA3AF' }}>
+                  <Text style={{ fontSize: 12, color: 'var(--color-muted)' }}>
                     {user?.role === 'student'
                       ? t('roles.student')
                       : user?.role === 'recruiter'

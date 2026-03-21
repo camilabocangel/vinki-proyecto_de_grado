@@ -253,7 +253,7 @@ export default function FeedbackPage() {
                 <div
                   style={{
                     padding: '12px 16px',
-                    background: '#F9FAFB',
+                    background: 'var(--color-bg)',
                     borderRadius: 8,
                     marginBottom: 16,
                   }}
@@ -275,7 +275,7 @@ export default function FeedbackPage() {
                             style={{
                               textAlign: 'center',
                               padding: 12,
-                              background: '#F9FAFB',
+                              background: 'var(--color-bg)',
                               borderRadius: 8,
                             }}
                           >
@@ -303,8 +303,8 @@ export default function FeedbackPage() {
                     <Card
                       size="small"
                       style={{
-                        background: '#F5F3FF',
-                        border: '1px solid #E9D5FF',
+                        background: 'var(--color-primary-bg)',
+                        border: '1px solid var(--color-primary-light)',
                         borderRadius: 8,
                         marginBottom: 16,
                       }}
@@ -335,8 +335,10 @@ export default function FeedbackPage() {
                             <div
                               style={{
                                 padding: '12px 16px',
-                                background: '#ECFDF5',
-                                border: '1px solid #A7F3D0',
+                                background:
+                                  'color-mix(in srgb, var(--color-success) 10%, var(--color-surface))',
+                                border:
+                                  '1px solid color-mix(in srgb, var(--color-success) 40%, transparent)',
                                 borderRadius: 8,
                               }}
                             >
@@ -352,8 +354,10 @@ export default function FeedbackPage() {
                             <div
                               style={{
                                 padding: '12px 16px',
-                                background: '#EFF6FF',
-                                border: '1px solid #BFDBFE',
+                                background:
+                                  'color-mix(in srgb, var(--color-info) 10%, var(--color-surface))',
+                                border:
+                                  '1px solid color-mix(in srgb, var(--color-info) 40%, transparent)',
                                 borderRadius: 8,
                               }}
                             >
@@ -369,8 +373,10 @@ export default function FeedbackPage() {
                             <div
                               style={{
                                 padding: '12px 16px',
-                                background: '#FFFBEB',
-                                border: '1px solid #FDE68A',
+                                background:
+                                  'color-mix(in srgb, var(--color-warning) 10%, var(--color-surface))',
+                                border:
+                                  '1px solid color-mix(in srgb, var(--color-warning) 40%, transparent)',
                                 borderRadius: 8,
                               }}
                             >

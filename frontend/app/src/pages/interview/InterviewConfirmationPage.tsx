@@ -11,7 +11,7 @@ export default function InterviewConfirmationPage() {
   return (
     <div className="vinki-page" style={{ maxWidth: 600, margin: '0 auto' }}>
       <Result
-        icon={<CheckCircleFilled style={{ color: '#7C3AED' }} />}
+        icon={<CheckCircleFilled style={{ color: 'var(--color-primary)' }} />}
         title={t('interview.sent')}
         subTitle={t('interview.sentMessage')}
         extra={[

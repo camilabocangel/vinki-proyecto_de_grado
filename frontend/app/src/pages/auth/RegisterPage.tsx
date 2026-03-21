@@ -52,7 +52,7 @@ export default function RegisterPage() {
             rules={[{ required: true, message: t('auth.nameRequired') }]}
           >
             <Input
-              prefix={<UserOutlined style={{ color: '#9CA3AF' }} />}
+              prefix={<UserOutlined style={{ color: 'var(--color-muted)' }} />}
               placeholder="Tu nombre"
             />
           </Form.Item>
@@ -62,7 +62,7 @@ export default function RegisterPage() {
             rules={[{ required: true, type: 'email', message: t('auth.emailRequired') }]}
           >
             <Input
-              prefix={<MailOutlined style={{ color: '#9CA3AF' }} />}
+              prefix={<MailOutlined style={{ color: 'var(--color-muted)' }} />}
               placeholder="tu@email.com"
             />
           </Form.Item>
@@ -74,7 +74,7 @@ export default function RegisterPage() {
             ]}
           >
             <Input.Password
-              prefix={<LockOutlined style={{ color: '#9CA3AF' }} />}
+              prefix={<LockOutlined style={{ color: 'var(--color-muted)' }} />}
               placeholder={t('auth.minChars', { count: 8 })}
             />
           </Form.Item>

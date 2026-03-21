@@ -129,7 +129,9 @@ export default function ProfilePage() {
               <div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <UserOutlined style={{ fontSize: 16, color: '#7C3AED' }} />
+                    <UserOutlined
+                      style={{ fontSize: 16, color: 'var(--color-primary)' }}
+                    />
                     <div>
                       <Text type="secondary" style={{ fontSize: 12, display: 'block' }}>
                         {t('profile.name')}
@@ -138,7 +140,9 @@ export default function ProfilePage() {
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <MailOutlined style={{ fontSize: 16, color: '#7C3AED' }} />
+                    <MailOutlined
+                      style={{ fontSize: 16, color: 'var(--color-primary)' }}
+                    />
                     <div>
                       <Text type="secondary" style={{ fontSize: 12, display: 'block' }}>
                         {t('profile.email')}
@@ -147,7 +151,9 @@ export default function ProfilePage() {
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <SafetyOutlined style={{ fontSize: 16, color: '#7C3AED' }} />
+                    <SafetyOutlined
+                      style={{ fontSize: 16, color: 'var(--color-primary)' }}
+                    />
                     <div>
                       <Text type="secondary" style={{ fontSize: 12, display: 'block' }}>
                         {t('profile.role')}
@@ -156,7 +162,9 @@ export default function ProfilePage() {
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <CalendarOutlined style={{ fontSize: 16, color: '#7C3AED' }} />
+                    <CalendarOutlined
+                      style={{ fontSize: 16, color: 'var(--color-primary)' }}
+                    />
                     <div>
                       <Text type="secondary" style={{ fontSize: 12, display: 'block' }}>
                         {t('profile.memberSince')}

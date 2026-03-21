@@ -52,7 +52,7 @@ export default function LoginPage() {
             rules={[{ required: true, type: 'email', message: t('auth.emailRequired') }]}
           >
             <Input
-              prefix={<MailOutlined style={{ color: '#9CA3AF' }} />}
+              prefix={<MailOutlined style={{ color: 'var(--color-muted)' }} />}
               placeholder="tu@email.com"
             />
           </Form.Item>
@@ -62,7 +62,7 @@ export default function LoginPage() {
             rules={[{ required: true, message: t('auth.passwordRequired') }]}
           >
             <Input.Password
-              prefix={<LockOutlined style={{ color: '#9CA3AF' }} />}
+              prefix={<LockOutlined style={{ color: 'var(--color-muted)' }} />}
               placeholder="Tu contraseña"
             />
           </Form.Item>

@@ -369,7 +369,10 @@ export default function InterviewSessionPage() {
         />
         <Text
           strong
-          style={{ color: timeLeft < 60 ? '#ff4d4f' : undefined, whiteSpace: 'nowrap' }}
+          style={{
+            color: timeLeft < 60 ? 'var(--color-error)' : undefined,
+            whiteSpace: 'nowrap',
+          }}
         >
           {t('interview.timeRemaining')}: {minutes}:{seconds}
         </Text>
@@ -445,7 +448,7 @@ export default function InterviewSessionPage() {
                   width: 8,
                   height: 8,
                   borderRadius: '50%',
-                  backgroundColor: '#ff4d4f',
+                  backgroundColor: 'var(--color-error)',
                   marginRight: 6,
                   animation: 'pulse 1s infinite',
                 }}

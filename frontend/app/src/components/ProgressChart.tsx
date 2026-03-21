@@ -10,6 +10,10 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 
+function getCssVar(name: string): string {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || ''
+}
+
 export interface ProgressDataPoint {
   date: string
   interviewId: number
@@ -52,7 +56,10 @@ export default function ProgressChart({ data }: ProgressChartProps) {
   return (
     <ResponsiveContainer width="100%" height={350}>
       <LineChart data={data} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+        <CartesianGrid
+          strokeDasharray="3 3"
+          stroke={getCssVar('--color-border') || '#E5E7EB'}
+        />
         <XAxis
           dataKey="date"
           tick={{ fontSize: 12 }}
