@@ -1,6 +1,16 @@
-import { useState, useEffect } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 
-export function useTheme() {
+interface ThemeContextType {
+  isDark: boolean
+  toggle: () => void
+}
+
+export const ThemeContext = createContext<ThemeContextType>({
+  isDark: false,
+  toggle: () => {},
+})
+
+export function useThemeState() {
   const [isDark, setIsDark] = useState(() => {
     const saved = localStorage.getItem('vinki-theme')
     if (saved) return saved === 'dark'
@@ -12,5 +22,11 @@ export function useTheme() {
     localStorage.setItem('vinki-theme', isDark ? 'dark' : 'light')
   }, [isDark])
 
-  return { isDark, toggle: () => setIsDark((d) => !d) }
+  const toggle = useCallback(() => setIsDark((d) => !d), [])
+
+  return { isDark, toggle }
+}
+
+export function useTheme() {
+  return useContext(ThemeContext)
 }

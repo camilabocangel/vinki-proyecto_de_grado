@@ -1,5 +1,5 @@
 import { ConfigProvider, theme as antTheme, App as AntdApp } from 'antd'
-import { useTheme } from '../hooks/useTheme'
+import { ThemeContext, useThemeState } from '../hooks/useTheme'
 import { brandTokens } from '../theme/tokens'
 
 const lightTokens = {
@@ -60,17 +60,21 @@ const components = {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const { isDark } = useTheme()
+  const themeState = useThemeState()
 
   return (
-    <ConfigProvider
-      theme={{
-        algorithm: isDark ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
-        token: isDark ? darkTokens : lightTokens,
-        components,
-      }}
-    >
-      <AntdApp>{children}</AntdApp>
-    </ConfigProvider>
+    <ThemeContext.Provider value={themeState}>
+      <ConfigProvider
+        theme={{
+          algorithm: themeState.isDark
+            ? antTheme.darkAlgorithm
+            : antTheme.defaultAlgorithm,
+          token: themeState.isDark ? darkTokens : lightTokens,
+          components,
+        }}
+      >
+        <AntdApp>{children}</AntdApp>
+      </ConfigProvider>
+    </ThemeContext.Provider>
   )
 }
