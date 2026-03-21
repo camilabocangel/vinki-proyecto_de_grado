@@ -105,7 +105,7 @@ export default function ProfilePage() {
               <Avatar
                 size={72}
                 style={{
-                  background: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
+                  background: 'linear-gradient(135deg, #005C53, #042940)',
                   flexShrink: 0,
                 }}
                 icon={<UserOutlined style={{ fontSize: 32 }} />}

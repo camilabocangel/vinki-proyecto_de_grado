@@ -17,17 +17,17 @@ const lightTokens = {
 }
 
 const darkTokens = {
-  colorPrimary: '#A78BFA',
-  colorBgBase: '#1F2937',
-  colorBgLayout: '#111827',
-  colorTextBase: '#F9FAFB',
-  colorBorder: '#374151',
+  colorPrimary: '#9FC131',
+  colorBgBase: '#0f2a3a',
+  colorBgLayout: '#0a1a24',
+  colorTextBase: '#e8ece0',
+  colorBorder: '#1a3a4a',
   borderRadius: brandTokens.radii.small,
   fontFamily: brandTokens.fonts.body,
-  colorSuccess: '#34D399',
+  colorSuccess: '#9FC131',
   colorError: '#F87171',
   colorWarning: '#FBBF24',
-  colorInfo: '#60A5FA',
+  colorInfo: '#9FC131',
 }
 
 const components = {
@@ -35,7 +35,7 @@ const components = {
     borderRadius: brandTokens.radii.medium,
     controlHeight: 40,
     fontWeight: 600,
-    primaryShadow: '0 4px 12px rgba(124, 58, 237, 0.3)',
+    primaryShadow: '0 4px 12px rgba(0, 92, 83, 0.3)',
   },
   Card: {
     borderRadiusLG: brandTokens.radii.large,

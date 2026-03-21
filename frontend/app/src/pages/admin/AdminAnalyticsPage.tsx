@@ -34,7 +34,7 @@ interface AdminAnalytics {
   levelDistribution: Array<{ level: string; count: number }>
 }
 
-const PIE_COLORS = ['#7C3AED', '#3B82F6', '#10B981', '#F97316', '#EF4444', '#8B5CF6']
+const PIE_COLORS = ['#005C53', '#9FC131', '#042940', '#DBF227', '#D6D58E', '#d5f27b']
 
 export default function AdminAnalyticsPage() {
   const { t } = useTranslation()
@@ -81,7 +81,7 @@ export default function AdminAnalyticsPage() {
               title={t('admin.totalUsers')}
               value={data.totalUsers}
               prefix={<UserOutlined />}
-              valueStyle={{ color: '#7C3AED' }}
+              valueStyle={{ color: '#005C53' }}
             />
           </Card>
         </Col>
@@ -126,7 +126,7 @@ export default function AdminAnalyticsPage() {
                 <XAxis dataKey="date" fontSize={11} />
                 <YAxis allowDecimals={false} />
                 <Tooltip />
-                <Bar dataKey="count" fill="#7C3AED" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="count" fill="#005C53" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </Card>

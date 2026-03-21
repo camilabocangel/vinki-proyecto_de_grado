@@ -52,7 +52,7 @@ const metricLabels: Record<string, string> = {
 }
 
 const metricColors: Record<string, string> = {
-  technicalCorrectness: '#7C3AED',
+  technicalCorrectness: '#005C53',
   clarityOfExplanation: '#3B82F6',
   communication: '#10B981',
   confidence: '#F97316',
@@ -131,7 +131,7 @@ export default function SharedReportPage() {
             width: 48,
             height: 48,
             borderRadius: 12,
-            background: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
+            background: 'linear-gradient(135deg, #005C53, #042940)',
             color: '#fff',
             fontSize: 24,
             fontWeight: 700,

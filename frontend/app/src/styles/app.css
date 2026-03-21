@@ -70,14 +70,14 @@
 
 .vinki-sidebar .ant-menu-item:hover {
   color: #fff !important;
-  background: rgba(124, 58, 237, 0.15) !important;
+  background: rgba(159, 193, 49, 0.15) !important;
 }
 
 .vinki-sidebar .ant-menu-item-selected {
   background: var(--color-primary) !important;
   color: #fff !important;
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.35);
+  box-shadow: 0 4px 12px rgba(0, 92, 83, 0.35);
 }
 
 .vinki-sidebar .ant-menu-item .anticon {
@@ -272,7 +272,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #1e1b2e 0%, #2d2645 50%, #1e1b2e 100%);
+  background: linear-gradient(135deg, #042940 0%, #005c53 50%, #042940 100%);
 }
 
 .vinki-auth-card {

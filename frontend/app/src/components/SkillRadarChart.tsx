@@ -40,13 +40,13 @@ export function SkillRadarChart({ data }: SkillRadarChartProps) {
         <Radar
           name="Puntuación"
           dataKey="value"
-          stroke="#7C3AED"
+          stroke="#005C53"
           strokeWidth={2}
-          fill="#7C3AED"
+          fill="#005C53"
           fillOpacity={0.15}
           dot={{
             r: 4,
-            fill: '#7C3AED',
+            fill: '#005C53',
             stroke: getCssVar('--color-surface') || '#fff',
             strokeWidth: 2,
           }}

@@ -283,7 +283,7 @@ export function AppLayout() {
                 </div>
                 <Avatar
                   size={38}
-                  style={{ background: 'linear-gradient(135deg, #7C3AED, #6D28D9)' }}
+                  style={{ background: 'linear-gradient(135deg, #005C53, #042940)' }}
                   icon={<UserOutlined />}
                 />
               </div>

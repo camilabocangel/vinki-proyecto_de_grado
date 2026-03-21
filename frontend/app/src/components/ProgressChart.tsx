@@ -36,7 +36,7 @@ const METRIC_LINES: Array<{
 }> = [
   {
     key: 'technicalCorrectness',
-    color: '#7C3AED',
+    color: '#005C53',
     i18nKey: 'metrics.technicalCorrectness',
   },
   {

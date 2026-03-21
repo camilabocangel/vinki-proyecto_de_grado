@@ -61,7 +61,7 @@ const metricLabelKeys: Record<string, string> = {
 }
 
 const metricColors: Record<string, string> = {
-  technicalCorrectness: '#7C3AED',
+  technicalCorrectness: '#005C53',
   clarityOfExplanation: '#3B82F6',
   communication: '#10B981',
   confidence: '#F97316',

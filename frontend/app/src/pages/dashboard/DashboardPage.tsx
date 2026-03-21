@@ -324,7 +324,7 @@ export default function DashboardPage() {
                 type="circle"
                 percent={scorePercent}
                 size={64}
-                strokeColor="#7C3AED"
+                strokeColor="#005C53"
                 format={() => (
                   <Text strong style={{ fontSize: 18 }}>
                     {data?.averageScore?.toFixed(1) ?? '-'}
@@ -360,7 +360,7 @@ export default function DashboardPage() {
                     : 0
                 }
                 size={64}
-                strokeColor="#F97316"
+                strokeColor="#9FC131"
                 format={() => (
                   <Text strong style={{ fontSize: 18 }}>
                     {data?.recentInterviews.length ?? 0}
@@ -461,7 +461,7 @@ export default function DashboardPage() {
                     skill.score >= 80
                       ? '#10B981'
                       : skill.score >= 50
-                        ? '#7C3AED'
+                        ? '#005C53'
                         : '#F97316'
                   }
                   size="small"
