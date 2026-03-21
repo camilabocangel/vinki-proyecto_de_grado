@@ -142,6 +142,7 @@ export class ReportsService {
         questions: {
           orderBy: { orderNumber: 'asc' },
           include: {
+            question: { include: { skill: true } },
             answers: {
               include: {
                 evaluation: {
@@ -163,10 +164,111 @@ export class ReportsService {
         interviewQuestionId: q.id,
         orderNumber: q.orderNumber,
         questionTextSnapshot: q.questionTextSnapshot,
+        skillName: q.question?.skill?.name ?? null,
         answer: q.answers[0] ?? null,
         evaluation: q.answers[0]?.evaluation ?? null,
       })),
     };
+  }
+
+  async exportPDF(id: number, userId: number) {
+    const report = await this.getInterviewReport(id, userId);
+    const PDFDocument = (await import('pdfkit')).default;
+    const doc = new PDFDocument({ margin: 50 });
+
+    // Header
+    doc.fontSize(20).fillColor('#7C3AED').text('Vinki', { align: 'center' });
+    doc.moveDown(0.5);
+    doc.fontSize(16).fillColor('#111827').text('Reporte de Entrevista', { align: 'center' });
+    doc.moveDown(0.3);
+    doc.fontSize(10).fillColor('#6B7280').text(`Entrevista #${id} | Estado: ${report.interview.evaluationStatus}`, { align: 'center' });
+    doc.moveDown(1);
+
+    // Separator
+    doc.moveTo(50, doc.y).lineTo(545, doc.y).strokeColor('#E5E7EB').stroke();
+    doc.moveDown(1);
+
+    for (const item of report.evaluations) {
+      // Question header
+      doc.fontSize(12).fillColor('#7C3AED').text(`Pregunta ${item.orderNumber}`);
+      doc.fontSize(11).fillColor('#111827').text(item.questionTextSnapshot);
+      doc.moveDown(0.5);
+
+      // Answer
+      doc.fontSize(10).fillColor('#6B7280').text('Respuesta:');
+      doc.fontSize(10).fillColor('#111827').text(item.answer?.answerText || 'Sin respuesta', { indent: 10 });
+      doc.moveDown(0.5);
+
+      if (item.evaluation) {
+        // Metrics
+        const e = item.evaluation;
+        doc.fontSize(10).fillColor('#6B7280').text('Métricas:');
+        const metrics = [
+          `Corrección técnica: ${e.technicalCorrectness?.toFixed(1) ?? '-'}/5`,
+          `Claridad: ${e.clarityOfExplanation?.toFixed(1) ?? '-'}/5`,
+          `Comunicación: ${e.communication?.toFixed(1) ?? '-'}/5`,
+          `Confianza: ${e.confidence?.toFixed(1) ?? '-'}/5`,
+          `Resolución: ${e.problemSolving?.toFixed(1) ?? '-'}/5`,
+        ];
+        doc.fontSize(9).fillColor('#374151').text(metrics.join('  |  '), { indent: 10 });
+        doc.moveDown(0.3);
+
+        // Detected level
+        if ((e as any).detectedLevel?.name) {
+          doc.fontSize(10).fillColor('#7C3AED').text(`Nivel detectado: ${(e as any).detectedLevel.name}`);
+        }
+
+        // Feedback
+        if (e.feedbackText) {
+          doc.moveDown(0.3);
+          doc.fontSize(10).fillColor('#6B7280').text('Feedback IA:');
+          doc.fontSize(9).fillColor('#374151').text(e.feedbackText, { indent: 10 });
+        }
+
+        // Level recommendations
+        if ((e as any).juniorAnswer) {
+          doc.moveDown(0.3);
+          doc.fontSize(9).fillColor('#10B981').text('Junior: ', { continued: true });
+          doc.fillColor('#374151').text((e as any).juniorAnswer);
+        }
+        if ((e as any).midAnswer) {
+          doc.fontSize(9).fillColor('#3B82F6').text('Mid: ', { continued: true });
+          doc.fillColor('#374151').text((e as any).midAnswer);
+        }
+        if ((e as any).seniorAnswer) {
+          doc.fontSize(9).fillColor('#F59E0B').text('Senior: ', { continued: true });
+          doc.fillColor('#374151').text((e as any).seniorAnswer);
+        }
+      }
+
+      doc.moveDown(1);
+      // Separator between questions
+      doc.moveTo(50, doc.y).lineTo(545, doc.y).strokeColor('#E5E7EB').stroke();
+      doc.moveDown(0.5);
+    }
+
+    // Footer
+    doc.fontSize(8).fillColor('#9CA3AF').text(`Generado por Vinki | ${new Date().toLocaleDateString()}`, { align: 'center' });
+
+    return doc;
+  }
+
+  async exportCSV(id: number, userId: number) {
+    const report = await this.getInterviewReport(id, userId);
+    const headers = ['Pregunta', 'Orden', 'Respuesta', 'Corrección Técnica', 'Claridad', 'Comunicación', 'Confianza', 'Resolución', 'Nivel Detectado', 'Feedback'];
+    const rows = report.evaluations.map((item) => [
+      `"${item.questionTextSnapshot.replace(/"/g, '""')}"`,
+      item.orderNumber,
+      `"${(item.answer?.answerText || '').replace(/"/g, '""')}"`,
+      item.evaluation?.technicalCorrectness ?? '',
+      item.evaluation?.clarityOfExplanation ?? '',
+      item.evaluation?.communication ?? '',
+      item.evaluation?.confidence ?? '',
+      item.evaluation?.problemSolving ?? '',
+      (item.evaluation as any)?.detectedLevel?.name ?? '',
+      `"${(item.evaluation?.feedbackText || '').replace(/"/g, '""')}"`,
+    ]);
+    return [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
   }
 
   async markSeen(id: number, userId: number) {

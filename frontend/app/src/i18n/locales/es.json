@@ -121,7 +121,8 @@
     "sent": "¡Entrevista enviada!",
     "sentMessage": "Tu evaluación está siendo procesada por nuestra IA. Recibirás una notificación cuando esté lista.",
     "goToDashboard": "Ir al dashboard",
-    "viewStatus": "Ver estado"
+    "viewStatus": "Ver estado",
+    "timeRemaining": "Tiempo restante"
   },
   "feedback": {
     "reportTitle": "Reporte de entrevista",
@@ -135,7 +136,8 @@
     "noAnswer": "Sin respuesta escrita",
     "aiFeedback": "Feedback IA",
     "recommendedAnswers": "Respuestas recomendadas por nivel",
-    "notFound": "No se encontró el reporte."
+    "notFound": "No se encontró el reporte.",
+    "skill": "Habilidad"
   },
   "metrics": {
     "technicalCorrectness": "Corrección técnica",

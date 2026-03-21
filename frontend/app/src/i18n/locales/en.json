@@ -121,7 +121,8 @@
     "sent": "Interview submitted!",
     "sentMessage": "Your evaluation is being processed by our AI. You'll receive a notification when it's ready.",
     "goToDashboard": "Go to dashboard",
-    "viewStatus": "View status"
+    "viewStatus": "View status",
+    "timeRemaining": "Time remaining"
   },
   "feedback": {
     "reportTitle": "Interview report",
@@ -135,7 +136,8 @@
     "noAnswer": "No written answer",
     "aiFeedback": "AI Feedback",
     "recommendedAnswers": "Recommended answers by level",
-    "notFound": "Report not found."
+    "notFound": "Report not found.",
+    "skill": "Skill"
   },
   "metrics": {
     "technicalCorrectness": "Technical correctness",

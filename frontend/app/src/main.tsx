@@ -11,6 +11,14 @@ if (import.meta.env.DEV) {
   void import('./lib/axe').then(({ initAxe }) => initAxe(React))
 }
 
+const savedTheme = localStorage.getItem('vinki-theme')
+if (
+  savedTheme === 'dark' ||
+  (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)
+) {
+  document.documentElement.setAttribute('data-theme', 'dark')
+}
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ConfigProvider

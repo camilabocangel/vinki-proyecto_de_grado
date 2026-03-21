@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -8,6 +8,8 @@ import { api } from '../../api/client'
 
 const { Title, Text } = Typography
 const { TextArea } = Input
+
+const QUESTION_TIME_LIMIT = 300
 
 export default function InterviewSessionPage() {
   const { t } = useTranslation()
@@ -23,6 +25,9 @@ export default function InterviewSessionPage() {
     prevQuestion,
   } = useInterviewStore()
 
+  const [timeLeft, setTimeLeft] = useState(QUESTION_TIME_LIMIT)
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
   const { data, isLoading } = useQuery({
     queryKey: ['interview', id],
     queryFn: () => api.get<Interview>(`/interviews/${id}`),
@@ -37,10 +42,16 @@ export default function InterviewSessionPage() {
     mutationFn: ({
       questionId,
       answerText,
+      answeredInSeconds,
     }: {
       questionId: number
       answerText: string
-    }) => api.post(`/interviews/${id}/questions/${questionId}/answer`, { answerText }),
+      answeredInSeconds: number
+    }) =>
+      api.post(`/interviews/${id}/questions/${questionId}/answer`, {
+        answerText,
+        answeredInSeconds,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['interview', id] })
       message.success(t('interview.answerSaved'))
@@ -54,6 +65,53 @@ export default function InterviewSessionPage() {
     },
   })
 
+  const handleSubmitAnswer = useCallback(() => {
+    if (!currentInterview) return
+    const question = currentInterview.questions[currentQuestionIndex]
+    const textarea = document.getElementById('answer-text') as HTMLTextAreaElement
+    if (textarea?.value.trim()) {
+      const answeredInSeconds = QUESTION_TIME_LIMIT - timeLeft
+      submitAnswer.mutate({
+        questionId: question.id,
+        answerText: textarea.value,
+        answeredInSeconds,
+      })
+    }
+  }, [currentInterview, currentQuestionIndex, timeLeft, submitAnswer])
+
+  // Countdown timer: reset on each question change, auto-advance on expiry
+  useEffect(() => {
+    if (timerRef.current) clearInterval(timerRef.current)
+
+    const startTime = Date.now()
+    timerRef.current = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startTime) / 1000)
+      const remaining = Math.max(0, QUESTION_TIME_LIMIT - elapsed)
+      setTimeLeft(remaining)
+      if (remaining <= 0 && timerRef.current) {
+        clearInterval(timerRef.current)
+      }
+    }, 1000)
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current)
+    }
+  }, [currentQuestionIndex])
+
+  // Auto-advance when timer reaches 0
+  useEffect(() => {
+    if (timeLeft !== 0 || !currentInterview) return
+
+    handleSubmitAnswer()
+
+    const totalQuestions = currentInterview.questions.length
+    if (currentQuestionIndex < totalQuestions - 1) {
+      nextQuestion()
+    } else {
+      finishInterview.mutate()
+    }
+  }, [timeLeft]) // eslint-disable-line react-hooks/exhaustive-deps
+
   if (isLoading || !currentInterview)
     return (
       <div className="vinki-page">
@@ -63,13 +121,6 @@ export default function InterviewSessionPage() {
 
   const question = currentInterview.questions[currentQuestionIndex]
   const totalQuestions = currentInterview.questions.length
-
-  const handleSubmitAnswer = () => {
-    const textarea = document.getElementById('answer-text') as HTMLTextAreaElement
-    if (textarea?.value.trim()) {
-      submitAnswer.mutate({ questionId: question.id, answerText: textarea.value })
-    }
-  }
 
   const handleFinish = () => {
     modal.confirm({
@@ -81,13 +132,33 @@ export default function InterviewSessionPage() {
     })
   }
 
+  const minutes = Math.floor(timeLeft / 60)
+    .toString()
+    .padStart(2, '0')
+  const seconds = (timeLeft % 60).toString().padStart(2, '0')
+
   return (
     <div className="vinki-page" style={{ maxWidth: 800, margin: '0 auto' }}>
-      <Progress
-        percent={((currentQuestionIndex + 1) / totalQuestions) * 100}
-        format={() => `${currentQuestionIndex + 1} / ${totalQuestions}`}
-        style={{ marginBottom: 16 }}
-      />
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 16,
+          marginBottom: 16,
+        }}
+      >
+        <Progress
+          percent={((currentQuestionIndex + 1) / totalQuestions) * 100}
+          format={() => `${currentQuestionIndex + 1} / ${totalQuestions}`}
+          style={{ flex: 1, marginBottom: 0 }}
+        />
+        <Text
+          strong
+          style={{ color: timeLeft < 60 ? '#ff4d4f' : undefined, whiteSpace: 'nowrap' }}
+        >
+          {t('interview.timeRemaining')}: {minutes}:{seconds}
+        </Text>
+      </div>
 
       <Card>
         <Text type="secondary">Pregunta {question.orderNumber}</Text>

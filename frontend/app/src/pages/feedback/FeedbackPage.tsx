@@ -36,6 +36,7 @@ interface ReportItem {
   interviewQuestionId: number
   orderNumber: number
   questionTextSnapshot: string
+  skillName: string | null
   answer: { answerText: string | null } | null
   evaluation: Evaluation | null
 }
@@ -234,6 +235,11 @@ export default function FeedbackPage() {
                     }
                   >
                     {item.evaluation.detectedLevel.name}
+                  </Tag>
+                )}
+                {item.skillName && (
+                  <Tag color="geekblue" style={{ textTransform: 'capitalize' }}>
+                    {item.skillName.replace(/-/g, ' ')}
                   </Tag>
                 )}
                 <Text>

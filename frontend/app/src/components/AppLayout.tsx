@@ -10,9 +10,12 @@ import {
   UserOutlined,
   LineChartOutlined,
   SettingOutlined,
+  MoonOutlined,
+  SunOutlined,
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../hooks/useAuth'
+import { useTheme } from '../hooks/useTheme'
 
 const { Header, Content, Sider } = Layout
 const { Text } = Typography
@@ -24,6 +27,7 @@ export function AppLayout() {
   const location = useLocation()
   const { user, logout } = useAuth()
   const { t, i18n } = useTranslation()
+  const { isDark, toggle: toggleTheme } = useTheme()
   const isMobile = () => window.innerWidth < 992
   const [collapsed, setCollapsed] = useState(isMobile)
 
@@ -150,6 +154,12 @@ export function AppLayout() {
                 { value: 'es', label: 'ES' },
                 { value: 'en', label: 'EN' },
               ]}
+            />
+            <Button
+              type="text"
+              icon={isDark ? <SunOutlined /> : <MoonOutlined />}
+              onClick={toggleTheme}
+              style={{ fontSize: 18 }}
             />
             <Dropdown
               menu={{
