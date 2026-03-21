@@ -1,9 +1,20 @@
-import { expect, test } from '@playwright/test'
+import { test, expect } from '@playwright/test'
 
-test('landing hero renders key actions', async ({ page }) => {
-  await page.goto('/')
+test.describe('Smoke Tests', () => {
+  test('login page loads', async ({ page }) => {
+    await page.goto('/login')
+    await expect(page.locator('text=Vinki')).toBeVisible()
+    await expect(page.locator('input[type="text"], input[id*="email"]')).toBeVisible()
+    await expect(page.locator('input[type="password"]')).toBeVisible()
+  })
 
-  await expect(page.getByRole('heading', { name: /vinki/i })).toBeVisible()
-  await expect(page.getByRole('button', { name: /iniciar simulación/i })).toBeVisible()
-  await expect(page.getByRole('button', { name: /ver demo guiada/i })).toBeVisible()
+  test('register page loads', async ({ page }) => {
+    await page.goto('/register')
+    await expect(page.locator('input[type="password"]')).toBeVisible()
+  })
+
+  test('redirects unauthenticated user to login', async ({ page }) => {
+    await page.goto('/dashboard')
+    await expect(page).toHaveURL(/login/)
+  })
 })

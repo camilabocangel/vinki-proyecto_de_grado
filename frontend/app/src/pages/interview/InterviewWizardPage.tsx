@@ -173,7 +173,9 @@ export default function InterviewWizardPage() {
       <Steps
         current={current}
         items={steps.map((s) => ({ title: s.title }))}
-        style={{ marginBottom: 24 }}
+        responsive={false}
+        size="small"
+        style={{ marginBottom: 24, overflowX: 'auto' }}
       />
 
       <Card className="vinki-card" style={{ marginBottom: 24 }}>
