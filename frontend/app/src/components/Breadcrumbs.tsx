@@ -15,7 +15,24 @@ const routeNames: Record<string, string> = {
   questions: 'nav.questions',
   'study-plan': 'nav.studyPlan',
   confirmation: 'interview.sent',
+  shared: 'feedback.reportTitle',
+  audit: 'nav.auditLogs',
+  analytics: 'nav.analytics',
+  students: 'nav.talent',
 }
+
+// Routes that are actual pages (clickable)
+const validRoutes = new Set([
+  '/dashboard',
+  '/interview/new',
+  '/history',
+  '/settings',
+  '/recruiter',
+  '/admin/questions',
+  '/admin/analytics',
+  '/admin/audit',
+  '/study-plan',
+])
 
 export function Breadcrumbs() {
   const location = useLocation()
@@ -37,9 +54,10 @@ export function Breadcrumbs() {
       const isLast = index === pathSegments.length - 1
       const isId = /^\d+$/.test(segment)
       const label = isId ? `#${segment}` : t(routeNames[segment] || segment)
+      const isClickable = !isLast && validRoutes.has(path)
 
       return {
-        title: isLast ? label : <Link to={path}>{label}</Link>,
+        title: isClickable ? <Link to={path}>{label}</Link> : label,
       }
     }),
   ]
