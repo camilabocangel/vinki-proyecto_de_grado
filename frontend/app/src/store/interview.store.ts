@@ -1,16 +1,19 @@
 import { create } from 'zustand'
 
+interface AnswerData {
+  id: number
+  answerText: string | null
+  audioUrl: string | null
+  answeredAt: string
+}
+
 export interface InterviewQuestion {
   id: number
   questionId: number
   questionTextSnapshot: string
   orderNumber: number
-  answer?: {
-    id: number
-    answerText: string | null
-    audioUrl: string | null
-    answeredAt: string
-  } | null
+  answers?: AnswerData[]
+  answer?: AnswerData | null
 }
 
 export interface Interview {
@@ -39,8 +42,21 @@ interface InterviewState {
 export const useInterviewStore = create<InterviewState>((set, get) => ({
   currentInterview: null,
   currentQuestionIndex: 0,
-  setInterview: (interview) =>
-    set({ currentInterview: interview, currentQuestionIndex: 0 }),
+  setInterview: (interview) => {
+    if (interview) {
+      // Normalize: backend returns `answers` array, frontend uses `answer` (first item)
+      const normalized = {
+        ...interview,
+        questions: interview.questions.map((q) => ({
+          ...q,
+          answer: q.answer ?? q.answers?.[0] ?? null,
+        })),
+      }
+      set({ currentInterview: normalized, currentQuestionIndex: 0 })
+    } else {
+      set({ currentInterview: null, currentQuestionIndex: 0 })
+    }
+  },
   setQuestionIndex: (index) => set({ currentQuestionIndex: index }),
   nextQuestion: () => {
     const { currentQuestionIndex, currentInterview } = get()
