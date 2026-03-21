@@ -31,6 +31,20 @@ export class ReportsController {
     return this.reportsService.getDashboard(user.userId);
   }
 
+  @Get('percentiles')
+  @Roles('student')
+  getPercentiles(@Req() req: any) {
+    const user = (req as any).user;
+    return this.reportsService.getPercentiles(user.userId);
+  }
+
+  @Get('progress')
+  @Roles('student')
+  getProgressHistory(@Req() req: any) {
+    const user = (req as any).user;
+    return this.reportsService.getProgressHistory(user.userId);
+  }
+
   @Get('interviews/:id/report')
   @Roles('student')
   getReport(@Req() req: any, @Param('id', ParseIntPipe) id: number) {

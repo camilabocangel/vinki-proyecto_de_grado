@@ -171,6 +171,64 @@ export class ReportsService {
     };
   }
 
+  async getPercentiles(userId: number) {
+    // Get all users' skill scores
+    const allScores = await this.prisma.userSkillScore.findMany({
+      include: { skill: true },
+    });
+
+    // Get this user's scores
+    const userScores = allScores.filter((s) => s.userId === userId);
+
+    // Calculate percentiles per skill
+    const percentiles = userScores.map((us) => {
+      const sameSkillScores = allScores
+        .filter((s) => s.skillId === us.skillId)
+        .map((s) => s.score)
+        .sort((a, b) => a - b);
+
+      const rank = sameSkillScores.findIndex((s) => s >= us.score);
+      const percentile =
+        sameSkillScores.length > 1
+          ? Math.round((rank / (sameSkillScores.length - 1)) * 100)
+          : 50;
+
+      return {
+        skillId: us.skillId,
+        skillName: us.skill.name,
+        score: us.score,
+        percentile,
+        totalCandidates: sameSkillScores.length,
+      };
+    });
+
+    // Overall percentile
+    const allOverallScores = await this.prisma.userSkillScore.groupBy({
+      by: ['userId'],
+      _avg: { score: true },
+    });
+
+    const userOverall =
+      allOverallScores.find((s) => s.userId === userId)?._avg.score ?? 0;
+    const sortedOverall = allOverallScores
+      .map((s) => s._avg.score ?? 0)
+      .sort((a, b) => a - b);
+    const overallRank = sortedOverall.findIndex((s) => s >= userOverall);
+    const overallPercentile =
+      sortedOverall.length > 1
+        ? Math.round((overallRank / (sortedOverall.length - 1)) * 100)
+        : 50;
+
+    return {
+      percentiles,
+      overall: {
+        score: userOverall,
+        percentile: overallPercentile,
+        totalCandidates: sortedOverall.length,
+      },
+    };
+  }
+
   async exportPDF(id: number, userId: number) {
     const report = await this.getInterviewReport(id, userId);
     const PDFDocument = (await import('pdfkit')).default;
@@ -269,6 +327,55 @@ export class ReportsService {
       `"${(item.evaluation?.feedbackText || '').replace(/"/g, '""')}"`,
     ]);
     return [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+  }
+
+  async getProgressHistory(userId: number) {
+    const interviews = await this.prisma.interview.findMany({
+      where: { userId, evaluationStatus: 'completed' },
+      orderBy: { startedAt: 'asc' },
+      include: {
+        questions: {
+          include: {
+            answers: {
+              include: { evaluation: true },
+            },
+          },
+        },
+      },
+    });
+
+    const progress = interviews.map((iv) => {
+      const evals = iv.questions.flatMap((q) =>
+        q.answers
+          .filter((a) => a.evaluation)
+          .map((a) => a.evaluation!),
+      );
+
+      const avg = (field: 'technicalCorrectness' | 'clarityOfExplanation' | 'communication' | 'confidence' | 'problemSolving') => {
+        const values = evals.map((e) => e[field]).filter((v): v is number => v != null);
+        return values.length > 0 ? values.reduce((s, v) => s + v, 0) / values.length : 0;
+      };
+
+      const technicalCorrectness = avg('technicalCorrectness');
+      const clarityOfExplanation = avg('clarityOfExplanation');
+      const communication = avg('communication');
+      const confidence = avg('confidence');
+      const problemSolving = avg('problemSolving');
+      const overall = (technicalCorrectness + clarityOfExplanation + communication + confidence + problemSolving) / 5;
+
+      return {
+        date: iv.startedAt.toISOString().split('T')[0],
+        interviewId: iv.id,
+        technicalCorrectness: +technicalCorrectness.toFixed(2),
+        clarityOfExplanation: +clarityOfExplanation.toFixed(2),
+        communication: +communication.toFixed(2),
+        confidence: +confidence.toFixed(2),
+        problemSolving: +problemSolving.toFixed(2),
+        overall: +overall.toFixed(2),
+      };
+    });
+
+    return { progress };
   }
 
   async markSeen(id: number, userId: number) {

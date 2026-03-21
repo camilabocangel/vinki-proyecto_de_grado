@@ -5,7 +5,7 @@ interface RequestOptions extends RequestInit {
 }
 
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const { params, ...fetchOptions } = options
+  const { params, headers: optionHeaders, ...fetchOptions } = options
 
   let url = `${API_URL}${path}`
   if (params) {
@@ -17,11 +17,14 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
     if (qs) url += `?${qs}`
   }
 
+  const defaultHeaders: Record<string, string> =
+    fetchOptions.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }
+
   const res = await fetch(url, {
     credentials: 'include',
     headers: {
-      'Content-Type': 'application/json',
-      ...fetchOptions.headers,
+      ...defaultHeaders,
+      ...(optionHeaders as Record<string, string>),
     },
     ...fetchOptions,
   })
@@ -49,4 +52,10 @@ export const api = {
     request<T>(path, { method: 'PATCH', body: body ? JSON.stringify(body) : undefined }),
 
   delete: <T>(path: string) => request<T>(path, { method: 'DELETE' }),
+
+  postForm: <T>(path: string, formData: FormData) =>
+    request<T>(path, {
+      method: 'POST',
+      body: formData,
+    }),
 }

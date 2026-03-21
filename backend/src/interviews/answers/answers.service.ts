@@ -57,4 +57,25 @@ export class AnswersService {
       },
     });
   }
+
+  async getQuestionText(
+    interviewId: number,
+    questionId: number,
+    userId: number,
+  ): Promise<string> {
+    const interview = await this.prisma.interview.findUnique({
+      where: { id: interviewId },
+    });
+    if (!interview) throw new NotFoundException('Interview not found');
+    if (interview.userId !== userId) throw new ForbiddenException();
+
+    const interviewQuestion = await this.prisma.interviewQuestion.findFirst({
+      where: { interviewId, id: questionId },
+    });
+    if (!interviewQuestion) {
+      throw new NotFoundException('Question not found in this interview');
+    }
+
+    return interviewQuestion.questionTextSnapshot;
+  }
 }

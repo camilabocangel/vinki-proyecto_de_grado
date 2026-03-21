@@ -69,7 +69,12 @@
     "evaluations": "evaluaciones",
     "skills": "Habilidades",
     "interviewHistory": "Historial de entrevistas",
-    "filterByRole": "Filtrar por rol"
+    "filterByRole": "Filtrar por rol",
+    "comparison": "Comparativa anónima",
+    "topPercent": "Estás en el top {{percent}}% de candidatos",
+    "ofCandidates": "de {{total}} candidatos",
+    "progress": "Evolución de métricas",
+    "progressSubtitle": "Tu rendimiento a lo largo del tiempo"
   },
   "table": {
     "date": "Fecha",
@@ -122,7 +127,13 @@
     "sentMessage": "Tu evaluación está siendo procesada por nuestra IA. Recibirás una notificación cuando esté lista.",
     "goToDashboard": "Ir al dashboard",
     "viewStatus": "Ver estado",
-    "timeRemaining": "Tiempo restante"
+    "timeRemaining": "Tiempo restante",
+    "recording": "Grabando...",
+    "transcribing": "Transcribiendo...",
+    "recordAnswer": "Grabar respuesta",
+    "followUp": "Pregunta de seguimiento",
+    "getFollowUp": "Profundizar con IA",
+    "followUpAnswer": "Responde al seguimiento..."
   },
   "feedback": {
     "reportTitle": "Reporte de entrevista",

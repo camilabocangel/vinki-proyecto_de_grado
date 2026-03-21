@@ -18,6 +18,8 @@ import { ThunderboltFilled, ArrowRightOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../../api/client'
 import { useSSE } from '../../hooks/useSSE'
+import ProgressChart from '../../components/ProgressChart'
+import type { ProgressDataPoint } from '../../components/ProgressChart'
 
 const { Title, Text } = Typography
 
@@ -33,6 +35,30 @@ interface InterviewRow {
   questionCount: number
   avgScore: number | null
   detectedLevel: string | null
+}
+
+interface PercentileSkill {
+  skillId: number
+  skillName: string
+  score: number
+  percentile: number
+  totalCandidates: number
+}
+
+interface PercentilesData {
+  percentiles: PercentileSkill[]
+  overall: {
+    score: number
+    percentile: number
+    totalCandidates: number
+  }
+}
+
+function percentileColor(p: number): string {
+  if (p >= 75) return '#10B981'
+  if (p >= 50) return '#3B82F6'
+  if (p >= 25) return '#F97316'
+  return '#EF4444'
 }
 
 interface DashboardData {
@@ -71,6 +97,16 @@ export default function DashboardPage() {
   const { data, isLoading } = useQuery({
     queryKey: ['dashboard'],
     queryFn: () => api.get<DashboardData>('/dashboard'),
+  })
+
+  const { data: percentilesData } = useQuery({
+    queryKey: ['percentiles'],
+    queryFn: () => api.get<PercentilesData>('/percentiles'),
+  })
+
+  const { data: progressData } = useQuery({
+    queryKey: ['progress'],
+    queryFn: () => api.get<{ progress: ProgressDataPoint[] }>('/progress'),
   })
 
   if (isLoading)
@@ -356,6 +392,83 @@ export default function DashboardPage() {
                         : '#F97316'
                   }
                   size="small"
+                />
+              </Col>
+            ))}
+          </Row>
+        </Card>
+      )}
+
+      {/* Progress chart */}
+      {progressData && progressData.progress.length >= 2 && (
+        <Card
+          className="vinki-card"
+          title={t('dashboard.progress')}
+          style={{ marginBottom: 24 }}
+        >
+          <Text type="secondary" style={{ display: 'block', marginBottom: 16 }}>
+            {t('dashboard.progressSubtitle')}
+          </Text>
+          <ProgressChart data={progressData.progress} />
+        </Card>
+      )}
+
+      {/* Anonymous percentile comparison */}
+      {percentilesData && percentilesData.percentiles.length > 0 && (
+        <Card
+          className="vinki-card"
+          title={t('dashboard.comparison')}
+          style={{ marginBottom: 24 }}
+        >
+          <div style={{ marginBottom: 20, textAlign: 'center' }}>
+            <Progress
+              type="circle"
+              percent={percentilesData.overall.percentile}
+              size={80}
+              strokeColor={percentileColor(percentilesData.overall.percentile)}
+              format={() => (
+                <Text strong style={{ fontSize: 18 }}>
+                  {percentilesData.overall.percentile}%
+                </Text>
+              )}
+            />
+            <div style={{ marginTop: 8 }}>
+              <Text strong style={{ fontSize: 15 }}>
+                {t('dashboard.topPercent', {
+                  percent: 100 - percentilesData.overall.percentile,
+                })}
+              </Text>
+            </div>
+            <Text type="secondary" style={{ fontSize: 13 }}>
+              {t('dashboard.ofCandidates', {
+                total: percentilesData.overall.totalCandidates,
+              })}
+            </Text>
+          </div>
+          <Row gutter={[24, 16]}>
+            {percentilesData.percentiles.map((skill) => (
+              <Col xs={24} sm={12} key={skill.skillId}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    marginBottom: 4,
+                  }}
+                >
+                  <Text style={{ fontWeight: 500, textTransform: 'capitalize' }}>
+                    {skill.skillName.replace(/-/g, ' ')}
+                  </Text>
+                  <Text type="secondary" style={{ fontSize: 12 }}>
+                    {t('dashboard.ofCandidates', {
+                      total: skill.totalCandidates,
+                    })}
+                  </Text>
+                </div>
+                <Progress
+                  percent={skill.percentile}
+                  strokeColor={percentileColor(skill.percentile)}
+                  size="small"
+                  format={(p) => `${p}%`}
                 />
               </Col>
             ))}

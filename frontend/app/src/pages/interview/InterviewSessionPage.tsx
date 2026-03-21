@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Card, Button, Input, Typography, Progress, Space, App, Skeleton } from 'antd'
+import { AudioOutlined, PauseOutlined, RobotOutlined } from '@ant-design/icons'
 import { useInterviewStore, type Interview } from '../../store/interview.store'
 import { api } from '../../api/client'
 
@@ -27,6 +28,13 @@ export default function InterviewSessionPage() {
 
   const [timeLeft, setTimeLeft] = useState(QUESTION_TIME_LIMIT)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  const [isRecording, setIsRecording] = useState(false)
+  const [isTranscribing, setIsTranscribing] = useState(false)
+  const [followUpQuestion, setFollowUpQuestion] = useState<string | null>(null)
+  const [showFollowUp, setShowFollowUp] = useState(false)
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const audioChunksRef = useRef<Blob[]>([])
 
   const { data, isLoading } = useQuery({
     queryKey: ['interview', id],
@@ -65,6 +73,26 @@ export default function InterviewSessionPage() {
     },
   })
 
+  const requestFollowUp = useMutation({
+    mutationFn: ({
+      questionId,
+      answerText,
+    }: {
+      questionId: number
+      answerText: string
+    }) =>
+      api.post<{ followUpQuestion: string }>(
+        `/interviews/${id}/questions/${questionId}/followup`,
+        { answerText },
+      ),
+    onSuccess: (data) => {
+      if (data.followUpQuestion) {
+        setFollowUpQuestion(data.followUpQuestion)
+        setShowFollowUp(true)
+      }
+    },
+  })
+
   const handleSubmitAnswer = useCallback(() => {
     if (!currentInterview) return
     const question = currentInterview.questions[currentQuestionIndex]
@@ -78,6 +106,92 @@ export default function InterviewSessionPage() {
       })
     }
   }, [currentInterview, currentQuestionIndex, timeLeft, submitAnswer])
+
+  const handleGetFollowUp = useCallback(() => {
+    if (!currentInterview) return
+    const question = currentInterview.questions[currentQuestionIndex]
+    const textarea = document.getElementById('answer-text') as HTMLTextAreaElement
+    const answerText = textarea?.value.trim()
+    if (answerText) {
+      requestFollowUp.mutate({ questionId: question.id, answerText })
+    }
+  }, [currentInterview, currentQuestionIndex, requestFollowUp])
+
+  const handleSubmitFollowUpAnswer = useCallback(() => {
+    if (!currentInterview) return
+    const question = currentInterview.questions[currentQuestionIndex]
+    const textarea = document.getElementById(
+      'followup-answer-text',
+    ) as HTMLTextAreaElement
+    if (textarea?.value.trim()) {
+      const answeredInSeconds = QUESTION_TIME_LIMIT - timeLeft
+      submitAnswer.mutate({
+        questionId: question.id,
+        answerText: textarea.value,
+        answeredInSeconds,
+      })
+    }
+  }, [currentInterview, currentQuestionIndex, timeLeft, submitAnswer])
+
+  const startRecording = useCallback(async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const mediaRecorder = new MediaRecorder(stream)
+      mediaRecorderRef.current = mediaRecorder
+      audioChunksRef.current = []
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunksRef.current.push(e.data)
+      }
+
+      mediaRecorder.onstop = async () => {
+        stream.getTracks().forEach((track) => track.stop())
+
+        if (!currentInterview) return
+        const question = currentInterview.questions[currentQuestionIndex]
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
+
+        setIsTranscribing(true)
+        try {
+          const formData = new FormData()
+          formData.append('audio', audioBlob, 'recording.webm')
+
+          const result = await api.postForm<{ transcription: string }>(
+            `/interviews/${id}/questions/${question.id}/audio`,
+            formData,
+          )
+
+          const textarea = document.getElementById('answer-text') as HTMLTextAreaElement
+          if (textarea) {
+            textarea.value = result.transcription
+          }
+
+          queryClient.invalidateQueries({ queryKey: ['interview', id] })
+          message.success(t('interview.answerSaved'))
+        } catch {
+          message.error(t('common.error'))
+        } finally {
+          setIsTranscribing(false)
+        }
+      }
+
+      mediaRecorder.start()
+      setIsRecording(true)
+    } catch {
+      message.error(t('common.error'))
+    }
+  }, [currentInterview, currentQuestionIndex, id, message, queryClient, t])
+
+  const stopRecording = useCallback(() => {
+    mediaRecorderRef.current?.stop()
+    setIsRecording(false)
+  }, [])
+
+  // Reset follow-up state on question change
+  useEffect(() => {
+    setFollowUpQuestion(null)
+    setShowFollowUp(false)
+  }, [currentQuestionIndex])
 
   // Countdown timer: reset on each question change, auto-advance on expiry
   useEffect(() => {
@@ -172,6 +286,39 @@ export default function InterviewSessionPage() {
           style={{ marginBottom: 16 }}
         />
 
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+          {!isRecording ? (
+            <Button
+              icon={<AudioOutlined />}
+              onClick={startRecording}
+              disabled={isTranscribing}
+              type="dashed"
+            >
+              {t('interview.recordAnswer')}
+            </Button>
+          ) : (
+            <Button icon={<PauseOutlined />} onClick={stopRecording} danger>
+              <span
+                style={{
+                  display: 'inline-block',
+                  width: 8,
+                  height: 8,
+                  borderRadius: '50%',
+                  backgroundColor: '#ff4d4f',
+                  marginRight: 6,
+                  animation: 'pulse 1s infinite',
+                }}
+              />
+              {t('interview.recording')}
+            </Button>
+          )}
+          {isTranscribing && (
+            <Text type="secondary" italic>
+              {t('interview.transcribing')}
+            </Text>
+          )}
+        </div>
+
         <Space wrap>
           <Button disabled={currentQuestionIndex === 0} onClick={prevQuestion}>
             {t('common.back')}
@@ -183,6 +330,13 @@ export default function InterviewSessionPage() {
           >
             {t('interview.saveAnswer')}
           </Button>
+          <Button
+            icon={<RobotOutlined />}
+            onClick={handleGetFollowUp}
+            loading={requestFollowUp.isPending}
+          >
+            {t('interview.getFollowUp')}
+          </Button>
           {currentQuestionIndex < totalQuestions - 1 ? (
             <Button onClick={nextQuestion}>{t('common.next')}</Button>
           ) : (
@@ -192,6 +346,39 @@ export default function InterviewSessionPage() {
           )}
         </Space>
       </Card>
+
+      {showFollowUp && followUpQuestion && (
+        <Card
+          style={{
+            marginTop: 16,
+            borderLeft: '4px solid #1677ff',
+            background: '#f0f5ff',
+          }}
+        >
+          <Text type="secondary">{t('interview.followUp')}</Text>
+          <Title level={4}>{followUpQuestion}</Title>
+          <TextArea
+            id="followup-answer-text"
+            rows={5}
+            placeholder={t('interview.followUpAnswer')}
+            style={{ marginBottom: 16 }}
+          />
+          <Button
+            type="primary"
+            onClick={handleSubmitFollowUpAnswer}
+            loading={submitAnswer.isPending}
+          >
+            {t('interview.saveAnswer')}
+          </Button>
+        </Card>
+      )}
+
+      <style>{`
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.3; }
+        }
+      `}</style>
     </div>
   )
 }
