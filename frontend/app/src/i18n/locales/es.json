@@ -304,6 +304,75 @@
     "practiceComplete": "Tu sesión de práctica ha finalizado. Revisa tu feedback.",
     "tryAnother": "Realizar otra entrevista"
   },
+  "home": {
+    "hero": {
+      "title": "Practica entrevistas técnicas con inteligencia artificial",
+      "subtitle": "Vinki evalúa tus respuestas en tiempo real, detecta tu nivel y te ayuda a mejorar con feedback personalizado."
+    },
+    "cta": {
+      "student": "Soy Estudiante",
+      "recruiter": "Soy Reclutador",
+      "start": "Empezar ahora",
+      "viewCandidates": "Ver candidatos"
+    },
+    "student": {
+      "title": "¿Cómo funciona para estudiantes?",
+      "subtitle": "Simula entrevistas técnicas reales y mejora con cada intento",
+      "step1": {
+        "title": "Elige tu área",
+        "desc": "Frontend, Backend, Base de Datos o IA"
+      },
+      "step2": {
+        "title": "Selecciona tecnología",
+        "desc": "Lenguaje y framework según tu área"
+      },
+      "step3": {
+        "title": "Define tu nivel",
+        "desc": "Junior, Mid o Senior"
+      },
+      "step4": {
+        "title": "Elige el modo",
+        "desc": "Práctica (feedback inmediato) o Evaluación (reporte final)"
+      },
+      "step5": {
+        "title": "Responde preguntas",
+        "desc": "Texto, código o voz — como en una entrevista real"
+      },
+      "step6": {
+        "title": "Evaluación con IA",
+        "desc": "5 métricas (0–5), feedback detallado y nivel detectado"
+      },
+      "step7": {
+        "title": "Revisa tu progreso",
+        "desc": "Dashboard con historial, métricas y plan de mejora"
+      }
+    },
+    "recruiter": {
+      "title": "¿Cómo funciona para reclutadores?",
+      "subtitle": "Identifica talento técnico con datos objetivos",
+      "feature1": {
+        "title": "Visualiza candidatos",
+        "desc": "Accede al perfil técnico de cada estudiante evaluado"
+      },
+      "feature2": {
+        "title": "Evaluaciones con IA",
+        "desc": "Resultados objetivos basados en 5 métricas estandarizadas"
+      },
+      "feature3": {
+        "title": "Métricas comparables",
+        "desc": "Compara candidatos por puntaje, nivel y tecnología"
+      },
+      "feature4": {
+        "title": "Historial completo",
+        "desc": "Revisa el desempeño a lo largo del tiempo"
+      },
+      "feature5": {
+        "title": "Identifica talento",
+        "desc": "Filtra y exporta los mejores perfiles técnicos"
+      }
+    },
+    "login": "Iniciar sesión"
+  },
   "onboarding": {
     "welcome": "¡Bienvenido a Vinki!",
     "welcomeDesc": "Tu plataforma de simulación de entrevistas técnicas con IA",

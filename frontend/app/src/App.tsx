@@ -1,5 +1,5 @@
 import { Suspense, lazy } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Spin } from 'antd'
 import { ProtectedRoute } from './components/ProtectedRoute'
@@ -25,6 +25,7 @@ const AdminAnalyticsPage = lazy(() => import('./pages/admin/AdminAnalyticsPage')
 const ProfilePage = lazy(() => import('./pages/profile/ProfilePage'))
 const StudyPlanPage = lazy(() => import('./pages/dashboard/StudyPlanPage'))
 const SharedReportPage = lazy(() => import('./pages/feedback/SharedReportPage'))
+const HomePage = lazy(() => import('./pages/home/HomePage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
 const queryClient = new QueryClient({
@@ -56,6 +57,7 @@ export default function App() {
         <Suspense fallback={<Loading />}>
           <Routes>
             {/* Public routes */}
+            <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/shared/:token" element={<SharedReportPage />} />
@@ -94,8 +96,6 @@ export default function App() {
               </Route>
             </Route>
 
-            {/* Redirect */}
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>

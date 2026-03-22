@@ -304,6 +304,75 @@
     "practiceComplete": "Your practice session is complete. Review your feedback.",
     "tryAnother": "Take another interview"
   },
+  "home": {
+    "hero": {
+      "title": "Practice technical interviews with artificial intelligence",
+      "subtitle": "Vinki evaluates your answers in real time, detects your level, and helps you improve with personalized feedback."
+    },
+    "cta": {
+      "student": "I'm a Student",
+      "recruiter": "I'm a Recruiter",
+      "start": "Get started",
+      "viewCandidates": "View candidates"
+    },
+    "student": {
+      "title": "How does it work for students?",
+      "subtitle": "Simulate real technical interviews and improve with each attempt",
+      "step1": {
+        "title": "Choose your area",
+        "desc": "Frontend, Backend, Databases, or AI"
+      },
+      "step2": {
+        "title": "Select technology",
+        "desc": "Language and framework based on your area"
+      },
+      "step3": {
+        "title": "Set your level",
+        "desc": "Junior, Mid, or Senior"
+      },
+      "step4": {
+        "title": "Choose the mode",
+        "desc": "Practice (instant feedback) or Evaluation (final report)"
+      },
+      "step5": {
+        "title": "Answer questions",
+        "desc": "Text, code, or voice — just like a real interview"
+      },
+      "step6": {
+        "title": "AI evaluation",
+        "desc": "5 metrics (0–5), detailed feedback, and detected level"
+      },
+      "step7": {
+        "title": "Track your progress",
+        "desc": "Dashboard with history, metrics, and improvement plan"
+      }
+    },
+    "recruiter": {
+      "title": "How does it work for recruiters?",
+      "subtitle": "Identify technical talent with objective data",
+      "feature1": {
+        "title": "Visualize candidates",
+        "desc": "Access the technical profile of each evaluated student"
+      },
+      "feature2": {
+        "title": "AI-powered evaluations",
+        "desc": "Objective results based on 5 standardized metrics"
+      },
+      "feature3": {
+        "title": "Comparable metrics",
+        "desc": "Compare candidates by score, level, and technology"
+      },
+      "feature4": {
+        "title": "Complete history",
+        "desc": "Review performance over time"
+      },
+      "feature5": {
+        "title": "Identify talent",
+        "desc": "Filter and export the best technical profiles"
+      }
+    },
+    "login": "Sign in"
+  },
   "onboarding": {
     "welcome": "Welcome to Vinki!",
     "welcomeDesc": "Your AI-powered technical interview simulation platform",
