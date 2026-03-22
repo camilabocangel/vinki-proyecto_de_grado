@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker compose:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx vite:*)",
+      "Bash(npm install:*)",
+      "Bash(npx vitest:*)",
+      "Bash(grep -v \"^$\")",
+      "Bash(curl -s http://localhost:3001/api/health)"
+    ]
+  }
+}
