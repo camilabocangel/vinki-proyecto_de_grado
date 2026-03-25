@@ -41,7 +41,8 @@ model Role {
   id   Int    @id @default(autoincrement())
   name String @unique @db.VarChar(120)
 
-  interviews Interview[]
+  interviews     Interview[]
+  roleLanguages  RoleLanguage[]
 
   @@map("roles")
 }
@@ -50,11 +51,23 @@ model Language {
   id   Int    @id @default(autoincrement())
   name String @unique @db.VarChar(120)
 
-  frameworks Framework[]
-  questions  Question[]
-  interviews Interview[]
+  frameworks    Framework[]
+  questions     Question[]
+  interviews    Interview[]
+  roleLanguages RoleLanguage[]
 
   @@map("languages")
+}
+
+model RoleLanguage {
+  roleId     Int @map("role_id")
+  languageId Int @map("language_id")
+
+  role     Role     @relation(fields: [roleId], references: [id])
+  language Language @relation(fields: [languageId], references: [id])
+
+  @@id([roleId, languageId])
+  @@map("role_languages")
 }
 
 model Framework {

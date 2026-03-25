@@ -20,6 +20,11 @@ export class CatalogsController {
     return this.catalogsService.getLanguages();
   }
 
+  @Get('roles/:roleId/languages')
+  getLanguagesByRole(@Param('roleId', ParseIntPipe) roleId: number) {
+    return this.catalogsService.getLanguagesByRole(roleId);
+  }
+
   @Get('languages/:id/frameworks')
   getFrameworks(@Param('id', ParseIntPipe) id: number) {
     return this.catalogsService.getFrameworksByLanguage(id);

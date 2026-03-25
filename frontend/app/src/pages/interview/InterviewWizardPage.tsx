@@ -98,8 +98,9 @@ export default function InterviewWizardPage() {
   })
 
   const { data: languages } = useQuery({
-    queryKey: ['catalogs', 'languages'],
-    queryFn: () => api.get<CatalogItem[]>('/catalogs/languages'),
+    queryKey: ['catalogs', 'languages', roleId],
+    queryFn: () => api.get<CatalogItem[]>(`/catalogs/roles/${roleId}/languages`),
+    enabled: !!roleId,
   })
 
   const { data: frameworks } = useQuery({
@@ -136,7 +137,11 @@ export default function InterviewWizardPage() {
         <Col xs={12} sm={8} key={role.id}>
           <Card
             hoverable
-            onClick={() => setRoleId(role.id)}
+            onClick={() => {
+              setRoleId(role.id)
+              setLanguageId(undefined)
+              setFrameworkId(undefined)
+            }}
             style={{
               border:
                 roleId === role.id

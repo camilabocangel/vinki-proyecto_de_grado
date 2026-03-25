@@ -39,6 +39,8 @@ async function main() {
     'Go',
     'Rust',
     'SQL',
+    'HTML',
+    'CSS',
   ];
   const languages: Record<string, { id: number; name: string }> = {};
   for (const name of languageNames) {
@@ -119,6 +121,31 @@ async function main() {
       update: {},
       create: { name },
     });
+  }
+
+  // ──────────────────────────────────────────────
+  // Role ↔ Language mappings
+  // ──────────────────────────────────────────────
+  const roleLangMap: Record<string, string[]> = {
+    'Backend Engineer':    ['JavaScript', 'TypeScript', 'Python', 'Java', 'Go', 'Rust', 'SQL'],
+    'Frontend Engineer':   ['JavaScript', 'TypeScript', 'HTML', 'CSS'],
+    'Full Stack Engineer': ['JavaScript', 'TypeScript', 'Python', 'Java', 'Go', 'Rust', 'SQL', 'HTML', 'CSS'],
+    'DevOps Engineer':     ['Python', 'Go', 'Rust', 'SQL', 'JavaScript'],
+    'Data Engineer':       ['Python', 'SQL', 'Java', 'Go'],
+  };
+
+  for (const [roleName, langNames] of Object.entries(roleLangMap)) {
+    const role = roles[roleName];
+    if (!role) continue;
+    for (const langName of langNames) {
+      const language = languages[langName];
+      if (!language) continue;
+      await prisma.roleLanguage.upsert({
+        where: { roleId_languageId: { roleId: role.id, languageId: language.id } },
+        update: {},
+        create: { roleId: role.id, languageId: language.id },
+      });
+    }
   }
 
   // ──────────────────────────────────────────────
