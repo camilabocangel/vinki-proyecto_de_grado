@@ -9,6 +9,13 @@ export class CatalogsService {
     return this.prisma.language.findMany({ orderBy: { name: 'asc' } });
   }
 
+  getLanguagesByRole(roleId: number) {
+    return this.prisma.language.findMany({
+      where: { roleLanguages: { some: { roleId } } },
+      orderBy: { name: 'asc' },
+    });
+  }
+
   getFrameworksByLanguage(languageId: number) {
     return this.prisma.framework.findMany({
       where: { languageId },
