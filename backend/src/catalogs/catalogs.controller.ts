@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CatalogsService } from './catalogs.service.js';
 import { QuestionGeneratorService } from '../interviews/services/question-generator.service.js';
@@ -6,9 +6,11 @@ import { JwtCookieGuard } from '../auth/guards/jwt-cookie.guard.js';
 import { RolesGuard } from '../auth/guards/roles.guard.js';
 import { Roles } from '../auth/guards/roles.decorator.js';
 import { GenerateQuestionsDto } from './dto/generate-questions.dto.js';
+import { CacheInterceptor, Cacheable } from '../common/cache.interceptor.js';
 
 @ApiTags('catalogs')
 @Controller('catalogs')
+@UseInterceptors(CacheInterceptor)
 export class CatalogsController {
   constructor(
     private catalogsService: CatalogsService,
@@ -16,6 +18,7 @@ export class CatalogsController {
   ) {}
 
   @Get('languages')
+  @Cacheable(300)
   getLanguages() {
     return this.catalogsService.getLanguages();
   }
@@ -31,16 +34,19 @@ export class CatalogsController {
   }
 
   @Get('levels')
+  @Cacheable(300)
   getLevels() {
     return this.catalogsService.getLevels();
   }
 
   @Get('roles')
+  @Cacheable(300)
   getRoles() {
     return this.catalogsService.getRoles();
   }
 
   @Get('skills')
+  @Cacheable(300)
   getSkills() {
     return this.catalogsService.getSkills();
   }

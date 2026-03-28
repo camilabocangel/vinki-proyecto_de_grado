@@ -71,7 +71,10 @@
     "noNotifications": "Sin notificaciones pendientes",
     "markAllSeen": "Marcar todas como vistas",
     "auditLogs": "Auditoría",
-    "analytics": "Analíticas"
+    "analytics": "Analíticas",
+    "knowledgeBase": "Base de Conocimiento",
+    "compare": "Comparar",
+    "achievements": "Logros"
   },
   "dashboard": {
     "greeting": "Hola, {{name}}",
@@ -159,6 +162,8 @@
     "evaluationMode": "Modo evaluación",
     "practiceModeDesc": "Recibe feedback inmediato por pregunta",
     "evaluationModeDesc": "Feedback completo al finalizar",
+    "behavioralMode": "Modo conductual",
+    "behavioralModeDesc": "Preguntas situacionales tipo STAR",
     "evaluatingAnswer": "Evaluando respuesta...",
     "instantFeedback": "Feedback instantáneo",
     "useCodeEditor": "Usar editor de código",
@@ -273,7 +278,16 @@
     "notes": "Notas",
     "addNote": "Agregar nota",
     "notePlaceholder": "Escribe una nota sobre este estudiante...",
-    "noNotes": "Sin notas aún"
+    "noNotes": "Sin notas aún",
+    "compare": "Comparar",
+    "compareTitle": "Comparador de candidatos",
+    "selectStudentA": "Seleccionar Estudiante A",
+    "selectStudentB": "Seleccionar Estudiante B",
+    "totalInterviews": "Total entrevistas",
+    "skillRadar": "Radar de habilidades",
+    "levelDist": "Distribución por nivel",
+    "last5": "Últimas 5 entrevistas",
+    "selectBothStudents": "Selecciona dos estudiantes para comparar"
   },
   "studyPlan": {
     "title": "Tu plan de mejora",
@@ -380,5 +394,15 @@
     "startSimulationDesc": "Haz clic aquí para comenzar tu primera entrevista",
     "skills": "Tus habilidades",
     "skillsDesc": "Aquí verás tu progreso por habilidad después de cada entrevista"
+  },
+  "achievements": {
+    "title": "Logros",
+    "subtitle": "{{unlocked}} de {{total}} logros desbloqueados",
+    "all": "Todos",
+    "cat_interview": "Entrevistas",
+    "cat_skill": "Habilidades",
+    "cat_streak": "Racha",
+    "cat_knowledge": "Conocimiento",
+    "recentUnlocked": "Logros recientes"
   }
 }

@@ -15,6 +15,7 @@ import {
   CodeOutlined,
   BulbOutlined,
   TrophyOutlined,
+  TeamOutlined,
   RocketOutlined,
   SafetyCertificateOutlined,
   CrownOutlined,
@@ -309,7 +310,7 @@ export default function InterviewWizardPage() {
 
   const modeStep = (
     <Row gutter={[16, 16]}>
-      <Col xs={24} sm={12}>
+      <Col xs={24} sm={8}>
         <Card
           hoverable
           onClick={() => setMode('practice')}
@@ -341,7 +342,7 @@ export default function InterviewWizardPage() {
           </Text>
         </Card>
       </Col>
-      <Col xs={24} sm={12}>
+      <Col xs={24} sm={8}>
         <Card
           hoverable
           onClick={() => setMode('evaluation')}
@@ -371,6 +372,39 @@ export default function InterviewWizardPage() {
           </Text>
           <Text type="secondary" style={{ fontSize: 13 }}>
             {t('interview.evaluationModeDesc')}
+          </Text>
+        </Card>
+      </Col>
+      <Col xs={24} sm={8}>
+        <Card
+          hoverable
+          onClick={() => setMode('behavioral')}
+          style={{
+            border:
+              mode === 'behavioral'
+                ? '2px solid var(--color-primary)'
+                : '1px solid var(--color-border)',
+            textAlign: 'center',
+            cursor: 'pointer',
+            background: mode === 'behavioral' ? 'var(--color-primary-bg)' : undefined,
+            transition: 'all 0.25s ease',
+          }}
+          styles={{ body: { padding: 24 } }}
+        >
+          <div
+            style={{
+              color:
+                mode === 'behavioral' ? 'var(--color-primary)' : 'var(--color-muted)',
+              marginBottom: 12,
+            }}
+          >
+            <TeamOutlined style={{ fontSize: 36 }} />
+          </div>
+          <Text strong style={{ display: 'block', fontSize: 16, marginBottom: 4 }}>
+            {t('interview.behavioralMode')}
+          </Text>
+          <Text type="secondary" style={{ fontSize: 13 }}>
+            {t('interview.behavioralModeDesc')}
           </Text>
         </Card>
       </Col>

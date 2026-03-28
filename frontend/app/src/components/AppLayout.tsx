@@ -16,6 +16,9 @@ import {
   MoonOutlined,
   SunOutlined,
   BellOutlined,
+  FileTextOutlined,
+  TrophyOutlined,
+  SwapOutlined,
 } from '@ant-design/icons'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
@@ -70,6 +73,7 @@ export function AppLayout() {
     { key: '/interview/new', icon: <ThunderboltOutlined />, label: t('nav.interview') },
     { key: '/history', icon: <LineChartOutlined />, label: t('nav.history') },
     { key: '/study-plan', icon: <BookOutlined />, label: t('nav.studyPlan') },
+    { key: '/achievements', icon: <TrophyOutlined />, label: t('nav.achievements') },
   ]
 
   const roleMenuItems: { key: string; icon: React.ReactNode; label: string }[] = []
@@ -78,6 +82,16 @@ export function AppLayout() {
       key: '/recruiter',
       icon: <TeamOutlined />,
       label: t('nav.talent'),
+    })
+    roleMenuItems.push({
+      key: '/recruiter/compare',
+      icon: <SwapOutlined />,
+      label: t('nav.compare'),
+    })
+    roleMenuItems.push({
+      key: '/knowledge',
+      icon: <FileTextOutlined />,
+      label: t('nav.knowledgeBase'),
     })
   }
   if (user?.role === 'admin') {
@@ -161,7 +175,10 @@ export function AppLayout() {
         />
 
         <div className="vinki-logout">
-          <Button icon={<LogoutOutlined />} onClick={() => logout().then(() => navigate('/'))}>
+          <Button
+            icon={<LogoutOutlined />}
+            onClick={() => logout().then(() => navigate('/'))}
+          >
             {t('auth.logout')}
           </Button>
         </div>

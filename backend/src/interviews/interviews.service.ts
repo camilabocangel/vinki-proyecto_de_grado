@@ -51,6 +51,53 @@ export class InterviewsService {
       .filter(Boolean)
       .join(' ');
 
+    const interviewMode = dto.mode ?? 'evaluation';
+
+    // For behavioral mode: select only behavioral questions
+    if (interviewMode === 'behavioral') {
+      const behavioralQuestions = await this.prisma.question.findMany({
+        where: {
+          type: 'behavioral',
+          levelId: dto.chosenLevelId,
+        },
+        take: 5,
+      });
+
+      if (behavioralQuestions.length === 0) {
+        throw new NotFoundException('No behavioral questions found for the selected level');
+      }
+
+      const interview = await this.prisma.$transaction(async (tx) => {
+        const interview = await tx.interview.create({
+          data: {
+            userId,
+            roleId: dto.roleId,
+            languageId: dto.languageId,
+            frameworkId: dto.frameworkId,
+            chosenLevelId: dto.chosenLevelId,
+            mode: 'behavioral',
+          },
+        });
+
+        let orderNumber = 1;
+        for (const q of behavioralQuestions) {
+          await tx.interviewQuestion.create({
+            data: {
+              interviewId: interview.id,
+              questionId: q.id,
+              questionTextSnapshot: q.questionText,
+              orderNumber: orderNumber++,
+              generatedByAi: false,
+            },
+          });
+        }
+
+        return interview;
+      });
+
+      return this.findOne(interview.id, userId);
+    }
+
     // Try RAG generation first
     let ragQuestionTexts: string[] = [];
     try {
@@ -89,7 +136,7 @@ export class InterviewsService {
           languageId: dto.languageId,
           frameworkId: dto.frameworkId,
           chosenLevelId: dto.chosenLevelId,
-          mode: dto.mode ?? 'evaluation',
+          mode: interviewMode,
         },
       });
 

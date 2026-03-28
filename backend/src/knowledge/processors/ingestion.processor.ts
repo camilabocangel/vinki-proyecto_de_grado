@@ -10,6 +10,7 @@ export interface IngestionJobData {
   sourceUrl?: string;
   languageId?: number;
   frameworkId?: number;
+  uploadedById: number;
 }
 
 @Processor('knowledge-ingestion')
@@ -29,6 +30,7 @@ export class IngestionProcessor extends WorkerHost {
       sourceUrl: job.data.sourceUrl,
       languageId: job.data.languageId,
       frameworkId: job.data.frameworkId,
+      uploadedById: job.data.uploadedById,
     });
 
     this.logger.log(`Ingestion job ${job.id} completed`);

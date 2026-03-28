@@ -776,6 +776,150 @@ async function main() {
     },
   ];
 
+  // ─── BEHAVIORAL QUESTIONS ────────────────────
+  // Junior behavioral (5)
+  const behavioralQuestions: QuestionSeed[] = [
+    {
+      questionText: 'Cuéntame sobre una vez que tuviste que resolver un conflicto en tu equipo de desarrollo.',
+      type: 'behavioral',
+      source: 'curated',
+      languageId: languages['JavaScript'].id,
+      frameworkId: null,
+      levelId: levels['Junior'].id,
+      skillId: skills['error-handling'].id,
+    },
+    {
+      questionText: 'Describe una situación donde tuviste que aprender una tecnología nueva rápidamente.',
+      type: 'behavioral',
+      source: 'curated',
+      languageId: languages['JavaScript'].id,
+      frameworkId: null,
+      levelId: levels['Junior'].id,
+      skillId: skills['design-patterns'].id,
+    },
+    {
+      questionText: '¿Cómo manejaste una situación donde no entendías un requerimiento del proyecto?',
+      type: 'behavioral',
+      source: 'curated',
+      languageId: languages['JavaScript'].id,
+      frameworkId: null,
+      levelId: levels['Junior'].id,
+      skillId: skills['error-handling'].id,
+    },
+    {
+      questionText: 'Cuéntame sobre un error que cometiste en código y cómo lo solucionaste.',
+      type: 'behavioral',
+      source: 'curated',
+      languageId: languages['JavaScript'].id,
+      frameworkId: null,
+      levelId: levels['Junior'].id,
+      skillId: skills['testing'].id,
+    },
+    {
+      questionText: 'Describe una vez que recibiste feedback negativo sobre tu código. ¿Cómo reaccionaste?',
+      type: 'behavioral',
+      source: 'curated',
+      languageId: languages['JavaScript'].id,
+      frameworkId: null,
+      levelId: levels['Junior'].id,
+      skillId: skills['design-patterns'].id,
+    },
+    // Mid behavioral (5)
+    {
+      questionText: '¿Cómo manejaste una situación donde no estuviste de acuerdo con una decisión técnica de tu equipo?',
+      type: 'behavioral',
+      source: 'curated',
+      languageId: languages['JavaScript'].id,
+      frameworkId: null,
+      levelId: levels['Mid'].id,
+      skillId: skills['design-patterns'].id,
+    },
+    {
+      questionText: 'Cuéntame sobre un proyecto donde las cosas no salieron según lo planeado. ¿Qué hiciste?',
+      type: 'behavioral',
+      source: 'curated',
+      languageId: languages['JavaScript'].id,
+      frameworkId: null,
+      levelId: levels['Mid'].id,
+      skillId: skills['error-handling'].id,
+    },
+    {
+      questionText: 'Describe cómo priorizas cuando tienes múltiples tareas urgentes.',
+      type: 'behavioral',
+      source: 'curated',
+      languageId: languages['JavaScript'].id,
+      frameworkId: null,
+      levelId: levels['Mid'].id,
+      skillId: skills['design-patterns'].id,
+    },
+    {
+      questionText: 'Cuéntame sobre una vez que tuviste que convencer a tu equipo de adoptar una nueva herramienta o práctica.',
+      type: 'behavioral',
+      source: 'curated',
+      languageId: languages['JavaScript'].id,
+      frameworkId: null,
+      levelId: levels['Mid'].id,
+      skillId: skills['testing'].id,
+    },
+    {
+      questionText: 'Describe una situación donde tuviste que colaborar con un compañero difícil. ¿Cómo lo manejaste?',
+      type: 'behavioral',
+      source: 'curated',
+      languageId: languages['JavaScript'].id,
+      frameworkId: null,
+      levelId: levels['Mid'].id,
+      skillId: skills['error-handling'].id,
+    },
+    // Senior behavioral (5)
+    {
+      questionText: 'Cuéntame sobre una decisión arquitectónica importante que tomaste y que tuvo un impacto significativo en el proyecto.',
+      type: 'behavioral',
+      source: 'curated',
+      languageId: languages['JavaScript'].id,
+      frameworkId: null,
+      levelId: levels['Senior'].id,
+      skillId: skills['system-design'].id,
+    },
+    {
+      questionText: 'Describe una situación donde tuviste que liderar un equipo a través de una crisis técnica en producción.',
+      type: 'behavioral',
+      source: 'curated',
+      languageId: languages['JavaScript'].id,
+      frameworkId: null,
+      levelId: levels['Senior'].id,
+      skillId: skills['error-handling'].id,
+    },
+    {
+      questionText: '¿Cómo has mentoreado a desarrolladores junior? Dame un ejemplo concreto de cómo ayudaste a alguien a crecer.',
+      type: 'behavioral',
+      source: 'curated',
+      languageId: languages['JavaScript'].id,
+      frameworkId: null,
+      levelId: levels['Senior'].id,
+      skillId: skills['design-patterns'].id,
+    },
+    {
+      questionText: 'Cuéntame sobre una vez que tuviste que hacer un trade-off técnico difícil entre velocidad de entrega y calidad del código.',
+      type: 'behavioral',
+      source: 'curated',
+      languageId: languages['JavaScript'].id,
+      frameworkId: null,
+      levelId: levels['Senior'].id,
+      skillId: skills['testing'].id,
+    },
+    {
+      questionText: 'Describe cómo manejaste una situación donde debiste migrar un sistema legacy crítico sin interrumpir el servicio.',
+      type: 'behavioral',
+      source: 'curated',
+      languageId: languages['JavaScript'].id,
+      frameworkId: null,
+      levelId: levels['Senior'].id,
+      skillId: skills['system-design'].id,
+    },
+  ];
+
+  questionData.push(...behavioralQuestions);
+
   for (const q of questionData) {
     await prisma.$executeRawUnsafe(
       `INSERT INTO questions (question_text, type, source, language_id, framework_id, level_id, skill_id, embedding)
@@ -983,6 +1127,9 @@ Nunca hardcodear secretos en código. Usar variables de entorno, vault (HashiCor
     },
   ];
 
+  const adminUser = await prisma.user.findFirst({ where: { role: 'admin' } });
+  const adminId = adminUser!.id;
+
   for (const doc of knowledgeDocs) {
     const existing = await prisma.knowledgeDocument.findFirst({
       where: { title: doc.title },
@@ -995,6 +1142,7 @@ Nunca hardcodear secretos en código. Usar variables de entorno, vault (HashiCor
         rawContent: doc.content,
         languageId: doc.languageId,
         frameworkId: doc.frameworkId,
+        uploadedById: adminId,
         status: 'ready',
       },
     });
@@ -1045,6 +1193,129 @@ Nunca hardcodear secretos en código. Usar variables de entorno, vault (HashiCor
   }
 
   console.log(`Knowledge base seeded: ${knowledgeDocs.length} documents`);
+
+  // ──────────────────────────────────────────────
+  // Achievements
+  // ──────────────────────────────────────────────
+  const achievementDefs = [
+    {
+      key: 'first_interview',
+      title: 'Primera entrevista',
+      titleEn: 'First Interview',
+      description: 'Completaste tu primera entrevista',
+      descriptionEn: 'You completed your first interview',
+      icon: 'rocket',
+      category: 'interview',
+      threshold: 1,
+    },
+    {
+      key: 'five_interviews',
+      title: 'Cinco entrevistas',
+      titleEn: 'Five Interviews',
+      description: 'Completaste 5 entrevistas',
+      descriptionEn: 'You completed 5 interviews',
+      icon: 'fire',
+      category: 'interview',
+      threshold: 5,
+    },
+    {
+      key: 'ten_interviews',
+      title: 'Diez entrevistas',
+      titleEn: 'Ten Interviews',
+      description: 'Completaste 10 entrevistas',
+      descriptionEn: 'You completed 10 interviews',
+      icon: 'crown',
+      category: 'interview',
+      threshold: 10,
+    },
+    {
+      key: 'perfect_score',
+      title: 'Puntaje perfecto',
+      titleEn: 'Perfect Score',
+      description: 'Obtuviste 5.0 en alguna métrica',
+      descriptionEn: 'You scored 5.0 on any metric',
+      icon: 'star',
+      category: 'skill',
+      threshold: 1,
+    },
+    {
+      key: 'skill_master',
+      title: 'Maestro de habilidades',
+      titleEn: 'Skill Master',
+      description: 'Alcanzaste un puntaje de habilidad superior a 80',
+      descriptionEn: 'You reached a skill score above 80',
+      icon: 'trophy',
+      category: 'skill',
+      threshold: 1,
+    },
+    {
+      key: 'all_rounder',
+      title: 'Todoterreno',
+      titleEn: 'All-Rounder',
+      description: 'Tienes puntajes en todas las habilidades',
+      descriptionEn: 'You have scores in all skills',
+      icon: 'thunderbolt',
+      category: 'skill',
+      threshold: 1,
+    },
+    {
+      key: 'level_up',
+      title: 'Nivel superado',
+      titleEn: 'Level Up',
+      description: 'La IA detectó un nivel superior al que elegiste',
+      descriptionEn: 'AI detected a level higher than you chose',
+      icon: 'rise',
+      category: 'streak',
+      threshold: 1,
+    },
+    {
+      key: 'practice_champion',
+      title: 'Campeón de práctica',
+      titleEn: 'Practice Champion',
+      description: 'Completaste 5 entrevistas en modo práctica',
+      descriptionEn: 'You completed 5 practice mode interviews',
+      icon: 'fire',
+      category: 'streak',
+      threshold: 5,
+    },
+    {
+      key: 'speed_demon',
+      title: 'Rayo veloz',
+      titleEn: 'Speed Demon',
+      description: 'Respondiste todas las preguntas de una entrevista',
+      descriptionEn: 'You answered all questions in an interview',
+      icon: 'thunderbolt',
+      category: 'streak',
+      threshold: 1,
+    },
+    {
+      key: 'knowledge_contributor',
+      title: 'Colaborador de conocimiento',
+      titleEn: 'Knowledge Contributor',
+      description: 'Subiste un documento a la base de conocimiento',
+      descriptionEn: 'You uploaded a knowledge document',
+      icon: 'book',
+      category: 'knowledge',
+      threshold: 1,
+    },
+  ];
+
+  for (const def of achievementDefs) {
+    await prisma.achievement.upsert({
+      where: { key: def.key },
+      update: {
+        title: def.title,
+        titleEn: def.titleEn,
+        description: def.description,
+        descriptionEn: def.descriptionEn,
+        icon: def.icon,
+        category: def.category,
+        threshold: def.threshold,
+      },
+      create: def,
+    });
+  }
+  console.log(`Achievements seeded: ${achievementDefs.length} definitions`);
 }
 
 main()

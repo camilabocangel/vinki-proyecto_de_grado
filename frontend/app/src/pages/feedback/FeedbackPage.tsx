@@ -48,7 +48,7 @@ interface ReportItem {
   questionTextSnapshot: string
   skillName: string | null
   source: string | null
-  answer: { answerText: string | null } | null
+  answer: { answerText: string | null; audioUrl: string | null } | null
   evaluation: Evaluation | null
 }
 
@@ -343,6 +343,15 @@ export default function FeedbackPage() {
                     {t('feedback.yourAnswer')}
                   </Text>
                   <Text>{item.answer?.answerText || t('feedback.noAnswer')}</Text>
+                  {item.answer?.audioUrl &&
+                    item.answer.audioUrl !== 'audio://uploaded' && (
+                      <div style={{ marginTop: 8 }}>
+                        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+                        <audio controls style={{ width: '100%' }}>
+                          <source src={item.answer.audioUrl} />
+                        </audio>
+                      </div>
+                    )}
                 </div>
                 {item.evaluation && (
                   <>

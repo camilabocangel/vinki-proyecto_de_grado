@@ -3,9 +3,11 @@ import { ReportsController } from './reports.controller.js';
 import { SharedReportController } from './shared-report.controller.js';
 import { ReportsService } from './reports.service.js';
 import { PrismaService } from '../common/prisma.service.js';
+import { RedisService } from '../common/redis.service.js';
+import { CacheInterceptor } from '../common/cache.interceptor.js';
 
 @Module({
   controllers: [ReportsController, SharedReportController],
-  providers: [ReportsService, PrismaService],
+  providers: [ReportsService, PrismaService, RedisService, CacheInterceptor],
 })
 export class ReportsModule {}

@@ -2,10 +2,13 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
+  NotFoundException,
   Param,
   ParseIntPipe,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { JwtCookieGuard } from '../auth/guards/jwt-cookie.guard.js';
@@ -17,9 +20,9 @@ import { SearchKnowledgeDto } from './dto/search-knowledge.dto.js';
 import { KnowledgeIngestionService } from './services/knowledge-ingestion.service.js';
 import { KnowledgeRetrievalService } from './services/knowledge-retrieval.service.js';
 
-@Controller('admin/knowledge')
+@Controller('knowledge')
 @UseGuards(JwtCookieGuard, RolesGuard)
-@Roles('admin')
+@Roles('recruiter', 'admin')
 export class KnowledgeController {
   constructor(
     private prisma: PrismaService,
@@ -28,13 +31,15 @@ export class KnowledgeController {
   ) {}
 
   @Post()
-  async ingestDocument(@Body() dto: IngestDocumentDto) {
+  async ingestDocument(@Req() req: any, @Body() dto: IngestDocumentDto) {
+    const user = req.user;
     const result = await this.ingestionService.ingestDocument({
       title: dto.title,
       content: dto.content,
       sourceUrl: dto.sourceUrl,
       languageId: dto.languageId,
       frameworkId: dto.frameworkId,
+      uploadedById: user.userId,
     });
 
     return {
@@ -45,8 +50,12 @@ export class KnowledgeController {
   }
 
   @Get()
-  async listDocuments() {
+  async listDocuments(@Req() req: any) {
+    const user = req.user;
+    const isAdmin = user.role === 'admin';
+
     const documents = await this.prisma.knowledgeDocument.findMany({
+      where: isAdmin ? {} : { uploadedById: user.userId },
       orderBy: { createdAt: 'desc' },
       select: {
         id: true,
@@ -55,8 +64,12 @@ export class KnowledgeController {
         status: true,
         languageId: true,
         frameworkId: true,
+        uploadedById: true,
         createdAt: true,
         updatedAt: true,
+        uploadedBy: { select: { name: true } },
+        language: { select: { name: true } },
+        framework: { select: { name: true } },
         _count: { select: { chunks: true } },
       },
     });
@@ -69,15 +82,22 @@ export class KnowledgeController {
   }
 
   @Get(':id')
-  async getDocument(@Param('id', ParseIntPipe) id: number) {
-    const document = await this.prisma.knowledgeDocument.findUniqueOrThrow({
+  async getDocument(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
+    const user = req.user;
+    const document = await this.prisma.knowledgeDocument.findUnique({
       where: { id },
       include: {
         language: true,
         framework: true,
+        uploadedBy: { select: { name: true } },
         _count: { select: { chunks: true } },
       },
     });
+
+    if (!document) throw new NotFoundException('Document not found');
+    if (user.role !== 'admin' && document.uploadedById !== user.userId) {
+      throw new ForbiddenException();
+    }
 
     return {
       ...document,
@@ -87,7 +107,17 @@ export class KnowledgeController {
   }
 
   @Delete(':id')
-  async deleteDocument(@Param('id', ParseIntPipe) id: number) {
+  async deleteDocument(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
+    const user = req.user;
+    const document = await this.prisma.knowledgeDocument.findUnique({
+      where: { id },
+    });
+
+    if (!document) throw new NotFoundException('Document not found');
+    if (user.role !== 'admin' && document.uploadedById !== user.userId) {
+      throw new ForbiddenException();
+    }
+
     await this.prisma.knowledgeDocument.delete({ where: { id } });
     return { message: 'Document and its chunks deleted successfully' };
   }

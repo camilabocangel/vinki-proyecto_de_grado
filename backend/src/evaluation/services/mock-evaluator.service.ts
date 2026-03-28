@@ -3,7 +3,7 @@ import type { IEvaluatorService, AnswerInput, EvaluationOutput } from '../interf
 
 @Injectable()
 export class MockEvaluatorService implements IEvaluatorService {
-  async evaluate(answers: AnswerInput[]): Promise<EvaluationOutput[]> {
+  async evaluate(answers: AnswerInput[], _isBehavioral = false): Promise<EvaluationOutput[]> {
     const levels = ['Junior', 'Mid', 'Senior'] as const;
     return answers.map((answer) => ({
       answerId: answer.answerId,

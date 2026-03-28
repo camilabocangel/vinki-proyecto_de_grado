@@ -19,6 +19,7 @@ export class KnowledgeIngestionService {
     sourceUrl?: string;
     languageId?: number;
     frameworkId?: number;
+    uploadedById: number;
   }): Promise<{ documentId: number; chunkCount: number }> {
     const document = await this.prisma.knowledgeDocument.create({
       data: {
@@ -27,6 +28,7 @@ export class KnowledgeIngestionService {
         sourceUrl: params.sourceUrl,
         languageId: params.languageId,
         frameworkId: params.frameworkId,
+        uploadedById: params.uploadedById,
         status: 'processing',
       },
     });

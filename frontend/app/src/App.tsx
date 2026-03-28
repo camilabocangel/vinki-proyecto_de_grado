@@ -19,12 +19,17 @@ const RecruiterDashboardPage = lazy(
   () => import('./pages/recruiter/RecruiterDashboardPage'),
 )
 const StudentProfilePage = lazy(() => import('./pages/recruiter/StudentProfilePage'))
+const CandidateComparatorPage = lazy(
+  () => import('./pages/recruiter/CandidateComparatorPage'),
+)
 const AdminQuestionsPage = lazy(() => import('./pages/admin/AdminQuestionsPage'))
 const AdminAuditPage = lazy(() => import('./pages/admin/AdminAuditPage'))
 const AdminAnalyticsPage = lazy(() => import('./pages/admin/AdminAnalyticsPage'))
 const ProfilePage = lazy(() => import('./pages/profile/ProfilePage'))
 const StudyPlanPage = lazy(() => import('./pages/dashboard/StudyPlanPage'))
+const AchievementsPage = lazy(() => import('./pages/dashboard/AchievementsPage'))
 const SharedReportPage = lazy(() => import('./pages/feedback/SharedReportPage'))
+const KnowledgeBasePage = lazy(() => import('./pages/knowledge/KnowledgeBasePage'))
 const HomePage = lazy(() => import('./pages/home/HomePage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
@@ -76,6 +81,7 @@ export default function App() {
                 <Route path="/feedback/:id" element={<FeedbackPage />} />
                 <Route path="/history" element={<FeedbackHistoryPage />} />
                 <Route path="/study-plan" element={<StudyPlanPage />} />
+                <Route path="/achievements" element={<AchievementsPage />} />
                 <Route path="/settings" element={<ProfilePage />} />
 
                 {/* Recruiter */}
@@ -85,6 +91,11 @@ export default function App() {
                     path="/recruiter/students/:studentId"
                     element={<StudentProfilePage />}
                   />
+                  <Route
+                    path="/recruiter/compare"
+                    element={<CandidateComparatorPage />}
+                  />
+                  <Route path="/knowledge" element={<KnowledgeBasePage />} />
                 </Route>
 
                 {/* Admin */}

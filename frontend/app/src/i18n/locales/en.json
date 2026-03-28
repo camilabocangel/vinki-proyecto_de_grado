@@ -71,7 +71,10 @@
     "noNotifications": "No pending notifications",
     "markAllSeen": "Mark all as seen",
     "auditLogs": "Audit Logs",
-    "analytics": "Analytics"
+    "analytics": "Analytics",
+    "knowledgeBase": "Knowledge Base",
+    "compare": "Compare",
+    "achievements": "Achievements"
   },
   "dashboard": {
     "greeting": "Hello, {{name}}",
@@ -161,6 +164,8 @@
     "evaluationMode": "Evaluation mode",
     "practiceModeDesc": "Get instant feedback per question",
     "evaluationModeDesc": "Full feedback after finishing",
+    "behavioralMode": "Behavioral mode",
+    "behavioralModeDesc": "Situational STAR-method questions",
     "evaluatingAnswer": "Evaluating answer...",
     "instantFeedback": "Instant feedback",
     "question": "Question {{num}}",
@@ -273,7 +278,16 @@
     "notes": "Notes",
     "addNote": "Add note",
     "notePlaceholder": "Write a note about this student...",
-    "noNotes": "No notes yet"
+    "noNotes": "No notes yet",
+    "compare": "Compare",
+    "compareTitle": "Candidate Comparator",
+    "selectStudentA": "Select Student A",
+    "selectStudentB": "Select Student B",
+    "totalInterviews": "Total interviews",
+    "skillRadar": "Skills radar",
+    "levelDist": "Level distribution",
+    "last5": "Last 5 interviews",
+    "selectBothStudents": "Select two students to compare"
   },
   "studyPlan": {
     "title": "Your improvement plan",
@@ -380,5 +394,15 @@
     "startSimulationDesc": "Click here to begin your first interview",
     "skills": "Your skills",
     "skillsDesc": "Here you'll see your progress by skill after each interview"
+  },
+  "achievements": {
+    "title": "Achievements",
+    "subtitle": "{{unlocked}} of {{total}} achievements unlocked",
+    "all": "All",
+    "cat_interview": "Interviews",
+    "cat_skill": "Skills",
+    "cat_streak": "Streak",
+    "cat_knowledge": "Knowledge",
+    "recentUnlocked": "Recent achievements"
   }
 }

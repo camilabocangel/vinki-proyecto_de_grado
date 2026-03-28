@@ -16,6 +16,7 @@ import { NotificationsModule } from './notifications/notifications.module.js';
 import { HealthModule } from './health/health.module.js';
 import { LlmModule } from './llm/llm.module.js';
 import { KnowledgeModule } from './knowledge/knowledge.module.js';
+import { AchievementsModule } from './achievements/achievements.module.js';
 
 @Module({
   imports: [
@@ -79,6 +80,7 @@ import { KnowledgeModule } from './knowledge/knowledge.module.js';
     ReportsModule,
     NotificationsModule,
     KnowledgeModule,
+    AchievementsModule,
     HealthModule,
   ],
   providers: [

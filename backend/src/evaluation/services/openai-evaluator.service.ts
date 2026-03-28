@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
 import type { IEvaluatorService, AnswerInput, EvaluationOutput } from '../interfaces/evaluator.interface.js';
 import { EVALUATION_RUBRICS } from '../rubrics.js';
+import { BEHAVIORAL_RUBRICS } from '../rubrics-behavioral.js';
 
 @Injectable()
 export class OpenaiEvaluatorService implements IEvaluatorService {
@@ -14,7 +15,10 @@ export class OpenaiEvaluatorService implements IEvaluatorService {
     });
   }
 
-  async evaluate(answers: AnswerInput[]): Promise<EvaluationOutput[]> {
+  async evaluate(answers: AnswerInput[], isBehavioral = false): Promise<EvaluationOutput[]> {
+    const rubrics = isBehavioral ? BEHAVIORAL_RUBRICS : EVALUATION_RUBRICS;
+    const contextLabel = isBehavioral ? 'entrevista conductual (behavioral)' : 'entrevista técnica';
+
     const answersText = answers
       .map(
         (a, i) =>
@@ -27,11 +31,11 @@ export class OpenaiEvaluatorService implements IEvaluatorService {
       messages: [
         {
           role: 'system',
-          content: `Eres un evaluador experto de entrevistas técnicas. ${EVALUATION_RUBRICS}`,
+          content: `Eres un evaluador experto de ${contextLabel}. ${rubrics}`,
         },
         {
           role: 'user',
-          content: `Evalúa las siguientes respuestas de entrevista técnica:\n\n${answersText}`,
+          content: `Evalúa las siguientes respuestas de ${contextLabel}:\n\n${answersText}`,
         },
       ],
       response_format: { type: 'json_object' },

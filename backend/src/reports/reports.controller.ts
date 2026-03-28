@@ -6,6 +6,7 @@ import {
   Query,
   Body,
   UseGuards,
+  UseInterceptors,
   Req,
   Res,
   ParseIntPipe,
@@ -18,15 +19,18 @@ import { ReportsService } from './reports.service.js';
 import { JwtCookieGuard } from '../auth/guards/jwt-cookie.guard.js';
 import { RolesGuard } from '../auth/guards/roles.guard.js';
 import { Roles } from '../auth/guards/roles.decorator.js';
+import { CacheInterceptor, Cacheable } from '../common/cache.interceptor.js';
 
 @ApiTags('reports')
 @UseGuards(JwtCookieGuard, RolesGuard)
+@UseInterceptors(CacheInterceptor)
 @Controller()
 export class ReportsController {
   constructor(private reportsService: ReportsService) {}
 
   @Get('dashboard')
   @Roles('student')
+  @Cacheable(60)
   getDashboard(@Req() req: any) {
     const user = (req as any).user;
     return this.reportsService.getDashboard(user.userId);
@@ -34,6 +38,7 @@ export class ReportsController {
 
   @Get('percentiles')
   @Roles('student')
+  @Cacheable(300)
   getPercentiles(@Req() req: any) {
     const user = (req as any).user;
     return this.reportsService.getPercentiles(user.userId);
@@ -93,6 +98,16 @@ export class ReportsController {
     return this.reportsService.addNote(user.userId, studentId, body.content);
   }
 
+  @Get('recruiter/compare')
+  @Roles('recruiter', 'admin')
+  compareStudents(@Query('studentIds') studentIds: string) {
+    const ids = studentIds
+      .split(',')
+      .map((id) => parseInt(id.trim(), 10))
+      .filter((id) => !isNaN(id));
+    return this.reportsService.compareStudents(ids);
+  }
+
   @Get('recruiter/students/:studentId')
   @Roles('recruiter', 'admin')
   getStudentProfile(@Param('studentId', ParseIntPipe) studentId: number) {
@@ -116,6 +131,23 @@ export class ReportsController {
   getStudyPlan(@Req() req: any) {
     const user = (req as any).user;
     return this.reportsService.generateStudyPlan(user.userId);
+  }
+
+  @Get('study-plan/export/pdf')
+  @Roles('student')
+  async exportStudyPlanPdf(@Req() req: any, @Res() res: Response) {
+    const user = (req as any).user;
+    const plan = await this.reportsService.generateStudyPlan(user.userId);
+    if (!plan) {
+      res.status(404).json({ message: 'No study plan available' });
+      return;
+    }
+    const pdfBuffer = await this.reportsService.generateStudyPlanPdf(plan);
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': 'attachment; filename="vinki-study-plan.pdf"',
+    });
+    res.end(pdfBuffer);
   }
 
   @Post('interviews/:id/mark-seen')

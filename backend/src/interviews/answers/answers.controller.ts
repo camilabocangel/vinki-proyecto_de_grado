@@ -15,6 +15,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AnswersService } from './answers.service.js';
 import { TranscriptionService } from '../services/transcription.service.js';
+import { PrismaService } from '../../common/prisma.service.js';
 import { JwtCookieGuard } from '../../auth/guards/jwt-cookie.guard.js';
 import { RolesGuard } from '../../auth/guards/roles.guard.js';
 import { Roles } from '../../auth/guards/roles.decorator.js';
@@ -30,6 +31,7 @@ export class AnswersController {
     private answersService: AnswersService,
     private transcriptionService: TranscriptionService,
     private followUpService: FollowUpService,
+    private prisma: PrismaService,
   ) {}
 
   @Post('answer')
@@ -57,9 +59,19 @@ export class AnswersController {
       throw new BadRequestException('Audio file is required');
     }
 
+    // Get interview language for transcription
+    const interview = await this.prisma.interview.findUnique({
+      where: { id: interviewId },
+      include: { language: true },
+    });
+    const langCode = this.transcriptionService.getLanguageCode(
+      interview?.language?.name,
+    );
+
     const transcription = await this.transcriptionService.transcribe(
       file.buffer,
       file.originalname || 'audio.webm',
+      langCode,
     );
 
     const user = (req as any).user;
