@@ -17,7 +17,12 @@ import {
   Input,
   message,
 } from 'antd'
-import { DownloadOutlined, ShareAltOutlined, CopyOutlined } from '@ant-design/icons'
+import {
+  DownloadOutlined,
+  ShareAltOutlined,
+  CopyOutlined,
+  RobotOutlined,
+} from '@ant-design/icons'
 import { api } from '../../api/client'
 import { SkillRadarChart } from '../../components/SkillRadarChart'
 import { usePageTitle } from '../../hooks/usePageTitle'
@@ -42,6 +47,7 @@ interface ReportItem {
   orderNumber: number
   questionTextSnapshot: string
   skillName: string | null
+  source: string | null
   answer: { answerText: string | null } | null
   evaluation: Evaluation | null
 }
@@ -306,6 +312,13 @@ export default function FeedbackPage() {
                   <Tag color="geekblue" style={{ textTransform: 'capitalize' }}>
                     {item.skillName.replace(/-/g, ' ')}
                   </Tag>
+                )}
+                {item.source === 'rag' ? (
+                  <Tag color="volcano" icon={<RobotOutlined />}>
+                    RAG
+                  </Tag>
+                ) : (
+                  <Tag color="blue">Curada</Tag>
                 )}
                 <Text>
                   {item.questionTextSnapshot.slice(0, 100)}

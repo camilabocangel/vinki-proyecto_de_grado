@@ -51,10 +51,11 @@ model Language {
   id   Int    @id @default(autoincrement())
   name String @unique @db.VarChar(120)
 
-  frameworks    Framework[]
-  questions     Question[]
-  interviews    Interview[]
-  roleLanguages RoleLanguage[]
+  frameworks         Framework[]
+  questions          Question[]
+  interviews         Interview[]
+  roleLanguages      RoleLanguage[]
+  knowledgeDocuments KnowledgeDocument[]
 
   @@map("languages")
 }
@@ -75,9 +76,10 @@ model Framework {
   name       String @db.VarChar(120)
   languageId Int    @map("language_id")
 
-  language   Language    @relation(fields: [languageId], references: [id])
-  questions  Question[]
-  interviews Interview[]
+  language           Language            @relation(fields: [languageId], references: [id])
+  questions          Question[]
+  interviews         Interview[]
+  knowledgeDocuments KnowledgeDocument[]
 
   @@index([languageId])
   @@map("frameworks")
@@ -248,4 +250,40 @@ model AuditLog {
   @@index([userId])
   @@index([createdAt])
   @@map("audit_logs")
+}
+
+model KnowledgeDocument {
+  id          Int      @id @default(autoincrement())
+  title       String   @db.VarChar(500)
+  sourceUrl   String?  @map("source_url") @db.VarChar(1000)
+  rawContent  String   @map("raw_content")
+  languageId  Int?     @map("language_id")
+  frameworkId Int?     @map("framework_id")
+  status      String   @default("pending") @db.VarChar(30)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  language  Language?  @relation(fields: [languageId], references: [id])
+  framework Framework? @relation(fields: [frameworkId], references: [id])
+  chunks    KnowledgeChunk[]
+
+  @@index([languageId])
+  @@index([frameworkId])
+  @@index([status])
+  @@map("knowledge_documents")
+}
+
+model KnowledgeChunk {
+  id         Int                           @id @default(autoincrement())
+  documentId Int                           @map("document_id")
+  chunkIndex Int                           @map("chunk_index")
+  content    String
+  tokenCount Int                           @map("token_count")
+  embedding  Unsupported("vector(1536)")?
+  createdAt  DateTime                      @default(now()) @map("created_at") @db.Timestamptz()
+
+  document KnowledgeDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
+  @@map("knowledge_chunks")
 }

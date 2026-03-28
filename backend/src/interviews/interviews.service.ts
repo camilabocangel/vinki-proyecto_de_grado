@@ -1,20 +1,28 @@
 import {
+  Inject,
   Injectable,
   ConflictException,
   NotFoundException,
   ForbiddenException,
+  Logger,
 } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { PrismaService } from '../common/prisma.service.js';
 import { QuestionSelectorService } from './services/question-selector.service.js';
+import { RagQuestionGeneratorService } from '../rag/services/rag-question-generator.service.js';
+import { EMBEDDING_PROVIDER, IEmbeddingProvider } from '../llm/interfaces/embedding-provider.interface.js';
 import { CreateInterviewDto } from './dto/create-interview.dto.js';
 
 @Injectable()
 export class InterviewsService {
+  private readonly logger = new Logger(InterviewsService.name);
+
   constructor(
     private prisma: PrismaService,
     private questionSelector: QuestionSelectorService,
+    private ragGenerator: RagQuestionGeneratorService,
+    @Inject(EMBEDDING_PROVIDER) private embeddingProvider: IEmbeddingProvider,
     @InjectQueue('evaluation') private evaluationQueue: Queue,
   ) {}
 
@@ -43,15 +51,32 @@ export class InterviewsService {
       .filter(Boolean)
       .join(' ');
 
-    // Select 5 questions
-    const questionIds = await this.questionSelector.selectQuestions({
+    // Try RAG generation first
+    let ragQuestionTexts: string[] = [];
+    try {
+      ragQuestionTexts = await this.ragGenerator.generateQuestions({
+        roleText,
+        level: level?.name ?? '',
+        language: language?.name ?? '',
+        languageId: dto.languageId,
+        frameworkId: dto.frameworkId,
+        count: 2,
+      });
+    } catch (error) {
+      this.logger.warn('RAG generation failed, using curated questions only', error);
+    }
+
+    // Select curated questions (3 if RAG succeeded, 5 if not)
+    const curatedCount = ragQuestionTexts.length > 0 ? 3 : 5;
+    const allCuratedIds = await this.questionSelector.selectQuestions({
       languageId: dto.languageId,
       frameworkId: dto.frameworkId,
       levelId: dto.chosenLevelId,
       roleText,
     });
+    const curatedIds = allCuratedIds.slice(0, curatedCount);
 
-    if (questionIds.length === 0) {
+    if (curatedIds.length === 0 && ragQuestionTexts.length === 0) {
       throw new NotFoundException('No questions found for the selected criteria');
     }
 
@@ -68,18 +93,47 @@ export class InterviewsService {
         },
       });
 
+      // Add curated questions
       const questions = await tx.question.findMany({
-        where: { id: { in: questionIds } },
+        where: { id: { in: curatedIds } },
       });
 
-      for (let i = 0; i < questions.length; i++) {
-        const q = questions[i];
+      let orderNumber = 1;
+      for (const q of questions) {
         await tx.interviewQuestion.create({
           data: {
             interviewId: interview.id,
             questionId: q.id,
             questionTextSnapshot: q.questionText,
-            orderNumber: i + 1,
+            orderNumber: orderNumber++,
+          },
+        });
+      }
+
+      // Add RAG-generated questions
+      for (const text of ragQuestionTexts) {
+        const embedding = await this.embeddingProvider.embed(text);
+        const embeddingStr = `[${embedding.join(',')}]`;
+
+        const [ragQuestion] = await tx.$queryRawUnsafe<Array<{ id: number }>>(
+          `INSERT INTO questions (question_text, type, source, language_id, framework_id, level_id, skill_id, embedding, created_at)
+           VALUES ($1, 'open', 'rag', $2, $3, $4, $5, $6::vector, NOW())
+           RETURNING id`,
+          text,
+          dto.languageId ?? questions[0]?.languageId ?? 1,
+          dto.frameworkId ?? null,
+          dto.chosenLevelId,
+          questions[0]?.skillId ?? 1,
+          embeddingStr,
+        );
+
+        await tx.interviewQuestion.create({
+          data: {
+            interviewId: interview.id,
+            questionId: ragQuestion.id,
+            questionTextSnapshot: text,
+            orderNumber: orderNumber++,
+            generatedByAi: true,
           },
         });
       }
@@ -98,6 +152,9 @@ export class InterviewsService {
           orderBy: { orderNumber: 'asc' },
           include: {
             answers: true,
+            question: {
+              select: { source: true },
+            },
           },
         },
       },

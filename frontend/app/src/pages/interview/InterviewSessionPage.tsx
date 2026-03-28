@@ -412,10 +412,17 @@ export default function InterviewSessionPage() {
       </div>
 
       <Card>
-        <div style={{ marginBottom: 8 }}>
+        <div style={{ marginBottom: 8, display: 'flex', gap: 8, alignItems: 'center' }}>
           <Tag color="purple">
             {t('interview.question', { num: question.orderNumber })}
           </Tag>
+          {question.question?.source === 'rag' ? (
+            <Tag color="volcano" icon={<RobotOutlined />}>
+              RAG
+            </Tag>
+          ) : (
+            <Tag color="blue">Curada</Tag>
+          )}
         </div>
         <Title level={3}>{question.questionTextSnapshot}</Title>
 
