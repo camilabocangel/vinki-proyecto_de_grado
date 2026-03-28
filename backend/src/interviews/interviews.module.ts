@@ -21,7 +21,7 @@ import { RagModule } from '../rag/rag.module.js';
     EvaluationModule,
     RagModule,
   ],
-  controllers: [InterviewsController, AnswersController, TemplatesController],
+  controllers: [TemplatesController, InterviewsController, AnswersController],
   providers: [
     InterviewsService,
     QuestionSelectorService,
