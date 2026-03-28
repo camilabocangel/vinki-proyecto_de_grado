@@ -8,6 +8,8 @@ import { TranscriptionService } from './services/transcription.service.js';
 import { FollowUpService } from './services/followup.service.js';
 import { AnswersController } from './answers/answers.controller.js';
 import { AnswersService } from './answers/answers.service.js';
+import { TemplatesController } from './templates.controller.js';
+import { TemplatesService } from './templates.service.js';
 import { PrismaService } from '../common/prisma.service.js';
 import { EvaluationModule } from '../evaluation/evaluation.module.js';
 import { RagModule } from '../rag/rag.module.js';
@@ -19,13 +21,14 @@ import { RagModule } from '../rag/rag.module.js';
     EvaluationModule,
     RagModule,
   ],
-  controllers: [InterviewsController, AnswersController],
+  controllers: [InterviewsController, AnswersController, TemplatesController],
   providers: [
     InterviewsService,
     QuestionSelectorService,
     TranscriptionService,
     FollowUpService,
     AnswersService,
+    TemplatesService,
     PrismaService,
   ],
   exports: [InterviewsService],

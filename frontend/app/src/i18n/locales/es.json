@@ -74,7 +74,10 @@
     "analytics": "Analíticas",
     "knowledgeBase": "Base de Conocimiento",
     "compare": "Comparar",
-    "achievements": "Logros"
+    "achievements": "Logros",
+    "career": "Mi Carrera",
+    "templates": "Plantillas",
+    "challenges": "Desafios"
   },
   "dashboard": {
     "greeting": "Hola, {{name}}",
@@ -395,6 +398,16 @@
     "skills": "Tus habilidades",
     "skillsDesc": "Aquí verás tu progreso por habilidad después de cada entrevista"
   },
+  "career": {
+    "trajectory": "Trayectoria",
+    "jobFit": "Job Fit",
+    "monthsToNext": "~{{months}} meses para {{level}}",
+    "growthRate": "Crecimiento: +{{rate}} pts/mes",
+    "match": "{{percent}}% match",
+    "missingSkills": "Skills por desarrollar",
+    "skillGap": "Análisis de brechas",
+    "noData": "Necesitas al menos 3 entrevistas completadas"
+  },
   "achievements": {
     "title": "Logros",
     "subtitle": "{{unlocked}} de {{total}} logros desbloqueados",
@@ -404,5 +417,59 @@
     "cat_streak": "Racha",
     "cat_knowledge": "Conocimiento",
     "recentUnlocked": "Logros recientes"
+  },
+  "templates": {
+    "title": "Plantillas de Entrevista",
+    "subtitle": "Configuraciones preestablecidas para escenarios comunes",
+    "createTemplate": "Crear Plantilla",
+    "name": "Nombre",
+    "description": "Descripción",
+    "companyType": "Tipo de Empresa",
+    "questionsCount": "Preguntas",
+    "public": "Pública",
+    "private": "Privada",
+    "visibility": "Visibilidad",
+    "deleteConfirm": "¿Eliminar esta plantilla?",
+    "deleted": "Plantilla eliminada",
+    "created": "Plantilla creada",
+    "startFromTemplate": "Iniciar Entrevista",
+    "noTemplates": "No hay plantillas disponibles",
+    "chooseMode": "Elige el modo de entrevista",
+    "customInterview": "Entrevista Personalizada",
+    "customInterviewDesc": "Configura tu propia entrevista paso a paso",
+    "fromTemplate": "Desde Plantilla",
+    "fromTemplateDesc": "Inicia desde una plantilla preconfigurada",
+    "backToModes": "Volver a selección de modo",
+    "selectTemplate": "Selecciona una plantilla",
+    "questionSelector": "Seleccionar preguntas",
+    "searchQuestions": "Buscar preguntas...",
+    "addToTemplate": "Agregar",
+    "removeFromTemplate": "Quitar",
+    "selectedQuestions": "Preguntas seleccionadas",
+    "publicToggle": "Hacer pública",
+    "or": "o"
+  },
+  "challenges": {
+    "title": "Desafios y Clasificacion",
+    "subtitle": "Compite en desafios estacionales y sube en el ranking",
+    "activeChallenges": "Desafios Activos",
+    "globalLeaderboard": "Clasificacion Global",
+    "challengeLeaderboards": "Clasificacion por Desafio",
+    "join": "Unirse",
+    "joined": "Participando",
+    "completed": "Completado",
+    "endsIn": "Termina en",
+    "days": "dias",
+    "participants": "participantes",
+    "progress": "Progreso",
+    "rank": "Posicion",
+    "name": "Nombre",
+    "score": "Puntaje",
+    "interviews": "Entrevistas",
+    "resetsIn": "Se reinicia en {{days}} dias",
+    "noChallenges": "No hay desafios activos en este momento",
+    "noParticipants": "Aun no hay participantes",
+    "you": "(Tu)",
+    "target": "Meta"
   }
 }

@@ -22,14 +22,17 @@ const StudentProfilePage = lazy(() => import('./pages/recruiter/StudentProfilePa
 const CandidateComparatorPage = lazy(
   () => import('./pages/recruiter/CandidateComparatorPage'),
 )
+const TemplatesPage = lazy(() => import('./pages/recruiter/TemplatesPage'))
 const AdminQuestionsPage = lazy(() => import('./pages/admin/AdminQuestionsPage'))
 const AdminAuditPage = lazy(() => import('./pages/admin/AdminAuditPage'))
 const AdminAnalyticsPage = lazy(() => import('./pages/admin/AdminAnalyticsPage'))
 const ProfilePage = lazy(() => import('./pages/profile/ProfilePage'))
 const StudyPlanPage = lazy(() => import('./pages/dashboard/StudyPlanPage'))
 const AchievementsPage = lazy(() => import('./pages/dashboard/AchievementsPage'))
+const CareerInsightsPage = lazy(() => import('./pages/dashboard/CareerInsightsPage'))
 const SharedReportPage = lazy(() => import('./pages/feedback/SharedReportPage'))
 const KnowledgeBasePage = lazy(() => import('./pages/knowledge/KnowledgeBasePage'))
+const ChallengesPage = lazy(() => import('./pages/challenges/ChallengesPage'))
 const HomePage = lazy(() => import('./pages/home/HomePage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
@@ -82,6 +85,8 @@ export default function App() {
                 <Route path="/history" element={<FeedbackHistoryPage />} />
                 <Route path="/study-plan" element={<StudyPlanPage />} />
                 <Route path="/achievements" element={<AchievementsPage />} />
+                <Route path="/career" element={<CareerInsightsPage />} />
+                <Route path="/challenges" element={<ChallengesPage />} />
                 <Route path="/settings" element={<ProfilePage />} />
 
                 {/* Recruiter */}
@@ -96,6 +101,7 @@ export default function App() {
                     element={<CandidateComparatorPage />}
                   />
                   <Route path="/knowledge" element={<KnowledgeBasePage />} />
+                  <Route path="/recruiter/templates" element={<TemplatesPage />} />
                 </Route>
 
                 {/* Admin */}

@@ -74,7 +74,10 @@
     "analytics": "Analytics",
     "knowledgeBase": "Knowledge Base",
     "compare": "Compare",
-    "achievements": "Achievements"
+    "achievements": "Achievements",
+    "career": "My Career",
+    "templates": "Templates",
+    "challenges": "Challenges"
   },
   "dashboard": {
     "greeting": "Hello, {{name}}",
@@ -395,6 +398,16 @@
     "skills": "Your skills",
     "skillsDesc": "Here you'll see your progress by skill after each interview"
   },
+  "career": {
+    "trajectory": "Trajectory",
+    "jobFit": "Job Fit",
+    "monthsToNext": "~{{months}} months to {{level}}",
+    "growthRate": "Growth: +{{rate}} pts/month",
+    "match": "{{percent}}% match",
+    "missingSkills": "Skills to develop",
+    "skillGap": "Skill gap analysis",
+    "noData": "You need at least 3 completed interviews"
+  },
   "achievements": {
     "title": "Achievements",
     "subtitle": "{{unlocked}} of {{total}} achievements unlocked",
@@ -404,5 +417,59 @@
     "cat_streak": "Streak",
     "cat_knowledge": "Knowledge",
     "recentUnlocked": "Recent achievements"
+  },
+  "templates": {
+    "title": "Interview Templates",
+    "subtitle": "Pre-configured interview setups for common scenarios",
+    "createTemplate": "Create Template",
+    "name": "Name",
+    "description": "Description",
+    "companyType": "Company Type",
+    "questionsCount": "Questions",
+    "public": "Public",
+    "private": "Private",
+    "visibility": "Visibility",
+    "deleteConfirm": "Delete this template?",
+    "deleted": "Template deleted",
+    "created": "Template created",
+    "startFromTemplate": "Start Interview",
+    "noTemplates": "No templates available",
+    "chooseMode": "Choose interview mode",
+    "customInterview": "Custom Interview",
+    "customInterviewDesc": "Configure your own interview step by step",
+    "fromTemplate": "From Template",
+    "fromTemplateDesc": "Start from a pre-configured template",
+    "backToModes": "Back to mode selection",
+    "selectTemplate": "Select a template",
+    "questionSelector": "Select questions",
+    "searchQuestions": "Search questions...",
+    "addToTemplate": "Add",
+    "removeFromTemplate": "Remove",
+    "selectedQuestions": "Selected questions",
+    "publicToggle": "Make public",
+    "or": "or"
+  },
+  "challenges": {
+    "title": "Challenges & Leaderboard",
+    "subtitle": "Compete in seasonal challenges and climb the rankings",
+    "activeChallenges": "Active Challenges",
+    "globalLeaderboard": "Global Leaderboard",
+    "challengeLeaderboards": "Challenge Leaderboards",
+    "join": "Join",
+    "joined": "Joined",
+    "completed": "Completed!",
+    "endsIn": "Ends in",
+    "days": "days",
+    "participants": "participants",
+    "progress": "Progress",
+    "rank": "Rank",
+    "name": "Name",
+    "score": "Score",
+    "interviews": "Interviews",
+    "resetsIn": "Resets in {{days}} days",
+    "noChallenges": "No active challenges at the moment",
+    "noParticipants": "No participants yet",
+    "you": "(You)",
+    "target": "Target"
   }
 }

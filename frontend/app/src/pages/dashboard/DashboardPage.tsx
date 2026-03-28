@@ -681,6 +681,9 @@ export default function DashboardPage() {
         />
       </Card>
 
+      {/* Transfer Learning Recommendations */}
+      <TransferCard />
+
       <Tour
         open={tourOpen}
         onClose={() => {
@@ -707,5 +710,60 @@ export default function DashboardPage() {
         ]}
       />
     </div>
+  )
+}
+
+function TransferCard() {
+  const { data: transfers = [] } = useQuery<
+    Array<{
+      fromLanguage: string
+      fromScore: number
+      toLanguage: string
+      predictedScore: number
+      confidence: number
+      reason: string
+    }>
+  >({
+    queryKey: ['transfer-recommendations'],
+    queryFn: () => api.get('/career/transfer'),
+  })
+
+  if (transfers.length === 0) return null
+
+  return (
+    <Card
+      className="vinki-card"
+      title="Expande tus habilidades"
+      style={{ marginTop: 16, marginBottom: 16 }}
+    >
+      <Row gutter={[12, 12]}>
+        {transfers.slice(0, 3).map((tr) => (
+          <Col xs={24} sm={8} key={tr.toLanguage}>
+            <Card size="small" style={{ textAlign: 'center' }}>
+              <Tag color="blue">{tr.fromLanguage}</Tag>
+              <ArrowRightOutlined style={{ margin: '0 8px' }} />
+              <Tag color="green">{tr.toLanguage}</Tag>
+              <div style={{ marginTop: 8 }}>
+                <Progress
+                  type="circle"
+                  size={60}
+                  percent={tr.predictedScore}
+                  format={(p) => `${p}`}
+                />
+              </div>
+              <Text
+                type="secondary"
+                style={{ fontSize: 12, display: 'block', marginTop: 4 }}
+              >
+                {tr.reason}
+              </Text>
+              <Tag color="orange" style={{ marginTop: 4 }}>
+                {tr.confidence}% confianza
+              </Tag>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+    </Card>
   )
 }

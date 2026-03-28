@@ -16,6 +16,8 @@ import {
 import { Response } from 'express';
 import { ApiTags } from '@nestjs/swagger';
 import { ReportsService } from './reports.service.js';
+import { CareerPredictionService } from './career-prediction.service.js';
+import { TransferLearningService } from './transfer-learning.service.js';
 import { JwtCookieGuard } from '../auth/guards/jwt-cookie.guard.js';
 import { RolesGuard } from '../auth/guards/roles.guard.js';
 import { Roles } from '../auth/guards/roles.decorator.js';
@@ -26,7 +28,11 @@ import { CacheInterceptor, Cacheable } from '../common/cache.interceptor.js';
 @UseInterceptors(CacheInterceptor)
 @Controller()
 export class ReportsController {
-  constructor(private reportsService: ReportsService) {}
+  constructor(
+    private reportsService: ReportsService,
+    private careerPredictionService: CareerPredictionService,
+    private transferLearningService: TransferLearningService,
+  ) {}
 
   @Get('dashboard')
   @Roles('student')
@@ -169,5 +175,29 @@ export class ReportsController {
   createShareLink(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
     const user = (req as any).user;
     return this.reportsService.createShareLink(id, user.userId);
+  }
+
+  @Get('career/trajectory')
+  @Roles('student')
+  @Cacheable(120)
+  getCareerTrajectory(@Req() req: any) {
+    const user = (req as any).user;
+    return this.careerPredictionService.predictTrajectory(user.userId);
+  }
+
+  @Get('career/job-fit')
+  @Roles('student')
+  @Cacheable(120)
+  getJobFitProfiles(@Req() req: any) {
+    const user = (req as any).user;
+    return this.careerPredictionService.getJobFitProfiles(user.userId);
+  }
+
+  @Get('career/transfer')
+  @Roles('student')
+  @Cacheable(300)
+  getTransferRecommendations(@Req() req: any) {
+    const user = (req as any).user;
+    return this.transferLearningService.getRecommendations(user.userId);
   }
 }

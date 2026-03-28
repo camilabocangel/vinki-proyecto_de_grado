@@ -19,6 +19,9 @@ import {
   FileTextOutlined,
   TrophyOutlined,
   SwapOutlined,
+  RocketOutlined,
+  SolutionOutlined,
+  FireOutlined,
 } from '@ant-design/icons'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
@@ -74,6 +77,8 @@ export function AppLayout() {
     { key: '/history', icon: <LineChartOutlined />, label: t('nav.history') },
     { key: '/study-plan', icon: <BookOutlined />, label: t('nav.studyPlan') },
     { key: '/achievements', icon: <TrophyOutlined />, label: t('nav.achievements') },
+    { key: '/career', icon: <RocketOutlined />, label: t('nav.career') },
+    { key: '/challenges', icon: <FireOutlined />, label: t('nav.challenges') },
   ]
 
   const roleMenuItems: { key: string; icon: React.ReactNode; label: string }[] = []
@@ -92,6 +97,11 @@ export function AppLayout() {
       key: '/knowledge',
       icon: <FileTextOutlined />,
       label: t('nav.knowledgeBase'),
+    })
+    roleMenuItems.push({
+      key: '/recruiter/templates',
+      icon: <SolutionOutlined />,
+      label: t('nav.templates'),
     })
   }
   if (user?.role === 'admin') {

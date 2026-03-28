@@ -1316,6 +1316,206 @@ Nunca hardcodear secretos en código. Usar variables de entorno, vault (HashiCor
     });
   }
   console.log(`Achievements seeded: ${achievementDefs.length} definitions`);
+
+  // ──────────────────────────────────────────────
+  // Interview Templates
+  // ──────────────────────────────────────────────
+  const recruiterUser = await prisma.user.findFirst({ where: { role: 'recruiter' } });
+  const recruiterId = recruiterUser!.id;
+
+  // Helper: find question IDs by skill, level, and optionally language
+  async function findQuestionIds(
+    skillName: string,
+    levelName: string,
+    languageName?: string,
+    limit = 2,
+  ): Promise<number[]> {
+    const where: any = {
+      skill: { name: skillName },
+      level: { name: levelName },
+    };
+    if (languageName) {
+      where.language = { name: languageName };
+    }
+    const qs = await prisma.question.findMany({
+      where,
+      select: { id: true },
+      take: limit,
+    });
+    return qs.map((q) => q.id);
+  }
+
+  // Template 1: Google Phone Screen - Backend (Senior, JavaScript)
+  const t1Questions = [
+    ...(await findQuestionIds('system-design', 'Senior', 'JavaScript', 2)),
+    ...(await findQuestionIds('algorithms', 'Senior', undefined, 1)),
+    ...(await findQuestionIds('async-patterns', 'Senior', 'JavaScript', 1)),
+    ...(await findQuestionIds('performance', 'Senior', 'JavaScript', 1)),
+  ];
+
+  // Template 2: Amazon SDE - Full Stack (Mid, TypeScript)
+  const t2Questions = [
+    ...(await findQuestionIds('rest-api-design', 'Mid', undefined, 2)),
+    ...(await findQuestionIds('design-patterns', 'Mid', 'TypeScript', 1)),
+    ...(await findQuestionIds('testing', 'Mid', 'TypeScript', 1)),
+    ...(await findQuestionIds('design-patterns', 'Mid', 'JavaScript', 1)),
+  ];
+
+  // Template 3: Startup Fast Track (Junior, JavaScript)
+  const t3Questions = [
+    ...(await findQuestionIds('error-handling', 'Junior', 'JavaScript', 2)),
+    ...(await findQuestionIds('data-structures', 'Junior', 'JavaScript', 1)),
+    ...(await findQuestionIds('rest-api-design', 'Junior', 'JavaScript', 1)),
+    ...(await findQuestionIds('async-patterns', 'Junior', 'JavaScript', 1)),
+  ];
+
+  // Template 4: Fintech Security Deep Dive (Senior, SQL)
+  const t4Questions = [
+    ...(await findQuestionIds('security', 'Senior', undefined, 2)),
+    ...(await findQuestionIds('database-optimization', 'Senior', 'SQL', 2)),
+    ...(await findQuestionIds('performance', 'Senior', undefined, 1)),
+  ];
+
+  const templateDefs = [
+    {
+      name: 'Google Phone Screen - Backend',
+      description: 'Simulates a Google phone screen for backend engineers. Covers system design, algorithms, and async patterns.',
+      companyType: 'Big Tech (FAANG)',
+      roleId: roles['Backend Engineer'].id,
+      levelId: levels['Senior'].id,
+      languageId: languages['JavaScript'].id,
+      frameworkId: null,
+      isPublic: true,
+      createdById: recruiterId,
+      questionIds: t1Questions.slice(0, 5),
+    },
+    {
+      name: 'Amazon SDE - Full Stack',
+      description: 'Amazon-style interview for full stack developers. Focuses on REST API design, design patterns, and testing.',
+      companyType: 'Big Tech (FAANG)',
+      roleId: roles['Full Stack Engineer'].id,
+      levelId: levels['Mid'].id,
+      languageId: languages['TypeScript'].id,
+      frameworkId: null,
+      isPublic: true,
+      createdById: recruiterId,
+      questionIds: t2Questions.slice(0, 5),
+    },
+    {
+      name: 'Startup Fast Track',
+      description: 'Quick interview format for startups looking for junior developers with solid JavaScript fundamentals.',
+      companyType: 'Startup',
+      roleId: roles['Frontend Engineer'].id,
+      levelId: levels['Junior'].id,
+      languageId: languages['JavaScript'].id,
+      frameworkId: null,
+      isPublic: true,
+      createdById: recruiterId,
+      questionIds: t3Questions.slice(0, 5),
+    },
+    {
+      name: 'Fintech Security Deep Dive',
+      description: 'In-depth interview focused on security best practices and database optimization for fintech companies.',
+      companyType: 'Fintech',
+      roleId: roles['Backend Engineer'].id,
+      levelId: levels['Senior'].id,
+      languageId: languages['SQL'].id,
+      frameworkId: null,
+      isPublic: true,
+      createdById: recruiterId,
+      questionIds: t4Questions.slice(0, 5),
+    },
+  ];
+
+  for (const tDef of templateDefs) {
+    const { questionIds, ...templateData } = tDef;
+    // Check if template already exists
+    const existing = await prisma.interviewTemplate.findFirst({
+      where: { name: tDef.name },
+    });
+    if (existing) continue;
+
+    const template = await prisma.interviewTemplate.create({
+      data: templateData,
+    });
+
+    for (let i = 0; i < questionIds.length; i++) {
+      await prisma.templateQuestion.create({
+        data: {
+          templateId: template.id,
+          questionId: questionIds[i],
+          orderNumber: i + 1,
+        },
+      });
+    }
+  }
+
+  console.log(`Templates seeded: ${templateDefs.length} interview templates`);
+
+  // ──────────────────────────────────────────────
+  // Seasonal Challenges
+  // ──────────────────────────────────────────────
+  const challengeDefs = [
+    {
+      title: 'Speedrunner de Marzo',
+      titleEn: 'March Speedrunner',
+      description: 'Completa 10 entrevistas antes de fin de mes',
+      descriptionEn: 'Complete 10 interviews before month end',
+      type: 'volume',
+      target: 10,
+      metric: 'interviews_completed',
+      icon: 'thunderbolt',
+      startDate: new Date('2026-03-01'),
+      endDate: new Date('2026-03-31'),
+    },
+    {
+      title: 'Maestro de Skills',
+      titleEn: 'Skill Master',
+      description: 'Alcanza un promedio de 4.0 o más en cualquier entrevista',
+      descriptionEn: 'Reach an average of 4.0 or higher in any interview',
+      type: 'skill',
+      target: 4,
+      metric: 'avg_score_above',
+      icon: 'star',
+      startDate: new Date('2026-03-01'),
+      endDate: new Date('2026-04-30'),
+    },
+    {
+      title: 'Responde Todo',
+      titleEn: 'Answer Everything',
+      description: 'Responde 30 preguntas de entrevista',
+      descriptionEn: 'Answer 30 interview questions',
+      type: 'volume',
+      target: 30,
+      metric: 'questions_answered',
+      icon: 'fire',
+      startDate: new Date('2026-03-01'),
+      endDate: new Date('2026-04-15'),
+    },
+    {
+      title: 'Racha Imparable',
+      titleEn: 'Unstoppable Streak',
+      description: 'Practica 5 días consecutivos',
+      descriptionEn: 'Practice 5 consecutive days',
+      type: 'streak',
+      target: 5,
+      metric: 'consecutive_days',
+      icon: 'fire',
+      startDate: new Date('2026-03-01'),
+      endDate: new Date('2026-06-30'),
+    },
+  ];
+
+  for (const def of challengeDefs) {
+    // Use title + startDate as a pseudo-unique key to avoid duplicates
+    const existing = await prisma.challenge.findFirst({
+      where: { title: def.title, startDate: def.startDate },
+    });
+    if (!existing) {
+      await prisma.challenge.create({ data: def });
+    }
+  }
+  console.log(`Challenges seeded: ${challengeDefs.length} seasonal challenges`);
 }
 
 main()

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Steps, Card, Select, Button, Typography, App, Row, Col, Tag } from 'antd'
+import { Steps, Card, Select, Button, Typography, App, Row, Col, Tag, Spin } from 'antd'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { api } from '../../api/client'
 import { usePageTitle } from '../../hooks/usePageTitle'
@@ -22,6 +22,8 @@ import {
   ArrowLeftOutlined,
   ArrowRightOutlined,
   PlayCircleOutlined,
+  SolutionOutlined,
+  FileTextOutlined,
 } from '@ant-design/icons'
 
 const { Title, Text } = Typography
@@ -29,6 +31,20 @@ const { Title, Text } = Typography
 interface CatalogItem {
   id: number
   name: string
+}
+
+interface TemplateItem {
+  id: number
+  name: string
+  description: string
+  companyType: string
+  isPublic: boolean
+  role: { id: number; name: string }
+  level: { id: number; name: string }
+  language: { id: number; name: string } | null
+  framework: { id: number; name: string } | null
+  createdBy: { id: number; name: string }
+  questions: { id: number }[]
 }
 
 const roleIcons: Record<string, React.ReactNode> = {
@@ -81,11 +97,14 @@ const stepIcons = [
   <PlayCircleOutlined />,
 ]
 
+type WizardMode = 'choose' | 'custom' | 'template'
+
 export default function InterviewWizardPage() {
   const { t } = useTranslation()
   usePageTitle(t('interview.configure'))
   const navigate = useNavigate()
   const { message } = App.useApp()
+  const [wizardMode, setWizardMode] = useState<WizardMode>('choose')
   const [current, setCurrent] = useState(0)
   const [roleId, setRoleId] = useState<number>()
   const [languageId, setLanguageId] = useState<number>()
@@ -115,6 +134,12 @@ export default function InterviewWizardPage() {
     queryFn: () => api.get<CatalogItem[]>('/catalogs/levels'),
   })
 
+  const { data: templates, isLoading: templatesLoading } = useQuery({
+    queryKey: ['interview-templates'],
+    queryFn: () => api.get<TemplateItem[]>('/interviews/templates'),
+    enabled: wizardMode === 'template',
+  })
+
   const createInterview = useMutation({
     mutationFn: () =>
       api.post<{ id: number }>('/interviews', {
@@ -132,6 +157,180 @@ export default function InterviewWizardPage() {
     },
   })
 
+  const startFromTemplate = useMutation({
+    mutationFn: (templateId: number) =>
+      api.post<{ id: number }>(`/interviews/templates/${templateId}/start`),
+    onSuccess: (data) => {
+      navigate(`/interview/${data.id}`)
+    },
+    onError: (err: Error) => {
+      message.error(err.message)
+    },
+  })
+
+  // ─── Mode selection (step 0) ───
+  if (wizardMode === 'choose') {
+    return (
+      <div className="vinki-page" style={{ maxWidth: 720, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+          <Title level={3} className="vinki-page-title" style={{ marginBottom: 4 }}>
+            {t('templates.chooseMode')}
+          </Title>
+          <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>
+            {t('interview.configureSubtitle')}
+          </Text>
+        </div>
+
+        <Row gutter={[24, 24]}>
+          <Col xs={24} sm={12}>
+            <Card
+              hoverable
+              onClick={() => setWizardMode('custom')}
+              style={{
+                textAlign: 'center',
+                cursor: 'pointer',
+                height: '100%',
+                border: '1px solid var(--color-border)',
+                transition: 'all 0.25s ease',
+              }}
+              styles={{ body: { padding: 32 } }}
+            >
+              <div style={{ color: 'var(--color-primary)', marginBottom: 16 }}>
+                <BulbOutlined style={{ fontSize: 48 }} />
+              </div>
+              <Title level={4} style={{ marginTop: 0, marginBottom: 8 }}>
+                {t('templates.customInterview')}
+              </Title>
+              <Text type="secondary">{t('templates.customInterviewDesc')}</Text>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12}>
+            <Card
+              hoverable
+              onClick={() => setWizardMode('template')}
+              style={{
+                textAlign: 'center',
+                cursor: 'pointer',
+                height: '100%',
+                border: '1px solid var(--color-border)',
+                transition: 'all 0.25s ease',
+              }}
+              styles={{ body: { padding: 32 } }}
+            >
+              <div style={{ color: 'var(--color-primary)', marginBottom: 16 }}>
+                <SolutionOutlined style={{ fontSize: 48 }} />
+              </div>
+              <Title level={4} style={{ marginTop: 0, marginBottom: 8 }}>
+                {t('templates.fromTemplate')}
+              </Title>
+              <Text type="secondary">{t('templates.fromTemplateDesc')}</Text>
+            </Card>
+          </Col>
+        </Row>
+      </div>
+    )
+  }
+
+  // ─── Template selection ───
+  if (wizardMode === 'template') {
+    return (
+      <div className="vinki-page" style={{ maxWidth: 800, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+          <Title level={3} className="vinki-page-title" style={{ marginBottom: 4 }}>
+            {t('templates.selectTemplate')}
+          </Title>
+          <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>
+            {t('templates.subtitle')}
+          </Text>
+        </div>
+
+        {templatesLoading ? (
+          <div style={{ textAlign: 'center', padding: 48 }}>
+            <Spin size="large" />
+          </div>
+        ) : !templates?.length ? (
+          <div style={{ textAlign: 'center', padding: 48 }}>
+            <Text type="secondary">{t('templates.noTemplates')}</Text>
+          </div>
+        ) : (
+          <Row gutter={[16, 16]}>
+            {templates.map((tpl) => {
+              const lMeta = levelMeta[tpl.level.name]
+              return (
+                <Col xs={24} sm={12} key={tpl.id}>
+                  <Card
+                    hoverable
+                    style={{
+                      height: '100%',
+                      border: '1px solid var(--color-border)',
+                      transition: 'all 0.25s ease',
+                    }}
+                    styles={{ body: { padding: 20 } }}
+                  >
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        marginBottom: 8,
+                      }}
+                    >
+                      <FileTextOutlined
+                        style={{ fontSize: 18, color: 'var(--color-primary)' }}
+                      />
+                      <Text strong style={{ fontSize: 15 }}>
+                        {tpl.name}
+                      </Text>
+                    </div>
+                    <Text
+                      type="secondary"
+                      style={{ display: 'block', fontSize: 13, marginBottom: 12 }}
+                    >
+                      {tpl.description}
+                    </Text>
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: 4,
+                        marginBottom: 12,
+                      }}
+                    >
+                      <Tag>{tpl.companyType}</Tag>
+                      <Tag>{tpl.role.name}</Tag>
+                      <Tag color={lMeta?.color}>{tpl.level.name}</Tag>
+                      {tpl.language && <Tag color="blue">{tpl.language.name}</Tag>}
+                      <Tag>
+                        {tpl.questions.length}{' '}
+                        {t('templates.questionsCount').toLowerCase()}
+                      </Tag>
+                    </div>
+                    <Button
+                      type="primary"
+                      block
+                      onClick={() => startFromTemplate.mutate(tpl.id)}
+                      loading={startFromTemplate.isPending}
+                      icon={<PlayCircleOutlined />}
+                    >
+                      {t('templates.startFromTemplate')}
+                    </Button>
+                  </Card>
+                </Col>
+              )
+            })}
+          </Row>
+        )}
+
+        <div style={{ marginTop: 24 }}>
+          <Button icon={<ArrowLeftOutlined />} onClick={() => setWizardMode('choose')}>
+            {t('templates.backToModes')}
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  // ─── Custom wizard (existing flow) ───
   const roleStep = (
     <Row gutter={[12, 12]}>
       {roles?.map((role) => (
@@ -471,7 +670,11 @@ export default function InterviewWizardPage() {
         style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
       >
         <div>
-          {current > 0 && (
+          {current === 0 ? (
+            <Button icon={<ArrowLeftOutlined />} onClick={() => setWizardMode('choose')}>
+              {t('templates.backToModes')}
+            </Button>
+          ) : (
             <Button icon={<ArrowLeftOutlined />} onClick={() => setCurrent(current - 1)}>
               {t('common.back')}
             </Button>
