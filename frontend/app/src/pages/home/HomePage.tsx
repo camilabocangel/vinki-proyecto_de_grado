@@ -30,21 +30,21 @@ import './home.css'
 type Mode = 'student' | 'recruiter'
 
 const STUDENT_STEPS = [
-  { key: 'step1', icon: <AppstoreOutlined /> },
-  { key: 'step2', icon: <CodeOutlined /> },
-  { key: 'step3', icon: <RocketOutlined /> },
-  { key: 'step4', icon: <ControlOutlined /> },
-  { key: 'step5', icon: <EditOutlined /> },
-  { key: 'step6', icon: <RobotOutlined /> },
-  { key: 'step7', icon: <LineChartOutlined /> },
+  { icon: <AppstoreOutlined />, title: 'Elige tu área', desc: 'Frontend, Backend, Base de Datos o IA', tags: ['Frontend', 'Backend', 'Base de Datos', 'IA'] },
+  { icon: <CodeOutlined />, title: 'Selecciona tecnología', desc: 'Lenguaje y framework según tu área', tags: ['React', 'Python', 'Node.js', 'PostgreSQL'] },
+  { icon: <RocketOutlined />, title: 'Define tu nivel', desc: 'Junior, Mid o Senior', tags: ['Junior', 'Mid', 'Senior'] },
+  { icon: <ControlOutlined />, title: 'Elige el modo', desc: 'Práctica (feedback inmediato) o Evaluación (reporte final)', tags: ['Práctica', 'Evaluación'] },
+  { icon: <EditOutlined />, title: 'Responde preguntas', desc: 'Como en una entrevista real', tags: ['Texto', 'Código', 'Voz'] },
+  { icon: <RobotOutlined />, title: 'Evaluación con IA', desc: 'Resultados basados en 5 métricas estandarizadas', tags: ['5 métricas', 'Feedback', 'Nivel detectado'] },
+  { icon: <LineChartOutlined />, title: 'Revisa tu progreso', desc: 'Tu historial completo de evaluaciones', tags: ['Historial', 'Métricas', 'Plan de mejora'] },
 ]
 
-const RECRUITER_FEATURES = [
-  { key: 'feature1', icon: <EyeOutlined /> },
-  { key: 'feature2', icon: <RobotOutlined /> },
-  { key: 'feature3', icon: <BarChartOutlined /> },
-  { key: 'feature4', icon: <HistoryOutlined /> },
-  { key: 'feature5', icon: <StarOutlined /> },
+const RECRUITER_STEPS = [
+  { icon: <EyeOutlined />, title: 'Visualiza candidatos', desc: 'Accede al perfil técnico de cada estudiante evaluado', tags: ['Perfiles', 'Técnico'] },
+  { icon: <RobotOutlined />, title: 'Evaluaciones con IA', desc: 'Resultados objetivos basados en 5 métricas estandarizadas', tags: ['5 métricas', 'Objetivos'] },
+  { icon: <BarChartOutlined />, title: 'Métricas comparables', desc: 'Compara candidatos', tags: ['Puntaje', 'Nivel', 'Tecnología'] },
+  { icon: <HistoryOutlined />, title: 'Historial completo', desc: 'Revisa el desempeño a lo largo del tiempo', tags: ['Historial', 'Evolución'] },
+  { icon: <StarOutlined />, title: 'Identifica talento', desc: 'Filtra y exporta los mejores perfiles técnicos', tags: ['Filtros', 'Exportar'] },
 ]
 
 export default function HomePage() {
@@ -56,27 +56,143 @@ export default function HomePage() {
 
   const studentSectionRef = useRef<HTMLDivElement>(null)
   const recruiterSectionRef = useRef<HTMLDivElement>(null)
+  const carouselRef = useRef<HTMLDivElement>(null)
+  const [activeIdx, setActiveIdx] = useState(0)
 
   usePageTitle('Vinki')
 
-  // Intersection Observer for scroll animations
+  // Reset active carousel index when mode changes
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('home-card-visible')
-          }
-        })
-      },
-      { threshold: 0.15 }
-    )
-
-    const cards = document.querySelectorAll('.home-step-card-alt')
-    cards.forEach((card) => observer.observe(card))
-
-    return () => observer.disconnect()
+    setActiveIdx(0)
+    if (carouselRef.current) carouselRef.current.scrollLeft = 0
   }, [mode])
+
+  // Scroll-based detection of the centered carousel card
+  useEffect(() => {
+    const container = carouselRef.current
+    if (!container) return
+
+    const updateActive = () => {
+      const cards = container.querySelectorAll<HTMLElement>('[data-idx]')
+      if (cards.length === 0) return
+
+      const containerRect = container.getBoundingClientRect()
+      const containerCenter = containerRect.left + containerRect.width / 2
+      let minDist = Infinity
+      let closestIdx = 0
+
+      cards.forEach((card) => {
+        const cardRect = card.getBoundingClientRect()
+        const cardCenter = cardRect.left + cardRect.width / 2
+        const dist = Math.abs(cardCenter - containerCenter)
+        if (dist < minDist) {
+          minDist = dist
+          closestIdx = Number(card.dataset.idx) || 0
+        }
+      })
+
+      setActiveIdx(closestIdx)
+    }
+
+    container.addEventListener('scroll', updateActive, { passive: true })
+
+    // Run once on mount after layout
+    const rafId = requestAnimationFrame(updateActive)
+
+    return () => {
+      container.removeEventListener('scroll', updateActive)
+      cancelAnimationFrame(rafId)
+    }
+  }, [mode])
+
+  // Drag-to-scroll for carousel
+  useEffect(() => {
+    const container = carouselRef.current
+    if (!container) return
+
+    let isDown = false
+    let startX = 0
+    let scrollLeft = 0
+
+    const onDown = (e: MouseEvent) => {
+      isDown = true
+      container.classList.add('carousel-dragging')
+      startX = e.pageX - container.offsetLeft
+      scrollLeft = container.scrollLeft
+    }
+    const onUp = () => {
+      isDown = false
+      container.classList.remove('carousel-dragging')
+    }
+    const onMove = (e: MouseEvent) => {
+      if (!isDown) return
+      e.preventDefault()
+      const x = e.pageX - container.offsetLeft
+      container.scrollLeft = scrollLeft - (x - startX)
+    }
+
+    container.addEventListener('mousedown', onDown)
+    container.addEventListener('mouseleave', onUp)
+    container.addEventListener('mouseup', onUp)
+    container.addEventListener('mousemove', onMove)
+
+    return () => {
+      container.removeEventListener('mousedown', onDown)
+      container.removeEventListener('mouseleave', onUp)
+      container.removeEventListener('mouseup', onUp)
+      container.removeEventListener('mousemove', onMove)
+    }
+  }, [mode])
+
+  const scrollToCard = useCallback((idx: number) => {
+    const container = carouselRef.current
+    if (!container) return
+    const card = container.children[idx] as HTMLElement
+    card?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
+  }, [])
+
+  const renderCarousel = () => {
+    const items = mode === 'student' ? STUDENT_STEPS : RECRUITER_STEPS
+    return (
+      <>
+        <div className="carousel-track" ref={carouselRef}>
+          {items.map((step, idx) => (
+            <div
+              className={`carousel-sphere-item${idx === activeIdx ? ' carousel-active' : ''}`}
+              key={idx}
+              data-idx={idx}
+            >
+              <div className="carousel-sphere">
+                <span className="carousel-sphere-badge">
+                  {String(idx + 1).padStart(2, '0')}
+                </span>
+                <span className="carousel-sphere-icon">{step.icon}</span>
+              </div>
+              <div className="carousel-info-card">
+                <h3 className="carousel-info-title">{step.title}</h3>
+                {step.desc && <p className="carousel-info-desc">{step.desc}</p>}
+                <div className="carousel-info-tags">
+                  {step.tags.map((tag) => (
+                    <span className="carousel-tag" key={tag}>{tag}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="carousel-dots">
+          {items.map((_, idx) => (
+            <button
+              key={idx}
+              className={`carousel-dot${idx === activeIdx ? ' carousel-dot-active' : ''}`}
+              onClick={() => scrollToCard(idx)}
+              aria-label={`Step ${idx + 1}`}
+            />
+          ))}
+        </div>
+      </>
+    )
+  }
 
   const handleWhatIsVinki = useCallback(() => {
     const ref = mode === 'recruiter' ? recruiterSectionRef : studentSectionRef
@@ -182,25 +298,7 @@ export default function HomePage() {
               <p className="home-section-subtitle">{t('home.student.subtitle')}</p>
             </div>
 
-            <div className="home-steps-alternating">
-              {STUDENT_STEPS.map((step, idx) => (
-                <div
-                  className={`home-step-card-alt ${idx % 2 === 0 ? 'home-step-left' : 'home-step-right'}`}
-                  key={step.key}
-                >
-                  <div className="home-step-card-alt-content">
-                    <div className="home-step-number">{idx + 1}</div>
-                    <div className="home-step-card-title">
-                      {t(`home.student.${step.key}.title`)}
-                    </div>
-                    <div className="home-step-card-desc">
-                      {t(`home.student.${step.key}.desc`)}
-                    </div>
-                  </div>
-                  <div className="home-step-card-alt-image" />
-                </div>
-              ))}
-            </div>
+            {renderCarousel()}
 
             <div className="home-cta-section">
               <Button
@@ -225,25 +323,7 @@ export default function HomePage() {
               <p className="home-section-subtitle">{t('home.recruiter.subtitle')}</p>
             </div>
 
-            <div className="home-steps-alternating">
-              {RECRUITER_FEATURES.map((feat, idx) => (
-                <div
-                  className={`home-step-card-alt ${idx % 2 === 0 ? 'home-step-left' : 'home-step-right'}`}
-                  key={feat.key}
-                >
-                  <div className="home-step-card-alt-content">
-                    <div className="home-feature-icon">{feat.icon}</div>
-                    <div className="home-step-card-title">
-                      {t(`home.recruiter.${feat.key}.title`)}
-                    </div>
-                    <div className="home-step-card-desc">
-                      {t(`home.recruiter.${feat.key}.desc`)}
-                    </div>
-                  </div>
-                  <div className="home-step-card-alt-image" />
-                </div>
-              ))}
-            </div>
+            {renderCarousel()}
 
             <div className="home-cta-section">
               <Button

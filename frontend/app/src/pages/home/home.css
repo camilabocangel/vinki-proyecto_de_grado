@@ -389,6 +389,217 @@
   box-shadow: 0 8px 24px rgba(219, 242, 39, 0.5);
 }
 
+/* ==========================================
+   Carousel Steps Section
+   ========================================== */
+.carousel-track::before,
+.carousel-track::after {
+  content: "";
+  flex: 0 0 calc(50vw - 100px);
+}
+.carousel-track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  gap: 32px;
+  padding: 40px 0 24px;
+  cursor: grab;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  user-select: none;
+}
+.carousel-track {
+  scroll-behavior: smooth;
+}
+
+.carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel-track.carousel-dragging {
+  cursor: grabbing;
+  scroll-snap-type: none;
+}
+
+.carousel-sphere-item {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  scroll-snap-align: center;
+  transition: transform 0.4s ease, opacity 0.4s ease;
+  min-width: 200px;
+  opacity: 0.45;
+}
+
+.carousel-sphere-item.carousel-active {
+  transform: translateY(-12px);
+  opacity: 1;
+}
+
+.carousel-sphere {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 2px solid var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.4s ease;
+  background: transparent;
+}
+
+.carousel-active .carousel-sphere {
+  border-color: var(--color-btn-primary);
+  box-shadow: 0 0 24px rgba(219, 242, 39, 0.3), 0 0 48px rgba(219, 242, 39, 0.1);
+}
+
+[data-theme='light'] .carousel-active .carousel-sphere {
+  box-shadow: 0 0 24px rgba(0, 92, 83, 0.2), 0 0 48px rgba(0, 92, 83, 0.08);
+}
+
+.carousel-sphere-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-btn-primary);
+  color: var(--color-btn-primary-text);
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel-sphere-icon {
+  font-size: 36px;
+  color: var(--color-text-secondary);
+  transition: color 0.4s ease;
+  line-height: 1;
+}
+
+.carousel-active .carousel-sphere-icon {
+  color: var(--color-btn-primary);
+}
+
+.carousel-info-card {
+  margin-top: 20px;
+  padding: 16px 20px;
+  border-radius: 16px;
+  background: var(--color-primary-bg);
+  text-align: center;
+  max-width: 220px;
+  min-width: 180px;
+  transition: all 0.4s ease;
+}
+
+[data-theme='dark'] .carousel-info-card {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme='dark'] .carousel-active .carousel-info-card {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.carousel-info-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 6px;
+}
+
+.carousel-info-desc {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin: 0 0 10px;
+  line-height: 1.4;
+}
+
+.carousel-info-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+
+.carousel-tag {
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-text-secondary);
+  background: transparent;
+  transition: all 0.3s ease;
+}
+
+.carousel-active .carousel-tag {
+  background: var(--color-btn-primary);
+  color: var(--color-btn-primary-text);
+  border-color: var(--color-btn-primary);
+}
+
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 0 0;
+}
+
+.carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-text-secondary);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s ease;
+  opacity: 0.35;
+}
+
+.carousel-dot:hover {
+  opacity: 0.6;
+}
+
+.carousel-dot-active {
+  width: 28px;
+  background: var(--color-btn-primary);
+  opacity: 1;
+}
+
+/* Carousel responsive */
+@media (max-width: 575px) {
+  .carousel-track {
+    gap: 20px;
+    padding: 32px calc(50% - 70px) 16px;
+  }
+
+  .carousel-sphere {
+    width: 110px;
+    height: 110px;
+  }
+
+  .carousel-sphere-icon {
+    font-size: 28px;
+  }
+
+  .carousel-info-card {
+    min-width: 160px;
+    max-width: 190px;
+    padding: 12px 14px;
+  }
+
+  .carousel-sphere-item {
+    min-width: 170px;
+  }
+}
+
 /* Responsive */
 @media (max-width: 1200px) {
   .home-header {
