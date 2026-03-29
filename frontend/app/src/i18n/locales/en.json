@@ -30,10 +30,11 @@
     "admin": "Administrator"
   },
   "auth": {
+    "hello": "Hello!",
     "login": "Sign in",
     "register": "Create account",
     "logout": "Sign out",
-    "welcomeTo": "Welcome to",
+    "welcomeTo": "Welcome to Vinki",
     "loginSubtitle": "Sign in to continue",
     "registerSubtitle": "Start practicing technical interviews",
     "email": "Email",
@@ -322,6 +323,7 @@
     "tryAnother": "Take another interview"
   },
   "home": {
+    "whatIsVinki": "What is Vinki",
     "hero": {
       "title": "Practice technical interviews with artificial intelligence",
       "subtitle": "Vinki evaluates your answers in real time, detects your level, and helps you improve with personalized feedback."

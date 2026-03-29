@@ -31,16 +31,11 @@ export default function LoginPage() {
     <div className="vinki-auth-page">
       <Card className="vinki-auth-card" styles={{ body: { padding: '40px 36px' } }}>
         <div className="vinki-auth-logo">
-          <div className="vinki-auth-logo-icon">V</div>
-          <Title level={3} style={{ marginBottom: 4 }}>
-            {t('auth.welcomeTo')}
+          <Title level={3} style={{ marginBottom: 4, color: '#dbf227', fontWeight: 600, fontSize: '2rem' }}>
+            {t('auth.hello')}
           </Title>
-          <Text type="secondary">{t('auth.loginSubtitle')}</Text>
-          <div style={{ marginTop: 4 }}>
-            <Text type="secondary" style={{ fontStyle: 'italic', fontSize: 13 }}>
-              {t('auth.tagline')}
-            </Text>
-          </div>
+          <Text style={{ color: '#f3f4f1', display: 'block' }}>{t('auth.welcomeTo')}</Text>
+          <Text style={{ color: '#f3f4f1', display: 'block' }}>{t('auth.tagline')}</Text>
         </div>
 
         {loginError && (

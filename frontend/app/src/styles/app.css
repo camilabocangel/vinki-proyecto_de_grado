@@ -272,15 +272,20 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #042940 0%, #005c53 50%, #042940 100%);
+  background: #042940;
 }
 
 .vinki-auth-card {
   width: 420px;
   max-width: 90vw;
-  border-radius: var(--radius-lg) !important;
+  border-radius: 16px !important;
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
   border: none;
+  background: rgba(0, 0, 0, 0.5) !important;
+}
+
+.vinki-auth-card .ant-card-body {
+  padding: 40px 36px;
 }
 
 .vinki-auth-logo {
@@ -288,11 +293,77 @@
   margin-bottom: 24px;
 }
 
+/* "Hello!" title */
+.vinki-auth-logo .ant-typography h3,
+.vinki-auth-logo .ant-typography.ant-typography-h3,
+.vinki-auth-card h3.ant-typography {
+  color: #dbf227 !important;
+  font-weight: 600 !important;
+  font-size: 2rem !important;
+}
+
+/* Subtitle texts */
+.vinki-auth-logo .ant-typography-secondary,
+.vinki-auth-card .vinki-auth-logo .ant-typography {
+  color: #f3f4f1 !important;
+}
+
+/* Form labels */
+.vinki-auth-card .ant-form-item-label > label {
+  color: #f3f4f1 !important;
+}
+
+/* Form inputs — pill shape */
+.vinki-auth-card .ant-input,
+.vinki-auth-card .ant-input-affix-wrapper {
+  background: #ffffff !important;
+  border-radius: 999px !important;
+  border: none !important;
+  padding: 12px 20px;
+  color: #042940 !important;
+}
+
+.vinki-auth-card .ant-input-affix-wrapper > input.ant-input {
+  background: transparent !important;
+}
+
+/* Login button */
+.vinki-auth-card .ant-btn-primary {
+  background: #dbf227 !important;
+  color: #042940 !important;
+  border: none !important;
+  border-radius: 999px !important;
+  height: 48px;
+  font-weight: 600;
+  font-size: 16px;
+  box-shadow: 0 4px 14px rgba(219, 242, 39, 0.4);
+}
+
+.vinki-auth-card .ant-btn-primary:hover {
+  box-shadow: 0 8px 24px rgba(219, 242, 39, 0.5);
+}
+
+/* Secondary texts, links, features */
+.vinki-auth-card .ant-typography,
+.vinki-auth-card .ant-typography-secondary {
+  color: #f3f4f1 !important;
+}
+
+.vinki-auth-card a {
+  color: #dbf227 !important;
+}
+
+/* Alert styling in dark card */
+.vinki-auth-card .ant-alert {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
 .vinki-auth-logo-icon {
   width: 52px;
   height: 52px;
   border-radius: 14px;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  background: linear-gradient(135deg, #005c53, #042940);
   display: inline-flex;
   align-items: center;
   justify-content: center;

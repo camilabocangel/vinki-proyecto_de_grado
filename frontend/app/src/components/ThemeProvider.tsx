@@ -19,7 +19,7 @@ const lightTokens = {
 const darkTokens = {
   colorPrimary: '#9FC131',
   colorBgBase: '#0f2a3a',
-  colorBgLayout: '#0a1a24',
+  colorBgLayout: '#042940',
   colorTextBase: '#e8ece0',
   colorBorder: '#1a3a4a',
   borderRadius: brandTokens.radii.small,

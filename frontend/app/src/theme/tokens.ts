@@ -32,8 +32,8 @@ export const brandTokens = {
     info: '#005C53',
   },
   fonts: {
-    display: 'Inter, system-ui, -apple-system, sans-serif',
-    body: 'Inter, system-ui, -apple-system, sans-serif',
+    display: 'Open Sans, Inter, system-ui, -apple-system, sans-serif',
+    body: 'Open Sans, Inter, system-ui, -apple-system, sans-serif',
   },
   radii: {
     large: 16,
