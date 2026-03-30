@@ -29,23 +29,6 @@ import './home.css'
 
 type Mode = 'student' | 'recruiter'
 
-const STUDENT_STEPS = [
-  { icon: <AppstoreOutlined />, title: 'Elige tu área', desc: 'Frontend, Backend, Base de Datos o IA', tags: ['Frontend', 'Backend', 'Base de Datos', 'IA'] },
-  { icon: <CodeOutlined />, title: 'Selecciona tecnología', desc: 'Lenguaje y framework según tu área', tags: ['React', 'Python', 'Node.js', 'PostgreSQL'] },
-  { icon: <RocketOutlined />, title: 'Define tu nivel', desc: 'Junior, Mid o Senior', tags: ['Junior', 'Mid', 'Senior'] },
-  { icon: <ControlOutlined />, title: 'Elige el modo', desc: 'Práctica (feedback inmediato) o Evaluación (reporte final)', tags: ['Práctica', 'Evaluación'] },
-  { icon: <EditOutlined />, title: 'Responde preguntas', desc: 'Como en una entrevista real', tags: ['Texto', 'Código', 'Voz'] },
-  { icon: <RobotOutlined />, title: 'Evaluación con IA', desc: 'Resultados basados en 5 métricas estandarizadas', tags: ['5 métricas', 'Feedback', 'Nivel detectado'] },
-  { icon: <LineChartOutlined />, title: 'Revisa tu progreso', desc: 'Tu historial completo de evaluaciones', tags: ['Historial', 'Métricas', 'Plan de mejora'] },
-]
-
-const RECRUITER_STEPS = [
-  { icon: <EyeOutlined />, title: 'Visualiza candidatos', desc: 'Accede al perfil técnico de cada estudiante evaluado', tags: ['Perfiles', 'Técnico'] },
-  { icon: <RobotOutlined />, title: 'Evaluaciones con IA', desc: 'Resultados objetivos basados en 5 métricas estandarizadas', tags: ['5 métricas', 'Objetivos'] },
-  { icon: <BarChartOutlined />, title: 'Métricas comparables', desc: 'Compara candidatos', tags: ['Puntaje', 'Nivel', 'Tecnología'] },
-  { icon: <HistoryOutlined />, title: 'Historial completo', desc: 'Revisa el desempeño a lo largo del tiempo', tags: ['Historial', 'Evolución'] },
-  { icon: <StarOutlined />, title: 'Identifica talento', desc: 'Filtra y exporta los mejores perfiles técnicos', tags: ['Filtros', 'Exportar'] },
-]
 
 export default function HomePage() {
   const { t, i18n } = useTranslation()
@@ -152,7 +135,24 @@ export default function HomePage() {
   }, [])
 
   const renderCarousel = () => {
-    const items = mode === 'student' ? STUDENT_STEPS : RECRUITER_STEPS
+    const items =
+      mode === 'student'
+        ? [
+            { icon: <AppstoreOutlined />, title: t('home.student.step1.title'), desc: t('home.student.step1.desc'), tags: ['Frontend', 'Backend', 'Base de Datos', 'IA'] },
+            { icon: <CodeOutlined />, title: t('home.student.step2.title'), desc: t('home.student.step2.desc'), tags: ['React', 'Python', 'Node.js', 'PostgreSQL'] },
+            { icon: <RocketOutlined />, title: t('home.student.step3.title'), desc: t('home.student.step3.desc'), tags: ['Junior', 'Mid', 'Senior'] },
+            { icon: <ControlOutlined />, title: t('home.student.step4.title'), desc: t('home.student.step4.desc'), tags: ['Práctica', 'Evaluación'] },
+            { icon: <EditOutlined />, title: t('home.student.step5.title'), desc: t('home.student.step5.desc'), tags: ['Texto', 'Código', 'Voz'] },
+            { icon: <RobotOutlined />, title: t('home.student.step6.title'), desc: t('home.student.step6.desc'), tags: ['5 métricas', 'Feedback', 'Nivel detectado'] },
+            { icon: <LineChartOutlined />, title: t('home.student.step7.title'), desc: t('home.student.step7.desc'), tags: ['Historial', 'Métricas', 'Plan de mejora'] },
+          ]
+        : [
+            { icon: <EyeOutlined />, title: t('home.recruiter.feature1.title'), desc: t('home.recruiter.feature1.desc'), tags: ['Perfiles', 'Técnico'] },
+            { icon: <RobotOutlined />, title: t('home.recruiter.feature2.title'), desc: t('home.recruiter.feature2.desc'), tags: ['5 métricas', 'Objetivos'] },
+            { icon: <BarChartOutlined />, title: t('home.recruiter.feature3.title'), desc: t('home.recruiter.feature3.desc'), tags: ['Puntaje', 'Nivel', 'Tecnología'] },
+            { icon: <HistoryOutlined />, title: t('home.recruiter.feature4.title'), desc: t('home.recruiter.feature4.desc'), tags: ['Historial', 'Evolución'] },
+            { icon: <StarOutlined />, title: t('home.recruiter.feature5.title'), desc: t('home.recruiter.feature5.desc'), tags: ['Filtros', 'Exportar'] },
+          ]
     return (
       <>
         <div className="carousel-track" ref={carouselRef}>
