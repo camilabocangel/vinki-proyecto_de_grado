@@ -5,6 +5,12 @@ import { Form, Input, Button, Card, Typography, Alert, Space } from 'antd'
 import { MailOutlined, LockOutlined, CheckCircleOutlined } from '@ant-design/icons'
 import { useAuth } from '../../hooks/useAuth'
 import { usePageTitle } from '../../hooks/usePageTitle'
+import sunSvg from '../../assets/svg/sun.svg'
+import wavesSvg from '../../assets/svg/waves.svg'
+import arcosSvg from '../../assets/svg/arcos.svg'
+import circlesSvg from '../../assets/svg/circles.svg'
+import trianglesSvg from '../../assets/svg/traingles.svg'
+import './authPage.css'
 
 const { Title, Text } = Typography
 
@@ -29,18 +35,18 @@ export default function LoginPage() {
 
   return (
     <div className="vinki-auth-page">
+      <img src={sunSvg} alt="" className="vinki-auth-deco vinki-auth-deco-sun" aria-hidden="true" />
+      <img src={wavesSvg} alt="" className="vinki-auth-deco vinki-auth-deco-waves" aria-hidden="true" />
+      <img src={arcosSvg} alt="" className="vinki-auth-deco vinki-auth-deco-arcos" aria-hidden="true" />
+      <img src={circlesSvg} alt="" className="vinki-auth-deco vinki-auth-deco-circles" aria-hidden="true" />
+      <img src={trianglesSvg} alt="" className="vinki-auth-deco vinki-auth-deco-triangles" aria-hidden="true" />
       <Card className="vinki-auth-card" styles={{ body: { padding: '40px 36px' } }}>
         <div className="vinki-auth-logo">
-          <div className="vinki-auth-logo-icon">V</div>
-          <Title level={3} style={{ marginBottom: 4 }}>
-            {t('auth.welcomeTo')}
-          </Title>
-          <Text type="secondary">{t('auth.loginSubtitle')}</Text>
-          <div style={{ marginTop: 4 }}>
-            <Text type="secondary" style={{ fontStyle: 'italic', fontSize: 13 }}>
-              {t('auth.tagline')}
-            </Text>
-          </div>
+          <h3 style={{ marginBottom: 4, color: '#dbf227', fontWeight: 600, fontSize: '2rem' }}>
+            {t('auth.hello')}
+          </h3>
+          <Text style={{ color: '#f3f4f1', display: 'block' }}>{t('auth.welcomeTo')}</Text>
+          <Text style={{ color: '#f3f4f1', display: 'block' }}>{t('auth.tagline')}</Text>
         </div>
 
         {loginError && (

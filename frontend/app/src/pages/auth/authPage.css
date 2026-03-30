@@ -1,0 +1,69 @@
+/* ==========================================
+   Auth Page — Decorative SVG Backgrounds
+   ========================================== */
+
+.vinki-auth-page {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Shared base for all decorative SVGs */
+.vinki-auth-deco {
+  position: fixed;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Sun — centered behind the card */
+.vinki-auth-deco-sun {
+  width: 520px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.7;
+}
+
+/* Waves — bottom, full width */
+.vinki-auth-deco-waves {
+  width: 500px;
+  top: -40px;
+  left: -60px;
+  opacity: 0.2;
+}
+
+/* Arcos — top-left */
+.vinki-auth-deco-arcos {
+  width: 700px;
+  bottom: -40px;
+  left: -240px;
+  opacity: 0.2;
+}
+
+/* Circles — top-right */
+.vinki-auth-deco-circles {
+  width: 360px;
+  top: -30px;
+  right: -40px;
+  opacity: 0.2;
+}
+
+/* Triangles — bottom-left */
+.vinki-auth-deco-triangles {
+  width: 520px;
+  bottom: -20px;
+  right: -70px;
+  opacity: 0.2;
+}
+
+/* Card stays above decorations */
+.vinki-auth-page .vinki-auth-card {
+  position: relative;
+  z-index: 1;
+}
+
+/* Hide decorations on very small screens */
+@media (max-width: 575px) {
+  .vinki-auth-deco {
+    display: none;
+  }
+}

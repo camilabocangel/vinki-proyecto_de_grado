@@ -1,8 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap');
 
 :root {
-  --font-display: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Open Sans', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-body: 'Open Sans', 'Inter', system-ui, -apple-system, sans-serif;
 
   /* Primary — Green */
   --color-primary: #005c53;
@@ -20,6 +20,16 @@
   --color-sidebar: #042940;
   --color-sidebar-text: #a5b8c4;
   --color-sidebar-active: #9fc131;
+
+  /* Buttons */
+  --color-btn-primary: #dbf227;
+  --color-btn-primary-text: #042940;
+  --color-btn-secondary: #ffffff;
+  --color-btn-secondary-text: #042940;
+  --color-btn-login: #042940;
+  --color-btn-login-text: #f3f4f1;
+  --color-nav-text: #042940;
+  --color-text-primary: #042940;
 
   /* Neutral */
   --color-bg: #f3f4f1;
@@ -62,7 +72,16 @@
   --color-sidebar-text: #8a9ea8;
   --color-sidebar-active: #9fc131;
 
-  --color-bg: #0a1a24;
+  --color-btn-primary: #dbf227;
+  --color-btn-primary-text: #042940;
+  --color-btn-secondary: #ffffff;
+  --color-btn-secondary-text: #042940;
+  --color-btn-login: #dbf227;
+  --color-btn-login-text: #042940;
+  --color-nav-text: #dbf227;
+  --color-text-primary: #f3f4f1;
+
+  --color-bg: #042940;
   --color-surface: #0f2a3a;
   --color-border: #1a3a4a;
   --color-text: #e8ece0;
