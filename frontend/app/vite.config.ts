@@ -10,6 +10,12 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'),
     },
   },
+  server: {
+    host: true,
+    watch: {
+      usePolling: true,
+    },
+  },
   test: {
     globals: true,
     environment: 'jsdom',

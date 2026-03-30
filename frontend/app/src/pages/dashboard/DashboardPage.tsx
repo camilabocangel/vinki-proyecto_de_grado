@@ -17,7 +17,18 @@ import {
   Tour,
   Space,
 } from 'antd'
-import { ThunderboltFilled, ArrowRightOutlined } from '@ant-design/icons'
+import {
+  ThunderboltFilled,
+  ArrowRightOutlined,
+  TrophyOutlined,
+  FireOutlined,
+  StarOutlined,
+  RocketOutlined,
+  CrownOutlined,
+  ThunderboltOutlined,
+  BookOutlined,
+  RiseOutlined,
+} from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../../api/client'
 import { useSSE } from '../../hooks/useSSE'
@@ -58,6 +69,30 @@ interface PercentilesData {
   }
 }
 
+interface AchievementItem {
+  id: number
+  key: string
+  title: string
+  titleEn: string
+  description: string
+  descriptionEn: string
+  icon: string
+  category: string
+  unlocked: boolean
+  unlockedAt: string | null
+}
+
+const achievementIconMap: Record<string, React.ReactNode> = {
+  trophy: <TrophyOutlined />,
+  fire: <FireOutlined />,
+  star: <StarOutlined />,
+  rocket: <RocketOutlined />,
+  crown: <CrownOutlined />,
+  thunderbolt: <ThunderboltOutlined />,
+  book: <BookOutlined />,
+  rise: <RiseOutlined />,
+}
+
 function percentileColor(p: number): string {
   if (p >= 75) return '#10B981'
   if (p >= 50) return '#3B82F6'
@@ -92,7 +127,7 @@ const levelColors: Record<string, string> = {
 }
 
 export default function DashboardPage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   usePageTitle(t('nav.dashboard'))
   const navigate = useNavigate()
   useSSE()
@@ -122,6 +157,21 @@ export default function DashboardPage() {
     queryKey: ['progress'],
     queryFn: () => api.get<{ progress: ProgressDataPoint[] }>('/progress'),
   })
+
+  const { data: achievementsData } = useQuery({
+    queryKey: ['achievements'],
+    queryFn: () => api.get<AchievementItem[]>('/achievements'),
+  })
+
+  const lang = i18n.language?.startsWith('en') ? 'en' : 'es'
+
+  const recentAchievements = (achievementsData ?? [])
+    .filter((a) => a.unlocked)
+    .sort(
+      (a, b) =>
+        new Date(b.unlockedAt ?? 0).getTime() - new Date(a.unlockedAt ?? 0).getTime(),
+    )
+    .slice(0, 3)
 
   if (isLoading)
     return (
@@ -551,6 +601,55 @@ export default function DashboardPage() {
         </Card>
       )}
 
+      {/* Recent achievements */}
+      {recentAchievements.length > 0 && (
+        <Card
+          className="vinki-card"
+          title={t('achievements.recentUnlocked')}
+          style={{ marginBottom: 24 }}
+          extra={
+            <Button type="link" onClick={() => navigate('/achievements')}>
+              {t('nav.achievements')}
+              <ArrowRightOutlined />
+            </Button>
+          }
+        >
+          <Row gutter={[16, 16]}>
+            {recentAchievements.map((a) => (
+              <Col xs={24} sm={8} key={a.id}>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 12,
+                    padding: '8px 12px',
+                    borderRadius: 8,
+                    background: 'var(--color-bg-secondary, #f5f5f5)',
+                  }}
+                >
+                  <div style={{ fontSize: 24, color: '#005C53' }}>
+                    {achievementIconMap[a.icon] || <TrophyOutlined />}
+                  </div>
+                  <div>
+                    <Text strong style={{ display: 'block', fontSize: 13 }}>
+                      {lang === 'en' ? a.titleEn : a.title}
+                    </Text>
+                    <Text type="secondary" style={{ fontSize: 11 }}>
+                      {a.unlockedAt
+                        ? new Date(a.unlockedAt).toLocaleDateString('es', {
+                            day: '2-digit',
+                            month: 'short',
+                          })
+                        : ''}
+                    </Text>
+                  </div>
+                </div>
+              </Col>
+            ))}
+          </Row>
+        </Card>
+      )}
+
       {/* Recent interviews */}
       <Card
         className="vinki-card"
@@ -582,6 +681,9 @@ export default function DashboardPage() {
         />
       </Card>
 
+      {/* Transfer Learning Recommendations */}
+      <TransferCard />
+
       <Tour
         open={tourOpen}
         onClose={() => {
@@ -608,5 +710,60 @@ export default function DashboardPage() {
         ]}
       />
     </div>
+  )
+}
+
+function TransferCard() {
+  const { data: transfers = [] } = useQuery<
+    Array<{
+      fromLanguage: string
+      fromScore: number
+      toLanguage: string
+      predictedScore: number
+      confidence: number
+      reason: string
+    }>
+  >({
+    queryKey: ['transfer-recommendations'],
+    queryFn: () => api.get('/career/transfer'),
+  })
+
+  if (transfers.length === 0) return null
+
+  return (
+    <Card
+      className="vinki-card"
+      title="Expande tus habilidades"
+      style={{ marginTop: 16, marginBottom: 16 }}
+    >
+      <Row gutter={[12, 12]}>
+        {transfers.slice(0, 3).map((tr) => (
+          <Col xs={24} sm={8} key={tr.toLanguage}>
+            <Card size="small" style={{ textAlign: 'center' }}>
+              <Tag color="blue">{tr.fromLanguage}</Tag>
+              <ArrowRightOutlined style={{ margin: '0 8px' }} />
+              <Tag color="green">{tr.toLanguage}</Tag>
+              <div style={{ marginTop: 8 }}>
+                <Progress
+                  type="circle"
+                  size={60}
+                  percent={tr.predictedScore}
+                  format={(p) => `${p}`}
+                />
+              </div>
+              <Text
+                type="secondary"
+                style={{ fontSize: 12, display: 'block', marginTop: 4 }}
+              >
+                {tr.reason}
+              </Text>
+              <Tag color="orange" style={{ marginTop: 4 }}>
+                {tr.confidence}% confianza
+              </Tag>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+    </Card>
   )
 }

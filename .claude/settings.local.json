@@ -8,7 +8,11 @@
       "Bash(npx vitest:*)",
       "Bash(grep -v \"^$\")",
       "Bash(curl -s http://localhost:3001/api/health)",
-      "Bash(curl -s \"http://localhost:3001/api/catalogs/roles\")"
+      "Bash(curl -s \"http://localhost:3001/api/catalogs/roles\")",
+      "Bash(npm --version)",
+      "Bash(docker --version)",
+      "Bash(docker-compose --version)",
+      "Bash(curl -s http://localhost:5174)"
     ]
   }
 }

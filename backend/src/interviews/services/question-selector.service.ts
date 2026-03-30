@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma.service.js';
-import { EmbeddingService } from './embedding.service.js';
+import { EMBEDDING_PROVIDER, IEmbeddingProvider } from '../../llm/interfaces/embedding-provider.interface.js';
 
 interface QuestionCandidate {
   id: number;
@@ -13,7 +13,7 @@ interface QuestionCandidate {
 export class QuestionSelectorService {
   constructor(
     private prisma: PrismaService,
-    private embeddingService: EmbeddingService,
+    @Inject(EMBEDDING_PROVIDER) private embeddingService: IEmbeddingProvider,
   ) {}
 
   async selectQuestions(filters: {

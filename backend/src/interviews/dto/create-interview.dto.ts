@@ -23,6 +23,6 @@ export class CreateInterviewDto {
   @ApiProperty({ required: false, default: 'evaluation' })
   @IsOptional()
   @IsString()
-  @IsIn(['practice', 'evaluation'])
+  @IsIn(['practice', 'evaluation', 'behavioral'])
   mode?: string;
 }

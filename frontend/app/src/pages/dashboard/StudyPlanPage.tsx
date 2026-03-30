@@ -1,7 +1,12 @@
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Typography, Card, Tag, Progress, List, Spin, Empty, Space } from 'antd'
-import { BookOutlined, PlayCircleOutlined, CodeOutlined } from '@ant-design/icons'
+import { Typography, Card, Tag, Progress, List, Spin, Empty, Space, Button } from 'antd'
+import {
+  BookOutlined,
+  PlayCircleOutlined,
+  CodeOutlined,
+  DownloadOutlined,
+} from '@ant-design/icons'
 import { api } from '../../api/client'
 import { usePageTitle } from '../../hooks/usePageTitle'
 
@@ -63,9 +68,28 @@ export default function StudyPlanPage() {
     return type
   }
 
+  const handleExportPdf = () => {
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
+    window.open(`${apiUrl}/study-plan/export/pdf`, '_blank')
+  }
+
   return (
     <div style={{ maxWidth: 900, margin: '0 auto' }}>
-      <Title level={2}>{t('studyPlan.title')}</Title>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: 16,
+        }}
+      >
+        <Title level={2} style={{ margin: 0 }}>
+          {t('studyPlan.title')}
+        </Title>
+        <Button type="primary" icon={<DownloadOutlined />} onClick={handleExportPdf}>
+          Exportar PDF
+        </Button>
+      </div>
 
       <Card style={{ marginBottom: 24 }}>
         <Paragraph>{data.summary}</Paragraph>

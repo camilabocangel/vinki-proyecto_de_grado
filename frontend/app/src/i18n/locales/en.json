@@ -30,10 +30,11 @@
     "admin": "Administrator"
   },
   "auth": {
+    "hello": "Hello!",
     "login": "Sign in",
     "register": "Create account",
     "logout": "Sign out",
-    "welcomeTo": "Welcome to",
+    "welcomeTo": "Welcome to Vinki",
     "loginSubtitle": "Sign in to continue",
     "registerSubtitle": "Start practicing technical interviews",
     "email": "Email",
@@ -71,7 +72,13 @@
     "noNotifications": "No pending notifications",
     "markAllSeen": "Mark all as seen",
     "auditLogs": "Audit Logs",
-    "analytics": "Analytics"
+    "analytics": "Analytics",
+    "knowledgeBase": "Knowledge Base",
+    "compare": "Compare",
+    "achievements": "Achievements",
+    "career": "My Career",
+    "templates": "Templates",
+    "challenges": "Challenges"
   },
   "dashboard": {
     "greeting": "Hello, {{name}}",
@@ -161,6 +168,8 @@
     "evaluationMode": "Evaluation mode",
     "practiceModeDesc": "Get instant feedback per question",
     "evaluationModeDesc": "Full feedback after finishing",
+    "behavioralMode": "Behavioral mode",
+    "behavioralModeDesc": "Situational STAR-method questions",
     "evaluatingAnswer": "Evaluating answer...",
     "instantFeedback": "Instant feedback",
     "question": "Question {{num}}",
@@ -273,7 +282,16 @@
     "notes": "Notes",
     "addNote": "Add note",
     "notePlaceholder": "Write a note about this student...",
-    "noNotes": "No notes yet"
+    "noNotes": "No notes yet",
+    "compare": "Compare",
+    "compareTitle": "Candidate Comparator",
+    "selectStudentA": "Select Student A",
+    "selectStudentB": "Select Student B",
+    "totalInterviews": "Total interviews",
+    "skillRadar": "Skills radar",
+    "levelDist": "Level distribution",
+    "last5": "Last 5 interviews",
+    "selectBothStudents": "Select two students to compare"
   },
   "studyPlan": {
     "title": "Your improvement plan",
@@ -305,6 +323,7 @@
     "tryAnother": "Take another interview"
   },
   "home": {
+    "whatIsVinki": "What is Vinki",
     "hero": {
       "title": "Practice technical interviews with artificial intelligence",
       "subtitle": "Vinki evaluates your answers in real time, detects your level, and helps you improve with personalized feedback."
@@ -380,5 +399,79 @@
     "startSimulationDesc": "Click here to begin your first interview",
     "skills": "Your skills",
     "skillsDesc": "Here you'll see your progress by skill after each interview"
+  },
+  "career": {
+    "trajectory": "Trajectory",
+    "jobFit": "Job Fit",
+    "monthsToNext": "~{{months}} months to {{level}}",
+    "growthRate": "Growth: +{{rate}} pts/month",
+    "match": "{{percent}}% match",
+    "missingSkills": "Skills to develop",
+    "skillGap": "Skill gap analysis",
+    "noData": "You need at least 3 completed interviews"
+  },
+  "achievements": {
+    "title": "Achievements",
+    "subtitle": "{{unlocked}} of {{total}} achievements unlocked",
+    "all": "All",
+    "cat_interview": "Interviews",
+    "cat_skill": "Skills",
+    "cat_streak": "Streak",
+    "cat_knowledge": "Knowledge",
+    "recentUnlocked": "Recent achievements"
+  },
+  "templates": {
+    "title": "Interview Templates",
+    "subtitle": "Pre-configured interview setups for common scenarios",
+    "createTemplate": "Create Template",
+    "name": "Name",
+    "description": "Description",
+    "companyType": "Company Type",
+    "questionsCount": "Questions",
+    "public": "Public",
+    "private": "Private",
+    "visibility": "Visibility",
+    "deleteConfirm": "Delete this template?",
+    "deleted": "Template deleted",
+    "created": "Template created",
+    "startFromTemplate": "Start Interview",
+    "noTemplates": "No templates available",
+    "chooseMode": "Choose interview mode",
+    "customInterview": "Custom Interview",
+    "customInterviewDesc": "Configure your own interview step by step",
+    "fromTemplate": "From Template",
+    "fromTemplateDesc": "Start from a pre-configured template",
+    "backToModes": "Back to mode selection",
+    "selectTemplate": "Select a template",
+    "questionSelector": "Select questions",
+    "searchQuestions": "Search questions...",
+    "addToTemplate": "Add",
+    "removeFromTemplate": "Remove",
+    "selectedQuestions": "Selected questions",
+    "publicToggle": "Make public",
+    "or": "or"
+  },
+  "challenges": {
+    "title": "Challenges & Leaderboard",
+    "subtitle": "Compete in seasonal challenges and climb the rankings",
+    "activeChallenges": "Active Challenges",
+    "globalLeaderboard": "Global Leaderboard",
+    "challengeLeaderboards": "Challenge Leaderboards",
+    "join": "Join",
+    "joined": "Joined",
+    "completed": "Completed!",
+    "endsIn": "Ends in",
+    "days": "days",
+    "participants": "participants",
+    "progress": "Progress",
+    "rank": "Rank",
+    "name": "Name",
+    "score": "Score",
+    "interviews": "Interviews",
+    "resetsIn": "Resets in {{days}} days",
+    "noChallenges": "No active challenges at the moment",
+    "noParticipants": "No participants yet",
+    "you": "(You)",
+    "target": "Target"
   }
 }

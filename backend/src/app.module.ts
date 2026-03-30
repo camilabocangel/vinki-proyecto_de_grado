@@ -14,6 +14,10 @@ import { EvaluationModule } from './evaluation/evaluation.module.js';
 import { ReportsModule } from './reports/reports.module.js';
 import { NotificationsModule } from './notifications/notifications.module.js';
 import { HealthModule } from './health/health.module.js';
+import { LlmModule } from './llm/llm.module.js';
+import { KnowledgeModule } from './knowledge/knowledge.module.js';
+import { AchievementsModule } from './achievements/achievements.module.js';
+import { ChallengesModule } from './challenges/challenges.module.js';
 
 @Module({
   imports: [
@@ -66,6 +70,9 @@ import { HealthModule } from './health/health.module.js';
     // Events
     EventEmitterModule.forRoot(),
 
+    // LLM provider abstraction (global)
+    LlmModule,
+
     // Feature modules
     AuthModule,
     CatalogsModule,
@@ -73,6 +80,9 @@ import { HealthModule } from './health/health.module.js';
     EvaluationModule,
     ReportsModule,
     NotificationsModule,
+    KnowledgeModule,
+    AchievementsModule,
+    ChallengesModule,
     HealthModule,
   ],
   providers: [

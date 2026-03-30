@@ -45,6 +45,22 @@ class EnvironmentVariables {
 
   @IsString()
   @IsOptional()
+  LLM_EMBEDDING_PROVIDER?: string;
+
+  @IsString()
+  @IsOptional()
+  LLM_TEXT_PROVIDER?: string;
+
+  @IsString()
+  @IsOptional()
+  GOOGLE_AI_API_KEY?: string;
+
+  @IsString()
+  @IsOptional()
+  EMBEDDING_DIMENSIONS?: string;
+
+  @IsString()
+  @IsOptional()
   AWS_S3_BUCKET?: string;
 
   @IsString()

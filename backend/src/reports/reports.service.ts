@@ -167,6 +167,7 @@ export class ReportsService {
         orderNumber: q.orderNumber,
         questionTextSnapshot: q.questionTextSnapshot,
         skillName: q.question?.skill?.name ?? null,
+        source: q.question?.source ?? null,
         answer: q.answers[0] ?? null,
         evaluation: q.answers[0]?.evaluation ?? null,
       })),
@@ -487,6 +488,164 @@ export class ReportsService {
     return plan;
   }
 
+  async generateStudyPlanPdf(plan: any): Promise<Buffer> {
+    const PDFDocument = (await import('pdfkit')).default;
+    const doc = new PDFDocument({ margin: 50 });
+    const chunks: Buffer[] = [];
+
+    doc.on('data', (chunk: Buffer) => chunks.push(chunk));
+
+    doc.fontSize(22).fillColor('#4F46E5').text('Vinki - Plan de Estudio', { align: 'center' });
+    doc.moveDown(0.5);
+    doc.fontSize(10).fillColor('#6B7280').text(`Generado: ${new Date().toLocaleDateString('es')}`, { align: 'center' });
+    doc.moveDown(1);
+
+    if (plan.summary) {
+      doc.fontSize(12).fillColor('#111827').text(plan.summary);
+      doc.moveDown(1);
+    }
+
+    if (plan.strengths?.length > 0) {
+      doc.fontSize(16).fillColor('#059669').text('Fortalezas');
+      doc.moveDown(0.3);
+      for (const s of plan.strengths) {
+        doc.fontSize(11).fillColor('#111827').text(`  - ${s}`);
+      }
+      doc.moveDown(1);
+    }
+
+    if (plan.improvements?.length > 0) {
+      doc.fontSize(16).fillColor('#DC2626').text('Areas de Mejora');
+      doc.moveDown(0.3);
+
+      for (const item of plan.improvements) {
+        doc.moveDown(0.5);
+        doc.fontSize(13).fillColor('#1F2937').text(`${item.skill} (Score: ${item.currentScore}/100)`);
+        doc.moveDown(0.2);
+
+        if (item.recommendations) {
+          for (const rec of item.recommendations) {
+            const icon = rec.type === 'article' ? '[Art]' : rec.type === 'video' ? '[Vid]' : '[Ej]';
+            doc.fontSize(10).fillColor('#4B5563').text(`    ${icon}  ${rec.title}`);
+            if (rec.url && rec.url !== '#') {
+              doc.fontSize(9).fillColor('#2563EB').text(`       ${rec.url}`);
+            }
+          }
+        }
+      }
+    }
+
+    doc.end();
+
+    return new Promise((resolve) => {
+      doc.on('end', () => resolve(Buffer.concat(chunks)));
+    });
+  }
+
+  async compareStudents(studentIds: number[]) {
+    const profiles = await Promise.all(
+      studentIds.map(async (studentId) => {
+        const user = await this.prisma.user.findUnique({
+          where: { id: studentId, role: 'student' },
+        });
+        if (!user) throw new NotFoundException(`Student ${studentId} not found`);
+
+        const interviews = await this.prisma.interview.findMany({
+          where: { userId: studentId, evaluationStatus: 'completed' },
+          orderBy: { startedAt: 'desc' },
+          include: {
+            level: true,
+            questions: {
+              include: {
+                answers: {
+                  include: { evaluation: { include: { detectedLevel: true } } },
+                },
+              },
+            },
+          },
+        });
+
+        const skillScores = await this.prisma.userSkillScore.findMany({
+          where: { userId: studentId },
+          include: { skill: true },
+        });
+
+        // Avg score across all completed interviews
+        const allEvals = interviews.flatMap((iv) =>
+          iv.questions.flatMap((q) =>
+            q.answers.filter((a) => a.evaluation).map((a) => a.evaluation!),
+          ),
+        );
+        const avgScore =
+          allEvals.length > 0
+            ? allEvals.reduce(
+                (sum, e) =>
+                  sum +
+                  ((e.technicalCorrectness ?? 0) +
+                    (e.clarityOfExplanation ?? 0) +
+                    (e.communication ?? 0) +
+                    (e.confidence ?? 0) +
+                    (e.problemSolving ?? 0)) /
+                    5,
+                0,
+              ) / allEvals.length
+            : null;
+
+        // Level distribution
+        const levelCounts: Record<string, number> = {};
+        for (const e of allEvals) {
+          const name = (e as any).detectedLevel?.name;
+          if (name) levelCounts[name] = (levelCounts[name] ?? 0) + 1;
+        }
+
+        // Last 5 interview scores
+        const last5 = interviews.slice(0, 5).map((iv) => {
+          const evals = iv.questions.flatMap((q) =>
+            q.answers.filter((a) => a.evaluation).map((a) => a.evaluation!),
+          );
+          const score =
+            evals.length > 0
+              ? evals.reduce(
+                  (sum, e) =>
+                    sum +
+                    ((e.technicalCorrectness ?? 0) +
+                      (e.clarityOfExplanation ?? 0) +
+                      (e.communication ?? 0) +
+                      (e.confidence ?? 0) +
+                      (e.problemSolving ?? 0)) /
+                      5,
+                  0,
+                ) / evals.length
+              : null;
+          return {
+            interviewId: iv.id,
+            date: iv.startedAt,
+            score,
+          };
+        });
+
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          interviewCount: interviews.length,
+          avgScore,
+          skillScores: skillScores.map((ss) => ({
+            skillName: ss.skill.name,
+            score: ss.score,
+          })),
+          levelDistribution: Object.entries(levelCounts).map(([level, count]) => ({
+            level,
+            count,
+          })),
+          last5Interviews: last5,
+        };
+      }),
+    );
+
+    return { students: profiles };
+  }
+
   async getStudentProfile(studentId: number) {
     const user = await this.prisma.user.findUnique({
       where: { id: studentId, role: 'student' },
@@ -661,6 +820,7 @@ export class ReportsService {
         orderNumber: q.orderNumber,
         questionTextSnapshot: q.questionTextSnapshot,
         skillName: q.question?.skill?.name ?? null,
+        source: q.question?.source ?? null,
         answer: q.answers[0] ?? null,
         evaluation: q.answers[0]?.evaluation ?? null,
       })),

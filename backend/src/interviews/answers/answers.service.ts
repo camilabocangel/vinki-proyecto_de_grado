@@ -167,6 +167,50 @@ export class AnswersService {
       },
     });
 
+    // Adaptive difficulty: if detected level > chosen level, upgrade next unanswered question
+    await this.adaptNextQuestion(interview, interviewQuestion, detectedLevelId);
+
     return evaluation;
+  }
+
+  private async adaptNextQuestion(
+    interview: { id: number; chosenLevelId: number; languageId: number | null; frameworkId: number | null },
+    currentQuestion: { orderNumber: number },
+    detectedLevelId: number | null,
+  ) {
+    if (!detectedLevelId || detectedLevelId <= interview.chosenLevelId) return;
+
+    // Find next unanswered question in this interview
+    const nextQuestion = await this.prisma.interviewQuestion.findFirst({
+      where: {
+        interviewId: interview.id,
+        orderNumber: { gt: currentQuestion.orderNumber },
+        answers: { none: {} },
+      },
+      orderBy: { orderNumber: 'asc' },
+    });
+
+    if (!nextQuestion) return;
+
+    // Find a harder question from the bank
+    const harderQuestion = await this.prisma.question.findFirst({
+      where: {
+        levelId: detectedLevelId,
+        languageId: interview.languageId ?? undefined,
+        type: { not: 'behavioral' },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (!harderQuestion) return;
+
+    // Swap the question
+    await this.prisma.interviewQuestion.update({
+      where: { id: nextQuestion.id },
+      data: {
+        questionId: harderQuestion.id,
+        questionTextSnapshot: harderQuestion.questionText,
+      },
+    });
   }
 }

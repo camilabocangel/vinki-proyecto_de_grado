@@ -25,5 +25,5 @@ export interface AnswerInputWithLevel extends AnswerInput {
 }
 
 export interface IEvaluatorService {
-  evaluate(answers: AnswerInput[]): Promise<EvaluationOutput[]>;
+  evaluate(answers: AnswerInput[], isBehavioral?: boolean): Promise<EvaluationOutput[]>;
 }

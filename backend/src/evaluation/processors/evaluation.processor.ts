@@ -57,8 +57,15 @@ export class EvaluationProcessor extends WorkerHost {
       const dbLevels = await this.prisma.level.findMany();
       const levelByName = new Map(dbLevels.map((l) => [l.name, l.id]));
 
-      // Run evaluation
-      const results = await this.evaluator.evaluate(answerInputs);
+      // Check if this is a behavioral interview
+      const interviewData = await this.prisma.interview.findUnique({
+        where: { id: interviewId },
+        select: { mode: true, userId: true },
+      });
+      const isBehavioral = interviewData?.mode === 'behavioral';
+
+      // Run evaluation (pass mode hint for behavioral rubrics)
+      const results = await this.evaluator.evaluate(answerInputs, isBehavioral);
 
       // Build a map: answerId -> skillId for UserSkillScore updates
       const answerSkillMap = new Map<number, number>();
@@ -71,10 +78,7 @@ export class EvaluationProcessor extends WorkerHost {
       }
 
       // Get userId for skill score update
-      const interview = await this.prisma.interview.findUnique({
-        where: { id: interviewId },
-      });
-      const userId = interview?.userId;
+      const userId = interviewData?.userId;
 
       // Persist evaluations and update skill scores
       for (const result of results) {

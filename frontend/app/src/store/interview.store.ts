@@ -14,6 +14,7 @@ export interface InterviewQuestion {
   orderNumber: number
   answers?: AnswerData[]
   answer?: AnswerData | null
+  question?: { source: string | null }
 }
 
 export interface Interview {

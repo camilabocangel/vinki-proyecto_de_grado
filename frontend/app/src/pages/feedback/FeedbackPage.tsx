@@ -17,7 +17,12 @@ import {
   Input,
   message,
 } from 'antd'
-import { DownloadOutlined, ShareAltOutlined, CopyOutlined } from '@ant-design/icons'
+import {
+  DownloadOutlined,
+  ShareAltOutlined,
+  CopyOutlined,
+  RobotOutlined,
+} from '@ant-design/icons'
 import { api } from '../../api/client'
 import { SkillRadarChart } from '../../components/SkillRadarChart'
 import { usePageTitle } from '../../hooks/usePageTitle'
@@ -42,7 +47,8 @@ interface ReportItem {
   orderNumber: number
   questionTextSnapshot: string
   skillName: string | null
-  answer: { answerText: string | null } | null
+  source: string | null
+  answer: { answerText: string | null; audioUrl: string | null } | null
   evaluation: Evaluation | null
 }
 
@@ -307,6 +313,13 @@ export default function FeedbackPage() {
                     {item.skillName.replace(/-/g, ' ')}
                   </Tag>
                 )}
+                {item.source === 'rag' ? (
+                  <Tag color="volcano" icon={<RobotOutlined />}>
+                    RAG
+                  </Tag>
+                ) : (
+                  <Tag color="blue">Curada</Tag>
+                )}
                 <Text>
                   {item.questionTextSnapshot.slice(0, 100)}
                   {item.questionTextSnapshot.length > 100 ? '...' : ''}
@@ -330,6 +343,15 @@ export default function FeedbackPage() {
                     {t('feedback.yourAnswer')}
                   </Text>
                   <Text>{item.answer?.answerText || t('feedback.noAnswer')}</Text>
+                  {item.answer?.audioUrl &&
+                    item.answer.audioUrl !== 'audio://uploaded' && (
+                      <div style={{ marginTop: 8 }}>
+                        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+                        <audio controls style={{ width: '100%' }}>
+                          <source src={item.answer.audioUrl} />
+                        </audio>
+                      </div>
+                    )}
                 </div>
                 {item.evaluation && (
                   <>
