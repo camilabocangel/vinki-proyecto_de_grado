@@ -50,7 +50,7 @@ export default function ProfilePage() {
   const [editingProfile, setEditingProfile] = useState(false)
 
   const updateProfileMutation = useMutation({
-    mutationFn: (values: { name?: string; email?: string }) =>
+    mutationFn: (values: { name?: string }) =>
       api.put<{
         id: number
         name: string
@@ -190,7 +190,7 @@ export default function ProfilePage() {
               <Form
                 form={profileForm}
                 layout="vertical"
-                onFinish={(values) => updateProfileMutation.mutate(values)}
+                onFinish={({ email: _, ...values }) => updateProfileMutation.mutate(values)}
                 initialValues={{ name: user.name, email: user.email }}
               >
                 <Form.Item
@@ -203,12 +203,8 @@ export default function ProfilePage() {
                 <Form.Item
                   name="email"
                   label={t('profile.email')}
-                  rules={[
-                    { required: true, message: t('profile.enterEmail') },
-                    { type: 'email', message: t('profile.invalidEmail') },
-                  ]}
                 >
-                  <Input prefix={<MailOutlined />} />
+                  <Input prefix={<MailOutlined />} disabled />
                 </Form.Item>
                 <div style={{ display: 'flex', gap: 12 }}>
                   <Button
