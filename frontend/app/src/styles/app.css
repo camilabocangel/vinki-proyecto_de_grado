@@ -4,9 +4,9 @@
 
 /* Sidebar */
 .vinki-sidebar {
-  background: var(--color-sidebar) !important;
+  background: #042940 !important;
   border-right: none;
-  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
+  box-shadow: 4px 0 24px rgba(4, 41, 64, 0.15);
 }
 
 .vinki-sidebar .ant-layout-sider-children {
@@ -70,14 +70,21 @@
 
 .vinki-sidebar .ant-menu-item:hover {
   color: #fff !important;
-  background: rgba(159, 193, 49, 0.15) !important;
+  background: rgba(255, 255, 255, 0.07) !important;
 }
 
 .vinki-sidebar .ant-menu-item-selected {
-  background: var(--color-primary) !important;
-  color: #fff !important;
+  background: rgba(255, 255, 255, 0.12) !important; /* glass blanco */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  color: #f3f4f1 !important; /* #042940 — letras e icono */
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(0, 92, 83, 0.35);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.vinki-sidebar .ant-menu-item-selected .anticon {
+  color: #f3f4f1 !important;
 }
 
 .vinki-sidebar .ant-menu-item .anticon {
