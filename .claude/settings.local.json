@@ -12,7 +12,9 @@
       "Bash(npm --version)",
       "Bash(docker --version)",
       "Bash(docker-compose --version)",
-      "Bash(curl -s http://localhost:5174)"
+      "Bash(curl -s http://localhost:5174)",
+      "mcp__claude_ai_Figma__use_figma",
+      "mcp__claude_ai_Figma__get_screenshot"
     ]
   }
 }

@@ -24,8 +24,9 @@ export default function LoginPage() {
   const onFinish = async (values: { email: string; password: string }) => {
     setLoading(true)
     try {
-      await login(values)
-      navigate('/dashboard')
+      const result = await login(values)
+      const role = result.user?.role
+      navigate(role === 'recruiter' ? '/recruiter' : '/dashboard')
     } catch {
       // error handled by mutation
     } finally {

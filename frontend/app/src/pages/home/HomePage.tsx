@@ -33,7 +33,7 @@ type Mode = 'student' | 'recruiter'
 export default function HomePage() {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
-  const { isAuthenticated, isLoading } = useAuth()
+  const { user, isAuthenticated, isLoading } = useAuth()
   const [mode, setMode] = useState<Mode>('student')
   const { isDark, toggle: toggleTheme } = useTheme()
 
@@ -200,7 +200,7 @@ export default function HomePage() {
   }, [mode])
 
   if (!isLoading && isAuthenticated) {
-    return <Navigate to="/dashboard" replace />
+    return <Navigate to={user?.role === 'recruiter' ? '/recruiter' : '/dashboard'} replace />
   }
 
   return (
