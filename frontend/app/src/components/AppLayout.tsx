@@ -194,7 +194,10 @@ export function AppLayout() {
         <div className="vinki-logout">
           <Button
             icon={<LogoutOutlined />}
-            onClick={() => logout().then(() => navigate('/'))}
+            onClick={() => {
+              navigate('/')
+              logout()
+            }}
           >
             {t('auth.logout')}
           </Button>
@@ -293,9 +296,9 @@ export function AppLayout() {
                     icon: <LogoutOutlined />,
                     label: t('auth.logout'),
                     danger: true,
-                    onClick: async () => {
-                      await logout()
+                    onClick: () => {
                       navigate('/')
+                      logout()
                     },
                   },
                 ],

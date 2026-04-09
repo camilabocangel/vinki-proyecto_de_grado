@@ -696,13 +696,23 @@ export class ReportsService {
       };
     });
 
+    const notes = await this.prisma.recruiterNote.findMany({
+      where: { studentId },
+      orderBy: { createdAt: 'desc' },
+    });
+
     return {
-      user: { id: user.id, name: user.name, email: user.email, createdAt: user.createdAt },
-      interviews: mappedInterviews,
+      user: { id: user.id, name: user.name, email: user.email, role: user.role, createdAt: user.createdAt },
+      recentInterviews: mappedInterviews,
       skillScores: skillScores.map((ss) => ({
         skillId: ss.skillId,
         skillName: ss.skill.name,
         score: ss.score,
+      })),
+      notes: notes.map((n) => ({
+        id: n.id,
+        content: n.content,
+        createdAt: n.createdAt,
       })),
     };
   }
