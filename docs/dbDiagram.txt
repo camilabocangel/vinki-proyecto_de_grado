@@ -1,118 +1,334 @@
+// ============================================
+// Vinki - Diagrama de Base de Datos (DBML)
+// Plataforma de simulación de entrevistas con IA
+// ============================================
+
+// --- Usuarios y Autenticación ---
+
 Table users {
   id int [pk, increment]
-  name varchar
-  email varchar [unique]
-  password_hash varchar
-  created_at timestamp
+  name varchar(255)
+  email varchar(255) [unique]
+  password_hash varchar(255)
+  role user_role [default: 'student']
+  created_at timestamptz [default: `now()`]
 }
+
+Enum user_role {
+  student
+  recruiter
+  admin
+}
+
+// --- Catálogos ---
 
 Table roles {
   id int [pk, increment]
-  name varchar
+  name varchar(120) [unique]
 }
 
 Table languages {
   id int [pk, increment]
-  name varchar
+  name varchar(120) [unique]
+}
+
+Table role_languages {
+  role_id int [pk]
+  language_id int [pk]
 }
 
 Table frameworks {
   id int [pk, increment]
-  name varchar
-  language_id int
+  name varchar(120)
+  language_id int [not null]
 }
 
 Table levels {
   id int [pk, increment]
-  name varchar
+  name varchar(120) [unique]
 }
 
 Table skills {
   id int [pk, increment]
-  name varchar
+  name varchar(150) [unique]
 }
+
+// --- Preguntas ---
 
 Table questions {
   id int [pk, increment]
   question_text text
-  type varchar
-  source varchar
-  language_id int
+  type varchar(80)
+  source varchar(120)
+  language_id int [not null]
   framework_id int
-  level_id int
-  skill_id int
-  embedding vector
-  created_at timestamp
+  level_id int [not null]
+  skill_id int [not null]
+  embedding "vector(1536)"
+  created_at timestamptz [default: `now()`]
+}
+
+// --- Entrevistas ---
+
+Enum evaluation_status {
+  pending
+  processing
+  completed
+  failed
 }
 
 Table interviews {
   id int [pk, increment]
-  user_id int
-  role_id int
+  user_id int [not null]
+  role_id int [not null]
   language_id int
   framework_id int
-  chosen_level_id int
-  started_at timestamp
-  finished_at timestamp
+  chosen_level_id int [not null]
+  started_at timestamptz [default: `now()`]
+  finished_at timestamptz
+  evaluation_status evaluation_status [default: 'pending']
+  evaluation_notification_seen boolean [default: false]
+  mode varchar(20) [default: 'evaluation']
 }
 
 Table interview_questions {
   id int [pk, increment]
-  interview_id int
-  question_id int
+  interview_id int [not null]
+  question_id int [not null]
   question_text_snapshot text
   order_number int
-  generated_by_ai boolean
+  generated_by_ai boolean [default: true]
 }
+
+// --- Respuestas y Evaluaciones ---
 
 Table answers {
   id int [pk, increment]
-  interview_question_id int
+  interview_question_id int [not null]
   answer_text text
-  audio_url varchar
-  answered_at timestamp
+  audio_url varchar(500)
+  answered_at timestamptz [default: `now()`]
 }
 
 Table answer_evaluations {
   id int [pk, increment]
-  answer_id int
-  technical_correctness float
-  clarity_of_explanation float
-  communication float
-  confidence float
-  problem_solving float
+  answer_id int [unique, not null]
+  technical_correctness real
+  clarity_of_explanation real
+  communication real
+  confidence real
+  problem_solving real
   detected_level_id int
   feedback_text text
-  evaluated_at timestamp
+  junior_answer text
+  mid_answer text
+  senior_answer text
+  evaluated_at timestamptz [default: `now()`]
 }
+
+// --- Puntajes de Habilidades ---
 
 Table user_skill_scores {
   id int [pk, increment]
-  user_id int
-  skill_id int
-  score float
-  last_updated timestamp
+  user_id int [not null]
+  skill_id int [not null]
+  score real
+  last_updated timestamptz [default: `now()`]
+
+  indexes {
+    (user_id, skill_id) [unique]
+  }
 }
 
+// --- Logros y Gamificación ---
+
+Table achievements {
+  id int [pk, increment]
+  key varchar(100) [unique]
+  title varchar(200)
+  title_en varchar(200)
+  description varchar(500)
+  description_en varchar(500)
+  icon varchar(50)
+  category varchar(50)
+  threshold int [default: 1]
+  created_at timestamptz [default: `now()`]
+}
+
+Table user_achievements {
+  id int [pk, increment]
+  user_id int [not null]
+  achievement_id int [not null]
+  unlocked_at timestamptz [default: `now()`]
+
+  indexes {
+    (user_id, achievement_id) [unique]
+  }
+}
+
+// --- Desafíos ---
+
+Table challenges {
+  id int [pk, increment]
+  title varchar(200)
+  title_en varchar(200)
+  description varchar(500)
+  description_en varchar(500)
+  type varchar(50)
+  target int
+  metric varchar(100)
+  icon varchar(50)
+  start_date timestamptz
+  end_date timestamptz
+  is_active boolean [default: true]
+  created_at timestamptz [default: `now()`]
+}
+
+Table challenge_participations {
+  id int [pk, increment]
+  user_id int [not null]
+  challenge_id int [not null]
+  progress int [default: 0]
+  completed boolean [default: false]
+  completed_at timestamptz
+  joined_at timestamptz [default: `now()`]
+
+  indexes {
+    (user_id, challenge_id) [unique]
+  }
+}
+
+// --- Plantillas de Entrevista ---
+
+Table interview_templates {
+  id int [pk, increment]
+  name varchar(200)
+  description varchar(500)
+  company_type varchar(100)
+  role_id int [not null]
+  level_id int [not null]
+  language_id int
+  framework_id int
+  is_public boolean [default: false]
+  created_by_id int [not null]
+  created_at timestamptz [default: `now()`]
+}
+
+Table template_questions {
+  id int [pk, increment]
+  template_id int [not null]
+  question_id int [not null]
+  order_number int
+}
+
+// --- Base de Conocimiento (RAG) ---
+
+Table knowledge_documents {
+  id int [pk, increment]
+  title varchar(500)
+  source_url varchar(1000)
+  raw_content text
+  language_id int
+  framework_id int
+  uploaded_by_id int [not null]
+  status varchar(30) [default: 'pending']
+  created_at timestamptz [default: `now()`]
+  updated_at timestamptz
+}
+
+Table knowledge_chunks {
+  id int [pk, increment]
+  document_id int [not null]
+  chunk_index int
+  content text
+  token_count int
+  embedding "vector(1536)"
+  created_at timestamptz [default: `now()`]
+}
+
+// --- Auditoría ---
+
+Table audit_logs {
+  id int [pk, increment]
+  user_id int [not null]
+  action varchar(100)
+  entity varchar(100)
+  entity_id int
+  details text
+  created_at timestamptz [default: `now()`]
+}
+
+// --- Notas del Reclutador ---
+
+Table recruiter_notes {
+  id int [pk, increment]
+  recruiter_id int [not null]
+  student_id int [not null]
+  interview_id int
+  content text
+  created_at timestamptz [default: `now()`]
+}
+
+// ============================================
+// RELACIONES
+// ============================================
+
+// Catálogos
+Ref: role_languages.role_id > roles.id
+Ref: role_languages.language_id > languages.id
 Ref: frameworks.language_id > languages.id
+
+// Preguntas
 Ref: questions.language_id > languages.id
 Ref: questions.framework_id > frameworks.id
 Ref: questions.level_id > levels.id
 Ref: questions.skill_id > skills.id
 
+// Entrevistas
 Ref: interviews.user_id > users.id
 Ref: interviews.role_id > roles.id
 Ref: interviews.language_id > languages.id
 Ref: interviews.framework_id > frameworks.id
 Ref: interviews.chosen_level_id > levels.id
 
-Ref: interview_questions.interview_id > interviews.id
+// Preguntas de entrevista
+Ref: interview_questions.interview_id > interviews.id [delete: cascade]
 Ref: interview_questions.question_id > questions.id
 
-Ref: answers.interview_question_id > interview_questions.id
-
-Ref: answer_evaluations.answer_id > answers.id
+// Respuestas y evaluaciones
+Ref: answers.interview_question_id > interview_questions.id [delete: cascade]
+Ref: answer_evaluations.answer_id > answers.id [delete: cascade]
 Ref: answer_evaluations.detected_level_id > levels.id
 
-Ref: user_skill_scores.user_id > users.id
+// Puntajes
+Ref: user_skill_scores.user_id > users.id [delete: cascade]
 Ref: user_skill_scores.skill_id > skills.id
+
+// Logros
+Ref: user_achievements.user_id > users.id
+Ref: user_achievements.achievement_id > achievements.id
+
+// Desafíos
+Ref: challenge_participations.user_id > users.id
+Ref: challenge_participations.challenge_id > challenges.id
+
+// Plantillas
+Ref: interview_templates.role_id > roles.id
+Ref: interview_templates.level_id > levels.id
+Ref: interview_templates.language_id > languages.id
+Ref: interview_templates.framework_id > frameworks.id
+Ref: interview_templates.created_by_id > users.id
+Ref: template_questions.template_id > interview_templates.id [delete: cascade]
+Ref: template_questions.question_id > questions.id
+
+// Base de conocimiento
+Ref: knowledge_documents.language_id > languages.id
+Ref: knowledge_documents.framework_id > frameworks.id
+Ref: knowledge_documents.uploaded_by_id > users.id
+Ref: knowledge_chunks.document_id > knowledge_documents.id [delete: cascade]
+
+// Auditoría y notas
+Ref: audit_logs.user_id > users.id
+Ref: recruiter_notes.recruiter_id > users.id
+Ref: recruiter_notes.student_id > users.id
+Ref: recruiter_notes.interview_id > interviews.id
