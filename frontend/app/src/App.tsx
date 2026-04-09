@@ -73,20 +73,24 @@ export default function App() {
             {/* Protected routes */}
             <Route element={<ProtectedRoute />}>
               <Route element={<AppLayout />}>
-                {/* Student */}
-                <Route path="/dashboard" element={<DashboardPage />} />
-                <Route path="/interview/new" element={<InterviewWizardPage />} />
-                <Route path="/interview/:id" element={<InterviewSessionPage />} />
-                <Route
-                  path="/interview/:id/confirmation"
-                  element={<InterviewConfirmationPage />}
-                />
-                <Route path="/feedback/:id" element={<FeedbackPage />} />
-                <Route path="/history" element={<FeedbackHistoryPage />} />
-                <Route path="/study-plan" element={<StudyPlanPage />} />
-                <Route path="/achievements" element={<AchievementsPage />} />
-                <Route path="/career" element={<CareerInsightsPage />} />
-                <Route path="/challenges" element={<ChallengesPage />} />
+                {/* Student-only routes */}
+                <Route element={<ProtectedRoute roles={['student', 'admin']} />}>
+                  <Route path="/dashboard" element={<DashboardPage />} />
+                  <Route path="/interview/new" element={<InterviewWizardPage />} />
+                  <Route path="/interview/:id" element={<InterviewSessionPage />} />
+                  <Route
+                    path="/interview/:id/confirmation"
+                    element={<InterviewConfirmationPage />}
+                  />
+                  <Route path="/feedback/:id" element={<FeedbackPage />} />
+                  <Route path="/history" element={<FeedbackHistoryPage />} />
+                  <Route path="/study-plan" element={<StudyPlanPage />} />
+                  <Route path="/achievements" element={<AchievementsPage />} />
+                  <Route path="/career" element={<CareerInsightsPage />} />
+                  <Route path="/challenges" element={<ChallengesPage />} />
+                </Route>
+
+                {/* Shared routes (all authenticated users) */}
                 <Route path="/settings" element={<ProfilePage />} />
 
                 {/* Recruiter */}

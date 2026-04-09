@@ -10,11 +10,14 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import type { Request } from 'express';
 import { JwtCookieGuard } from '../auth/guards/jwt-cookie.guard.js';
+import { RolesGuard } from '../auth/guards/roles.guard.js';
+import { Roles } from '../auth/guards/roles.decorator.js';
 import { ChallengesService } from './challenges.service.js';
 
 @ApiTags('challenges')
 @Controller()
-@UseGuards(JwtCookieGuard)
+@UseGuards(JwtCookieGuard, RolesGuard)
+@Roles('student')
 export class ChallengesController {
   constructor(private readonly challengesService: ChallengesService) {}
 
