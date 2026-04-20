@@ -31,6 +31,7 @@ import { useTheme } from '../hooks/useTheme'
 import { api } from '../api/client'
 import { Breadcrumbs } from './Breadcrumbs'
 import { GlobalSearch } from './GlobalSearch'
+import vinkiLogo from '../assets/images/vinkiLogo.png'
 
 interface PendingNotifications {
   count: number
@@ -149,7 +150,17 @@ export function AppLayout() {
         }}
       >
         <div className="vinki-logo">
-          <div className="vinki-logo-icon">V</div>
+          <img
+            src={vinkiLogo}
+            alt="Vinki"
+            className="vinki-logo-icon"
+            style={{
+              width: 36,
+              height: 36,
+              objectFit: 'contain',
+              background: 'transparent',
+            }}
+          />
           <span className="vinki-logo-text">Vinki</span>
         </div>
 

@@ -684,6 +684,7 @@ export class ReportsService {
               (e.communication ?? 0) + (e.confidence ?? 0) + (e.problemSolving ?? 0)) / 5, 0,
           ) / evals.length
         : null;
+      const detectedLevels = evals.map((e) => e.detectedLevelId).filter(Boolean);
       return {
         id: iv.id,
         startedAt: iv.startedAt,
@@ -692,9 +693,17 @@ export class ReportsService {
         roleName: iv.role.name,
         levelName: iv.level.name,
         languageName: iv.language?.name ?? null,
+        questionCount: iv.questions.length,
         avgScore,
+        detectedLevel: detectedLevels.length > 0 ? iv.level.name : null,
       };
     });
+
+    // Compute overall average score across all completed interviews
+    const scoredInterviews = mappedInterviews.filter((iv) => iv.avgScore != null);
+    const averageScore = scoredInterviews.length > 0
+      ? scoredInterviews.reduce((sum, iv) => sum + (iv.avgScore ?? 0), 0) / scoredInterviews.length
+      : null;
 
     const notes = await this.prisma.recruiterNote.findMany({
       where: { studentId },
@@ -703,6 +712,7 @@ export class ReportsService {
 
     return {
       user: { id: user.id, name: user.name, email: user.email, role: user.role, createdAt: user.createdAt },
+      averageScore,
       recentInterviews: mappedInterviews,
       skillScores: skillScores.map((ss) => ({
         skillId: ss.skillId,

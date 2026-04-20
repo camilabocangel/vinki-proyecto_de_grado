@@ -24,6 +24,8 @@ import { useAuth } from '../../hooks/useAuth'
 import { useTheme } from '../../hooks/useTheme'
 import { usePageTitle } from '../../hooks/usePageTitle'
 import heroImg from '../../assets/images/hero.png'
+import vinkiLogo from '../../assets/images/vinkiLogo.png'
+import vinkiLogoNegro from '../../assets/images/vinkiLogoNegro.png'
 import heroShape from '../../assets/svg/semicircles.svg'
 import './home.css'
 
@@ -208,7 +210,17 @@ export default function HomePage() {
       {/* Header */}
       <header className="home-header">
         <div className="home-header-logo">
-          <div className="home-header-logo-icon">V</div>
+          <img
+            src={isDark ? vinkiLogo : vinkiLogoNegro}
+            alt="Vinki"
+            className="home-header-logo-icon"
+            style={{
+              width: 40,
+              height: 40,
+              objectFit: 'contain',
+              background: 'transparent',
+            }}
+          />
           <span className="home-header-logo-text">Vinki</span>
         </div>
         <div className="home-header-actions">
