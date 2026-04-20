@@ -714,6 +714,7 @@ export default function DashboardPage() {
 }
 
 function TransferCard() {
+  const { t } = useTranslation()
   const { data: transfers = [] } = useQuery<
     Array<{
       fromLanguage: string
@@ -733,7 +734,7 @@ function TransferCard() {
   return (
     <Card
       className="vinki-card"
-      title="Expande tus habilidades"
+      title={t('career.expandSkills')}
       style={{ marginTop: 16, marginBottom: 16 }}
     >
       <Row gutter={[12, 12]}>
@@ -758,7 +759,7 @@ function TransferCard() {
                 {tr.reason}
               </Text>
               <Tag color="orange" style={{ marginTop: 4 }}>
-                {tr.confidence}% confianza
+                {t('career.confidencePercent', { percent: tr.confidence })}
               </Tag>
             </Card>
           </Col>

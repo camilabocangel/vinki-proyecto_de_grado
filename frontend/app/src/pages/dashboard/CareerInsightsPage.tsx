@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { useTranslation } from 'react-i18next'
+import { useTranslation, Trans } from 'react-i18next'
 import {
   Typography,
   Card,
@@ -243,7 +243,7 @@ export default function CareerInsightsPage() {
                   Senior
                 </Tag>
                 <Paragraph type="secondary" style={{ marginTop: 8 }}>
-                  {t('career.trajectory')} - Max level
+                  {t('career.trajectory')} - {t('career.maxLevel')}
                 </Paragraph>
               </div>
             )}
@@ -254,18 +254,13 @@ export default function CareerInsightsPage() {
         <Col xs={24} md={8}>
           <Card>
             <Statistic
-              title={
-                t('career.growthRate', { rate: '' })
-                  .replace('+', '')
-                  .replace(' pts/', '')
-                  .trim() || 'Growth Rate'
-              }
+              title={t('career.growthRateLabel')}
               value={
                 trajectory.growthRate > 0
                   ? `+${trajectory.growthRate}`
                   : trajectory.growthRate
               }
-              suffix="pts/month"
+              suffix={t('career.perMonth')}
               valueStyle={{
                 color:
                   trajectory.growthRate > 0
@@ -276,7 +271,7 @@ export default function CareerInsightsPage() {
               }}
             />
             <div style={{ marginTop: 16 }}>
-              <Text type="secondary">Confidence</Text>
+              <Text type="secondary">{t('career.confidence')}</Text>
               <Progress
                 percent={trajectory.confidence}
                 size="small"
@@ -289,7 +284,7 @@ export default function CareerInsightsPage() {
                 }
               />
               <Text type="secondary" style={{ fontSize: 12 }}>
-                ({trajectory.dataPoints.length} data points)
+                ({t('career.dataPoints', { count: trajectory.dataPoints.length })})
               </Text>
             </div>
           </Card>
@@ -322,7 +317,7 @@ export default function CareerInsightsPage() {
               stroke="#005C53"
               strokeWidth={2}
               dot={{ r: 4 }}
-              name="Actual"
+              name={t('career.actual')}
               connectNulls={false}
             />
             <Line
@@ -332,7 +327,7 @@ export default function CareerInsightsPage() {
               strokeWidth={2}
               strokeDasharray="8 4"
               dot={{ r: 3 }}
-              name="Projected"
+              name={t('career.projected')}
               connectNulls={false}
             />
           </LineChart>
@@ -429,7 +424,9 @@ export default function CareerInsightsPage() {
             <Paragraph>
               <Text strong>{bestMatch.title}</Text> @ {bestMatch.companyType} (
               {bestMatch.level}) -{' '}
-              <Text type="success">{bestMatch.matchPercent}% match</Text>
+              <Text type="success">
+                {t('career.matchLabel', { percent: bestMatch.matchPercent })}
+              </Text>
             </Paragraph>
 
             <ResponsiveContainer
@@ -455,8 +452,8 @@ export default function CareerInsightsPage() {
                 />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="required" fill="#d9d9d9" name="Required" />
-                <Bar dataKey="yours" name="Your Score">
+                <Bar dataKey="required" fill="#d9d9d9" name={t('career.required')} />
+                <Bar dataKey="yours" name={t('career.yourScore')}>
                   {bestMatch.requiredSkills.map((s, i) => (
                     <Cell
                       key={i}
@@ -476,12 +473,19 @@ export default function CareerInsightsPage() {
                   current={-1}
                   items={bestMatch.missingSkills.map((ms) => ({
                     title: (
-                      <Text>
-                        Improve <Text strong>{ms.name}</Text> by{' '}
-                        <Text type="danger">{ms.gap} points</Text>
-                      </Text>
+                      <Trans
+                        i18nKey="career.improveBy"
+                        values={{ skill: ms.name, gap: ms.gap }}
+                        components={{
+                          1: <Text strong />,
+                          2: <Text type="danger" />,
+                        }}
+                      />
                     ),
-                    description: `Required: ${ms.required} | Current: ${ms.required - ms.gap}`,
+                    description: t('career.requiredCurrent', {
+                      required: ms.required,
+                      current: ms.required - ms.gap,
+                    }),
                     status: 'wait' as const,
                   }))}
                 />

@@ -134,16 +134,20 @@ export class ReportsController {
 
   @Get('study-plan')
   @Roles('student')
-  getStudyPlan(@Req() req: any) {
+  getStudyPlan(@Req() req: any, @Query('lang') lang?: string) {
     const user = (req as any).user;
-    return this.reportsService.generateStudyPlan(user.userId);
+    return this.reportsService.generateStudyPlan(user.userId, lang);
   }
 
   @Get('study-plan/export/pdf')
   @Roles('student')
-  async exportStudyPlanPdf(@Req() req: any, @Res() res: Response) {
+  async exportStudyPlanPdf(
+    @Req() req: any,
+    @Res() res: Response,
+    @Query('lang') lang?: string,
+  ) {
     const user = (req as any).user;
-    const plan = await this.reportsService.generateStudyPlan(user.userId);
+    const plan = await this.reportsService.generateStudyPlan(user.userId, lang);
     if (!plan) {
       res.status(404).json({ message: 'No study plan available' });
       return;

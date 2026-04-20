@@ -300,7 +300,9 @@
     "article": "Article",
     "video": "Video",
     "exercise": "Exercise",
-    "noData": "Complete at least one interview to generate your plan"
+    "noData": "Complete at least one interview to generate your plan",
+    "exportPdf": "Export PDF",
+    "defaultSummary": "Personalized study plan based on your results."
   },
   "audio": {
     "record": "Record audio",
@@ -405,10 +407,25 @@
     "jobFit": "Job Fit",
     "monthsToNext": "~{{months}} months to {{level}}",
     "growthRate": "Growth: +{{rate}} pts/month",
+    "growthRateLabel": "Growth rate",
+    "perMonth": "pts/month",
     "match": "{{percent}}% match",
+    "matchLabel": "{{percent}}% match",
     "missingSkills": "Skills to develop",
     "skillGap": "Skill gap analysis",
-    "noData": "You need at least 3 completed interviews"
+    "noData": "You need at least 3 completed interviews",
+    "maxLevel": "Max level",
+    "confidence": "Confidence",
+    "dataPoints": "{{count}} data points",
+    "actual": "Actual",
+    "projected": "Projected",
+    "required": "Required",
+    "current": "Current",
+    "yourScore": "Your score",
+    "improveBy": "Improve <1>{{skill}}</1> by <2>{{gap}} points</2>",
+    "requiredCurrent": "Required: {{required}} | Current: {{current}}",
+    "expandSkills": "Expand your skills",
+    "confidencePercent": "{{percent}}% confidence"
   },
   "achievements": {
     "title": "Achievements",

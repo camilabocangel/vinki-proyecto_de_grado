@@ -426,7 +426,7 @@ export class ReportsService {
     return { students: mapped, total: mapped.length };
   }
 
-  async generateStudyPlan(userId: number) {
+  async generateStudyPlan(userId: number, lang?: string) {
     const skillScores = await this.prisma.userSkillScore.findMany({
       where: { userId },
       include: { skill: true },
@@ -445,6 +445,8 @@ export class ReportsService {
       .sort((a, b) => b.score - a.score)
       .map((s) => ({ name: s.skill.name, score: s.score }));
 
+    const isEnglish = (lang || '').toLowerCase().startsWith('en');
+
     // Use OpenAI to generate a study plan
     const OpenAI = (await import('openai')).default;
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || '' });
@@ -454,30 +456,38 @@ export class ReportsService {
     let plan: any;
     if (sandbox) {
       plan = {
-        summary: 'Plan de estudio personalizado basado en tus resultados.',
+        summary: isEnglish
+          ? 'Personalized study plan based on your results.'
+          : 'Plan de estudio personalizado basado en tus resultados.',
         strengths: strongSkills.map((s) => s.name),
         improvements: weakSkills.map((s) => ({
           skill: s.name,
           currentScore: s.score,
-          recommendations: [
-            { type: 'article', title: `Guía completa de ${s.name}`, url: '#' },
-            { type: 'video', title: `Tutorial de ${s.name}`, url: '#' },
-            { type: 'exercise', title: `Práctica de ${s.name}`, url: '#' },
-          ],
+          recommendations: isEnglish
+            ? [
+                { type: 'article', title: `Complete guide to ${s.name}`, url: '#' },
+                { type: 'video', title: `${s.name} tutorial`, url: '#' },
+                { type: 'exercise', title: `${s.name} practice`, url: '#' },
+              ]
+            : [
+                { type: 'article', title: `Guía completa de ${s.name}`, url: '#' },
+                { type: 'video', title: `Tutorial de ${s.name}`, url: '#' },
+                { type: 'exercise', title: `Práctica de ${s.name}`, url: '#' },
+              ],
         })),
       };
     } else {
+      const systemPrompt = isEnglish
+        ? 'You are a technical mentor. Generate a personalized study plan in JSON with real resources (articles, videos, exercises) to improve the candidate\'s weak skills. Respond entirely in English.'
+        : 'Eres un mentor técnico. Genera un plan de estudio personalizado en JSON con recursos reales (artículos, videos, ejercicios) para mejorar las habilidades débiles del candidato. Responde completamente en español.';
+      const userPrompt = isEnglish
+        ? `The candidate has these weak skills (score 0-100): ${JSON.stringify(weakSkills)}. And these strengths: ${JSON.stringify(strongSkills)}. Generate a plan in JSON: { "summary": "summary", "strengths": ["skill1"], "improvements": [{ "skill": "name", "currentScore": N, "recommendations": [{ "type": "article|video|exercise", "title": "title", "url": "real url" }] }] }. All text must be in English.`
+        : `El candidato tiene estas habilidades débiles (score de 0-100): ${JSON.stringify(weakSkills)}. Y estas fortalezas: ${JSON.stringify(strongSkills)}. Genera un plan en JSON: { "summary": "resumen", "strengths": ["skill1"], "improvements": [{ "skill": "name", "currentScore": N, "recommendations": [{ "type": "article|video|exercise", "title": "titulo", "url": "url real" }] }] }. Todo el texto debe estar en español.`;
       const response = await openai.chat.completions.create({
         model: 'gpt-4o-mini',
         messages: [
-          {
-            role: 'system',
-            content: 'Eres un mentor técnico. Genera un plan de estudio personalizado en JSON con recursos reales (artículos, videos, ejercicios) para mejorar las habilidades débiles del candidato.',
-          },
-          {
-            role: 'user',
-            content: `El candidato tiene estas habilidades débiles (score de 0-100): ${JSON.stringify(weakSkills)}. Y estas fortalezas: ${JSON.stringify(strongSkills)}. Genera un plan en JSON: { "summary": "resumen", "strengths": ["skill1"], "improvements": [{ "skill": "name", "currentScore": N, "recommendations": [{ "type": "article|video|exercise", "title": "titulo", "url": "url real" }] }] }`,
-          },
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt },
         ],
         response_format: { type: 'json_object' },
         temperature: 0.7,

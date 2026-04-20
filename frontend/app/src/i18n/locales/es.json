@@ -300,7 +300,9 @@
     "article": "Artículo",
     "video": "Video",
     "exercise": "Ejercicio",
-    "noData": "Completa al menos una entrevista para generar tu plan"
+    "noData": "Completa al menos una entrevista para generar tu plan",
+    "exportPdf": "Exportar PDF",
+    "defaultSummary": "Plan de estudio personalizado basado en tus resultados."
   },
   "audio": {
     "record": "Grabar audio",
@@ -402,13 +404,28 @@
   },
   "career": {
     "trajectory": "Trayectoria",
-    "jobFit": "Job Fit",
+    "jobFit": "Ajuste laboral",
     "monthsToNext": "~{{months}} meses para {{level}}",
     "growthRate": "Crecimiento: +{{rate}} pts/mes",
+    "growthRateLabel": "Tasa de crecimiento",
+    "perMonth": "pts/mes",
     "match": "{{percent}}% match",
+    "matchLabel": "{{percent}}% coincidencia",
     "missingSkills": "Skills por desarrollar",
     "skillGap": "Análisis de brechas",
-    "noData": "Necesitas al menos 3 entrevistas completadas"
+    "noData": "Necesitas al menos 3 entrevistas completadas",
+    "maxLevel": "Nivel máximo",
+    "confidence": "Confianza",
+    "dataPoints": "{{count}} puntos de datos",
+    "actual": "Real",
+    "projected": "Proyectado",
+    "required": "Requerido",
+    "current": "Actual",
+    "yourScore": "Tu puntaje",
+    "improveBy": "Mejora <1>{{skill}}</1> en <2>{{gap}} puntos</2>",
+    "requiredCurrent": "Requerido: {{required}} | Actual: {{current}}",
+    "expandSkills": "Expande tus habilidades",
+    "confidencePercent": "{{percent}}% confianza"
   },
   "achievements": {
     "title": "Logros",

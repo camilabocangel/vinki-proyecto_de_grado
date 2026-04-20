@@ -37,12 +37,13 @@ const typeIcons: Record<string, React.ReactNode> = {
 }
 
 export default function StudyPlanPage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   usePageTitle(t('nav.studyPlan'))
+  const lang = i18n.language?.startsWith('en') ? 'en' : 'es'
 
   const { data, isLoading } = useQuery({
-    queryKey: ['study-plan'],
-    queryFn: () => api.get<StudyPlan | null>('/study-plan'),
+    queryKey: ['study-plan', lang],
+    queryFn: () => api.get<StudyPlan | null>('/study-plan', { lang }),
   })
 
   if (isLoading) {
@@ -70,7 +71,7 @@ export default function StudyPlanPage() {
 
   const handleExportPdf = () => {
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
-    window.open(`${apiUrl}/study-plan/export/pdf`, '_blank')
+    window.open(`${apiUrl}/study-plan/export/pdf?lang=${lang}`, '_blank')
   }
 
   return (
@@ -87,7 +88,7 @@ export default function StudyPlanPage() {
           {t('studyPlan.title')}
         </Title>
         <Button type="primary" icon={<DownloadOutlined />} onClick={handleExportPdf}>
-          Exportar PDF
+          {t('studyPlan.exportPdf')}
         </Button>
       </div>
 
