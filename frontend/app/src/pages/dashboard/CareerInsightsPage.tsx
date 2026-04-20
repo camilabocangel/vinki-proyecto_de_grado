@@ -84,9 +84,9 @@ const LEVEL_COLORS: Record<string, string> = {
 }
 
 const LEVEL_BG: Record<string, string> = {
-  Junior: '#f6ffed',
-  Mid: '#e6f7ff',
-  Senior: '#fffbe6',
+  Junior: 'var(--color-level-junior-bg)',
+  Mid: 'var(--color-level-mid-bg)',
+  Senior: 'var(--color-level-senior-bg)',
 }
 
 function buildProjectedData(dataPoints: DataPoint[], growthRate: number) {

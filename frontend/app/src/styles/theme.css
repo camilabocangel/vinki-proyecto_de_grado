@@ -33,11 +33,17 @@
 
   /* Neutral */
   --color-bg: #f3f4f1;
+  --color-bg-secondary: #f5f5f5;
   --color-surface: #ffffff;
   --color-border: #ddddd4;
   --color-text: #042940;
   --color-text-secondary: #4a6670;
   --color-muted: #8a9ea8;
+
+  /* Level tints (Junior/Mid/Senior) */
+  --color-level-junior-bg: #f6ffed;
+  --color-level-mid-bg: #e6f7ff;
+  --color-level-senior-bg: #fffbe6;
 
   /* Semantic */
   --color-success: #9fc131;
@@ -82,11 +88,17 @@
   --color-text-primary: #f3f4f1;
 
   --color-bg: #042940;
+  --color-bg-secondary: #0a2030;
   --color-surface: #0f2a3a;
   --color-border: #1a3a4a;
   --color-text: #e8ece0;
-  --color-text-secondary: #8a9ea8;
-  --color-muted: #5a7080;
+  --color-text-secondary: #b8c5ce;
+  --color-muted: #8a9ea8;
+
+  /* Level tints — dark-mode adapted */
+  --color-level-junior-bg: rgba(82, 196, 26, 0.15);
+  --color-level-mid-bg: rgba(24, 144, 255, 0.18);
+  --color-level-senior-bg: rgba(250, 173, 20, 0.18);
 
   --color-success: #9fc131;
   --color-error: #f87171;

@@ -624,10 +624,11 @@ export default function DashboardPage() {
                     gap: 12,
                     padding: '8px 12px',
                     borderRadius: 8,
-                    background: 'var(--color-bg-secondary, #f5f5f5)',
+                    background: 'var(--color-bg-secondary)',
+                    border: '1px solid var(--color-border)',
                   }}
                 >
-                  <div style={{ fontSize: 24, color: '#005C53' }}>
+                  <div style={{ fontSize: 24, color: 'var(--color-primary)' }}>
                     {achievementIconMap[a.icon] || <TrophyOutlined />}
                   </div>
                   <div>
