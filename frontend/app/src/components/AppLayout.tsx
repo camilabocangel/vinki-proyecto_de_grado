@@ -73,9 +73,8 @@ export function AppLayout() {
   }, [])
 
   const mainMenuItems =
-    user?.role === 'recruiter'
-      ? []
-      : [
+    user?.role === 'student'
+      ? [
           { key: '/dashboard', icon: <DashboardOutlined />, label: t('nav.dashboard') },
           { key: '/interview/new', icon: <ThunderboltOutlined />, label: t('nav.interview') },
           { key: '/history', icon: <LineChartOutlined />, label: t('nav.history') },
@@ -84,8 +83,16 @@ export function AppLayout() {
           { key: '/career', icon: <RocketOutlined />, label: t('nav.career') },
           { key: '/challenges', icon: <FireOutlined />, label: t('nav.challenges') },
         ]
+      : []
 
   const roleMenuItems: { key: string; icon: React.ReactNode; label: string }[] = []
+  if (user?.role === 'admin') {
+    roleMenuItems.push({
+      key: '/admin/analytics',
+      icon: <BarChartOutlined />,
+      label: t('nav.analytics'),
+    })
+  }
   if (user?.role === 'recruiter' || user?.role === 'admin') {
     roleMenuItems.push({
       key: '/recruiter',
@@ -118,11 +125,6 @@ export function AppLayout() {
       key: '/admin/audit',
       icon: <FileSearchOutlined />,
       label: t('nav.auditLogs'),
-    })
-    roleMenuItems.push({
-      key: '/admin/analytics',
-      icon: <BarChartOutlined />,
-      label: t('nav.analytics'),
     })
   }
 

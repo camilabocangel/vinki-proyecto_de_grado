@@ -74,7 +74,7 @@ export default function App() {
             <Route element={<ProtectedRoute />}>
               <Route element={<AppLayout />}>
                 {/* Student-only routes */}
-                <Route element={<ProtectedRoute roles={['student', 'admin']} />}>
+                <Route element={<ProtectedRoute roles={['student']} />}>
                   <Route path="/dashboard" element={<DashboardPage />} />
                   <Route path="/interview/new" element={<InterviewWizardPage />} />
                   <Route path="/interview/:id" element={<InterviewSessionPage />} />

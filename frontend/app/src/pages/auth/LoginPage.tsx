@@ -5,6 +5,7 @@ import { Form, Input, Button, Card, Typography, Alert, Space } from 'antd'
 import { MailOutlined, LockOutlined, CheckCircleOutlined } from '@ant-design/icons'
 import { useAuth } from '../../hooks/useAuth'
 import { usePageTitle } from '../../hooks/usePageTitle'
+import { getRoleHome } from '../../lib/roleHome'
 import sunSvg from '../../assets/svg/sun.svg'
 import wavesSvg from '../../assets/svg/waves.svg'
 import arcosSvg from '../../assets/svg/arcos.svg'
@@ -25,8 +26,7 @@ export default function LoginPage() {
     setLoading(true)
     try {
       const result = await login(values)
-      const role = result.user?.role
-      navigate(role === 'recruiter' ? '/recruiter' : '/dashboard')
+      navigate(getRoleHome(result.user?.role))
     } catch {
       // error handled by mutation
     } finally {

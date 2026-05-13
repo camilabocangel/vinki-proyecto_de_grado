@@ -1,6 +1,7 @@
 import { Navigate, Outlet } from 'react-router-dom'
 import { Spin } from 'antd'
 import { useAuth } from '../hooks/useAuth'
+import { getRoleHome } from '../lib/roleHome'
 
 interface ProtectedRouteProps {
   roles?: string[]
@@ -29,8 +30,7 @@ export function ProtectedRoute({ roles }: ProtectedRouteProps) {
   }
 
   if (roles && user && !roles.includes(user.role)) {
-    const fallback = user.role === 'recruiter' ? '/recruiter' : '/dashboard'
-    return <Navigate to={fallback} replace />
+    return <Navigate to={getRoleHome(user.role)} replace />
   }
 
   return <Outlet />

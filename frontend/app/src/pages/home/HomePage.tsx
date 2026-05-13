@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../hooks/useAuth'
 import { useTheme } from '../../hooks/useTheme'
 import { usePageTitle } from '../../hooks/usePageTitle'
+import { getRoleHome } from '../../lib/roleHome'
 import heroImg from '../../assets/images/hero.png'
 import vinkiLogo from '../../assets/images/vinkiLogo.png'
 import vinkiLogoNegro from '../../assets/images/vinkiLogoNegro.png'
@@ -202,7 +203,7 @@ export default function HomePage() {
   }, [mode])
 
   if (!isLoading && isAuthenticated) {
-    return <Navigate to={user?.role === 'recruiter' ? '/recruiter' : '/dashboard'} replace />
+    return <Navigate to={getRoleHome(user?.role)} replace />
   }
 
   return (

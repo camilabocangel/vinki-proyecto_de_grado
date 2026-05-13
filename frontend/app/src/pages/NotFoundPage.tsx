@@ -1,10 +1,13 @@
 import { Button, Result } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useAuth } from '../hooks/useAuth'
+import { getRoleHome } from '../lib/roleHome'
 
 export default function NotFoundPage() {
   const navigate = useNavigate()
   const { t } = useTranslation()
+  const { user } = useAuth()
 
   return (
     <div
@@ -21,7 +24,7 @@ export default function NotFoundPage() {
         title="404"
         subTitle={t('common.notFound')}
         extra={
-          <Button type="primary" onClick={() => navigate('/dashboard')}>
+          <Button type="primary" onClick={() => navigate(getRoleHome(user?.role))}>
             {t('common.goHome')}
           </Button>
         }
