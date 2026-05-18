@@ -1,0 +1,100 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg15
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER}']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  minio:
+    image: minio/minio
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - miniodata:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ['CMD', 'mc', 'ready', 'local']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    restart: unless-stopped
+    ports:
+      - '3089:3000'
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
+      REDIS_URL: redis://redis:6379
+      JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY}
+      JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
+      JWT_ACCESS_EXPIRATION: ${JWT_ACCESS_EXPIRATION:-15m}
+      JWT_REFRESH_EXPIRATION: ${JWT_REFRESH_EXPIRATION:-7d}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      LLM_SANDBOX: ${LLM_SANDBOX:-false}
+      LLM_EMBEDDING_PROVIDER: ${LLM_EMBEDDING_PROVIDER:-openai}
+      LLM_TEXT_PROVIDER: ${LLM_TEXT_PROVIDER:-openai}
+      GOOGLE_AI_API_KEY: ${GOOGLE_AI_API_KEY:-}
+      EMBEDDING_DIMENSIONS: ${EMBEDDING_DIMENSIONS:-1536}
+      AWS_S3_BUCKET: ${AWS_S3_BUCKET:-vinki-audio}
+      AWS_S3_ENDPOINT: http://minio:9000
+      AWS_S3_ACCESS_KEY: ${MINIO_ROOT_USER}
+      AWS_S3_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
+      AWS_REGION: us-east-1
+      NODE_ENV: production
+      PORT: '3000'
+      FRONTEND_URL: ${FRONTEND_URL}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:3000/api/health']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  frontend:
+    build:
+      context: ./frontend/app
+      dockerfile: Dockerfile.prod
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+    restart: unless-stopped
+    ports:
+      - '5189:80'
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
+  redisdata:
+  miniodata:
