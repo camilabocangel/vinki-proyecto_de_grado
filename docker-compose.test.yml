@@ -1,0 +1,53 @@
+# Servicios DEDICADOS para la suite de integración (Fase 3 — QA).
+# Aislados del entorno de desarrollo: puertos distintos, contenedores
+# distintos, volumen distinto. La DB de test es efímera: cada `up -d`
+# arranca limpia si se elimina el volumen.
+#
+# Uso típico:
+#   docker compose -f docker-compose.test.yml up -d
+#   cd backend && DATABASE_URL=postgresql://vinki:vinki_test@localhost:5434/vinki_test?schema=public \
+#     node_modules/.bin/prisma migrate deploy
+#   cd backend && npm run test:int
+#   docker compose -f docker-compose.test.yml down -v   # limpia el volumen
+#
+# Convención de puertos de QA:
+#   - 5434 (host) -> 5432 (postgres-test)
+#   - 6381 (host) -> 6379 (redis-test)
+# (Evitan colisión con desarrollo: 5433 postgres-dev, 6380 redis-dev.)
+
+services:
+  postgres-test:
+    image: pgvector/pgvector:pg15
+    container_name: vinki-postgres-test
+    restart: unless-stopped
+    ports:
+      - '5434:5432'
+    environment:
+      POSTGRES_USER: vinki
+      POSTGRES_PASSWORD: vinki_test
+      POSTGRES_DB: vinki_test
+    volumes:
+      - pgdata_test:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U vinki']
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+  redis-test:
+    image: redis:7-alpine
+    container_name: vinki-redis-test
+    restart: unless-stopped
+    ports:
+      - '6381:6379'
+    volumes:
+      - redisdata_test:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata_test:
+  redisdata_test:

@@ -2,13 +2,13 @@ name: CI
 
 on:
   push:
-    branches: [master, '001-*']
+    branches: [master, '001-*', 'qa', 'feat/*']
   pull_request:
     branches: [master]
 
 jobs:
   backend:
-    name: Backend Tests
+    name: Backend — tests, lint y seguridad
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -31,6 +31,13 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+    env:
+      DATABASE_URL: postgresql://vinki:vinki_dev@localhost:5432/vinki?schema=public
+      REDIS_URL: redis://localhost:6379
+      JWT_PRIVATE_KEY: test-key
+      JWT_PUBLIC_KEY: test-key
+      LLM_SANDBOX: 'true'
+      NODE_OPTIONS: --max-old-space-size=4096
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -38,19 +45,60 @@ jobs:
           node-version: 20
           cache: npm
           cache-dependency-path: backend/package-lock.json
-      - run: cd backend && npm ci
-      - run: cd backend && npx tsc --noEmit
-      - run: cd backend && npx jest --no-cache --ci
-        env:
-          DATABASE_URL: postgresql://vinki:vinki_dev@localhost:5432/vinki?schema=public
-          REDIS_URL: redis://localhost:6379
-          JWT_PRIVATE_KEY: test-key
-          JWT_PUBLIC_KEY: test-key
-          LLM_SANDBOX: 'true'
+
+      # NT-001: usar `npm ci` (no `npm install`) — versiones exactas del lock.
+      - name: Instalar dependencias
+        working-directory: backend
+        run: npm ci
+
+      # NT-001: invocar el binario local de prisma (instalado por `npm ci`).
+      # Versión pineada por package.json (prisma@^6.19.2).
+      - name: Generar Prisma Client
+        working-directory: backend
+        run: node_modules/.bin/prisma generate
+
+      - name: Aplicar migraciones a la BD de CI
+        working-directory: backend
+        run: node_modules/.bin/prisma migrate deploy
+
+      - name: Verificación de tipos (tsc)
+        working-directory: backend
+        run: node_modules/.bin/tsc --noEmit
+
+      - name: Lint
+        working-directory: backend
+        run: npm run lint
+
+      - name: Lint de seguridad (eslint-plugin-security)
+        working-directory: backend
+        run: npm run lint:security
+
+      - name: Pruebas unitarias con cobertura
+        working-directory: backend
+        run: npm run test:cov
+
+      - name: Audit de dependencias
+        working-directory: backend
+        # `--audit-level=high` permite que critical NO bloquee aún (se
+        # endurecerá tras la Fase 6). Allowed-failure no es necesario aquí:
+        # npm audit retorna != 0 solo si encuentra vulnerabilidades en el
+        # nivel exigido o superior.
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+      - name: Subir reporte de cobertura
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: coverage/
+          retention-days: 14
 
   frontend:
-    name: Frontend Tests
+    name: Frontend — tests, lint y seguridad
     runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: --max-old-space-size=4096
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -58,6 +106,36 @@ jobs:
           node-version: 20
           cache: npm
           cache-dependency-path: frontend/app/package-lock.json
-      - run: cd frontend/app && npm ci
-      - run: cd frontend/app && npx tsc --noEmit
-      - run: cd frontend/app && npx vitest run
+
+      - name: Instalar dependencias
+        working-directory: frontend/app
+        run: npm ci
+
+      - name: Verificación de tipos (tsc)
+        working-directory: frontend/app
+        run: node_modules/.bin/tsc --noEmit
+
+      - name: Lint
+        working-directory: frontend/app
+        run: npm run lint
+
+      - name: Lint de seguridad (eslint-plugin-security)
+        working-directory: frontend/app
+        run: npm run lint:security
+
+      - name: Pruebas unitarias con cobertura
+        working-directory: frontend/app
+        run: npm run test:cov
+
+      - name: Audit de dependencias
+        working-directory: frontend/app
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+      - name: Subir reporte de cobertura
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage
+          path: frontend/app/coverage/
+          retention-days: 14

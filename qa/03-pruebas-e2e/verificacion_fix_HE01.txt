@@ -1,0 +1,29 @@
+Verificación del fix HE-01 — Cross-tenant data leak en cache
+============================================================
+
+Comando: npx playwright test --repeat-each=3 --reporter=list
+Fecha:   2026-05-20
+
+Resultado: 141 / 141 tests verde
+- 47 casos E2E × 3 repeticiones consecutivas = 141 ejecuciones
+- 0 fallos
+- 0 flakes
+- Tiempo total: ~8.4 min
+
+Verificación específica del test TC-E-05-003 (canario del bug HE-01):
+  ok  33  TC-E-05-003 — should show empty state for user with no interviews yet (2.8s)
+  ok  80  TC-E-05-003 — should show empty state for user with no interviews yet (2.5s)
+  ok 127  TC-E-05-003 — should show empty state for user with no interviews yet (2.8s)
+
+El test, que antes fallaba en suite completa (ver hallazgos_e2e.md §
+HE-01) por el cache poisoning cross-user del backend, ahora pasa
+consistentemente las 3 repeticiones SIN requerir flushdb manual de
+Redis entre tests. El fix en `backend/src/common/cache.interceptor.ts`
+incluyendo el `userId` en la cache key resuelve el bug en producción.
+
+Cobertura de regresión a múltiples niveles:
+  - Unitario backend: 11/11 tests del interceptor verde (8 originales
+    + 3 nuevos regression guards que cubren el escenario del bug).
+  - Backend completo: 371/371 (368 + 3 nuevos), 0 regresiones.
+  - Integración: 92/92 sin regresiones.
+  - E2E ×3: 141/141.

@@ -166,6 +166,85 @@ describe('AuthService', () => {
     });
   });
 
+  describe('generateTokens', () => {
+    it('should sign access token with payload that includes sub, email, role, and jti', () => {
+      service.generateTokens(mockUser as any);
+
+      // El primer sign() es el access token: lleva el payload completo sin
+      // opciones de expiración personalizadas (usa la del módulo JWT).
+      const firstCall = jwtService.sign.mock.calls[0];
+      expect(firstCall[0]).toEqual({
+        sub: mockUser.id,
+        email: mockUser.email,
+        role: mockUser.role,
+        jti: 'mock-uuid',
+      });
+      // El access token NO recibe un override de `expiresIn`.
+      expect(firstCall[1]).toBeUndefined();
+    });
+
+    it('should sign refresh token with JWT_REFRESH_EXPIRATION from config', () => {
+      service.generateTokens(mockUser as any);
+
+      // Segundo sign(): refresh token, con override de expiresIn = '7d' (mock).
+      const secondCall = jwtService.sign.mock.calls[1];
+      expect(secondCall[0]).toMatchObject({
+        sub: mockUser.id,
+        email: mockUser.email,
+        role: mockUser.role,
+      });
+      expect(secondCall[1]).toEqual({ expiresIn: '7d' });
+    });
+  });
+
+  describe('refreshFromToken', () => {
+    it('should issue new tokens when refresh token verifies and user exists', async () => {
+      jwtService.verify.mockReturnValue({ sub: mockUser.id });
+      prisma.user.findUnique.mockResolvedValue(mockUser);
+
+      const result = await service.refreshFromToken('valid-refresh-token');
+
+      // verify() se llamó con algoritmo RS256 (alineado con la config del módulo JWT).
+      expect(jwtService.verify).toHaveBeenCalledWith(
+        'valid-refresh-token',
+        expect.objectContaining({ algorithms: ['RS256'] }),
+      );
+      expect(prisma.user.findUnique).toHaveBeenCalledWith({
+        where: { id: mockUser.id },
+      });
+      // Se firman dos nuevos tokens (rotación).
+      expect(jwtService.sign).toHaveBeenCalledTimes(2);
+      expect(result).toMatchObject({
+        accessToken: 'mock-token',
+        refreshToken: 'mock-token',
+        user: { id: mockUser.id, email: mockUser.email, role: mockUser.role },
+      });
+    });
+
+    it('should throw UnauthorizedException when refresh token is malformed or expired', async () => {
+      jwtService.verify.mockImplementation(() => {
+        throw new Error('jwt malformed');
+      });
+
+      await expect(service.refreshFromToken('bad-token')).rejects.toThrow(
+        UnauthorizedException,
+      );
+      expect(prisma.user.findUnique).not.toHaveBeenCalled();
+    });
+
+    it('should throw UnauthorizedException when the user from payload no longer exists', async () => {
+      jwtService.verify.mockReturnValue({ sub: 999 });
+      prisma.user.findUnique.mockResolvedValue(null);
+
+      await expect(service.refreshFromToken('valid-token')).rejects.toThrow(
+        UnauthorizedException,
+      );
+      // jwtService.sign NO debe haberse llamado: no se emiten tokens si el
+      // usuario fue eliminado.
+      expect(jwtService.sign).not.toHaveBeenCalled();
+    });
+  });
+
   describe('getProfile', () => {
     it('should return user profile', async () => {
       prisma.user.findUnique.mockResolvedValue(mockUser);

@@ -1,0 +1,569 @@
+ts-jest[config] (WARN) [94mmessage[0m[90m TS151002: [0mUsing hybrid module kind (Node16/18/Next) is only supported in "isolatedModules: true". Please set "isolatedModules: true" in your tsconfig.json. To disable this message, you can set "diagnostics.ignoreCodes" to include 151002 in your ts-jest config. See more at https://kulshekhar.github.io/ts-jest/docs/getting-started/options/diagnostics
+ts-jest[config] (WARN) [94mmessage[0m[90m TS151002: [0mUsing hybrid module kind (Node16/18/Next) is only supported in "isolatedModules: true". Please set "isolatedModules: true" in your tsconfig.json. To disable this message, you can set "diagnostics.ignoreCodes" to include 151002 in your ts-jest config. See more at https://kulshekhar.github.io/ts-jest/docs/getting-started/options/diagnostics
+[31m[Nest] 22152  - [39m05/19/2026, 7:02:46 PM [31m  ERROR[39m [38;5;3m[EvaluationProcessor] [39m[31mEvaluation failed for interview 1: OpenAI timeout[39m
+Error: OpenAI timeout
+    at Object.<anonymous> (C:\Users\g5\Documents\University\ProyectoDeGrado\backend\src\evaluation\evaluation.processor.spec.ts:191:42)
+    at Promise.finally.completed (C:\Users\g5\Documents\University\ProyectoDeGrado\backend\node_modules\jest-circus\build\jestAdapterInit.js:1557:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (C:\Users\g5\Documents\University\ProyectoDeGrado\backend\node_modules\jest-circus\build\jestAdapterInit.js:1497:10)
+    at _callCircusTest (C:\Users\g5\Documents\University\ProyectoDeGrado\backend\node_modules\jest-circus\build\jestAdapterInit.js:1007:40)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at _runTest (C:\Users\g5\Documents\University\ProyectoDeGrado\backend\node_modules\jest-circus\build\jestAdapterInit.js:947:3)
+    at C:\Users\g5\Documents\University\ProyectoDeGrado\backend\node_modules\jest-circus\build\jestAdapterInit.js:849:7
+    at _runTestsForDescribeBlock (C:\Users\g5\Documents\University\ProyectoDeGrado\backend\node_modules\jest-circus\build\jestAdapterInit.js:862:11)
+    at _runTestsForDescribeBlock (C:\Users\g5\Documents\University\ProyectoDeGrado\backend\node_modules\jest-circus\build\jestAdapterInit.js:857:11)
+    at run (C:\Users\g5\Documents\University\ProyectoDeGrado\backend\node_modules\jest-circus\build\jestAdapterInit.js:761:3)
+    at runAndTransformResultsToJestFormat (C:\Users\g5\Documents\University\ProyectoDeGrado\backend\node_modules\jest-circus\build\jestAdapterInit.js:1918:21)
+    at jestAdapter (C:\Users\g5\Documents\University\ProyectoDeGrado\backend\node_modules\jest-circus\build\runner.js:101:19)
+    at runTestInternal (C:\Users\g5\Documents\University\ProyectoDeGrado\backend\node_modules\jest-runner\build\testWorker.js:275:16)
+    at runTest (C:\Users\g5\Documents\University\ProyectoDeGrado\backend\node_modules\jest-runner\build\testWorker.js:343:7)
+    at Object.worker (C:\Users\g5\Documents\University\ProyectoDeGrado\backend\node_modules\jest-runner\build\testWorker.js:497:12)
+[31m[Nest] 22152  - [39m05/19/2026, 7:02:46 PM [31m  ERROR[39m [38;5;3m[EvaluationProcessor] [39m[31mEvaluation failed for interview 1: Transient error[39m
+Error: Transient error
+    at Object.<anonymous> (C:\Users\g5\Documents\University\ProyectoDeGrado\backend\src\evaluation\evaluation.processor.spec.ts:209:42)
+    at Promise.finally.completed (C:\Users\g5\Documents\University\ProyectoDeGrado\backend\node_modules\jest-circus\build\jestAdapterInit.js:1557:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (C:\Users\g5\Documents\University\ProyectoDeGrado\backend\node_modules\jest-circus\build\jestAdapterInit.js:1497:10)
+    at _callCircusTest (C:\Users\g5\Documents\University\ProyectoDeGrado\backend\node_modules\jest-circus\build\jestAdapterInit.js:1007:40)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at _runTest (C:\Users\g5\Documents\University\ProyectoDeGrado\backend\node_modules\jest-circus\build\jestAdapterInit.js:947:3)
+    at C:\Users\g5\Documents\University\ProyectoDeGrado\backend\node_modules\jest-circus\build\jestAdapterInit.js:849:7
+    at _runTestsForDescribeBlock (C:\Users\g5\Documents\University\ProyectoDeGrado\backend\node_modules\jest-circus\build\jestAdapterInit.js:862:11)
+    at _runTestsForDescribeBlock (C:\Users\g5\Documents\University\ProyectoDeGrado\backend\node_modules\jest-circus\build\jestAdapterInit.js:857:11)
+    at run (C:\Users\g5\Documents\University\ProyectoDeGrado\backend\node_modules\jest-circus\build\jestAdapterInit.js:761:3)
+    at runAndTransformResultsToJestFormat (C:\Users\g5\Documents\University\ProyectoDeGrado\backend\node_modules\jest-circus\build\jestAdapterInit.js:1918:21)
+    at jestAdapter (C:\Users\g5\Documents\University\ProyectoDeGrado\backend\node_modules\jest-circus\build\runner.js:101:19)
+    at runTestInternal (C:\Users\g5\Documents\University\ProyectoDeGrado\backend\node_modules\jest-runner\build\testWorker.js:275:16)
+    at runTest (C:\Users\g5\Documents\University\ProyectoDeGrado\backend\node_modules\jest-runner\build\testWorker.js:343:7)
+    at Object.worker (C:\Users\g5\Documents\University\ProyectoDeGrado\backend\node_modules\jest-runner\build\testWorker.js:497:12)
+FAIL src/evaluation/evaluation.processor.spec.ts (41.779 s)
+  ● EvaluationProcessor › should load answers, call evaluator, and persist results
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    - Expected
+    + Received
+
+      [{"answerId": 100, "answerText": "My answer", "questionText": "What is REST?"}],
+    + false,
+
+    Number of calls: 1
+
+    [0m [90m 116 |[39m     })[33m;[39m
+     [90m 117 |[39m
+    [31m[1m>[22m[39m[90m 118 |[39m     expect(evaluator[33m.[39mevaluate)[33m.[39mtoHaveBeenCalledWith([
+     [90m     |[39m                                [31m[1m^[22m[39m
+     [90m 119 |[39m       { answerId[33m:[39m [35m100[39m[33m,[39m questionText[33m:[39m [32m'What is REST?'[39m[33m,[39m answerText[33m:[39m [32m'My answer'[39m }[33m,[39m
+     [90m 120 |[39m     ])[33m;[39m
+     [90m 121 |[39m[0m
+
+      at Object.<anonymous> (evaluation/evaluation.processor.spec.ts:118:32)
+
+ts-jest[config] (WARN) [94mmessage[0m[90m TS151002: [0mUsing hybrid module kind (Node16/18/Next) is only supported in "isolatedModules: true". Please set "isolatedModules: true" in your tsconfig.json. To disable this message, you can set "diagnostics.ignoreCodes" to include 151002 in your ts-jest config. See more at https://kulshekhar.github.io/ts-jest/docs/getting-started/options/diagnostics
+ts-jest[config] (WARN) [94mmessage[0m[90m TS151002: [0mUsing hybrid module kind (Node16/18/Next) is only supported in "isolatedModules: true". Please set "isolatedModules: true" in your tsconfig.json. To disable this message, you can set "diagnostics.ignoreCodes" to include 151002 in your ts-jest config. See more at https://kulshekhar.github.io/ts-jest/docs/getting-started/options/diagnostics
+ts-jest[config] (WARN) [94mmessage[0m[90m TS151002: [0mUsing hybrid module kind (Node16/18/Next) is only supported in "isolatedModules: true". Please set "isolatedModules: true" in your tsconfig.json. To disable this message, you can set "diagnostics.ignoreCodes" to include 151002 in your ts-jest config. See more at https://kulshekhar.github.io/ts-jest/docs/getting-started/options/diagnostics
+ts-jest[config] (WARN) [94mmessage[0m[90m TS151002: [0mUsing hybrid module kind (Node16/18/Next) is only supported in "isolatedModules: true". Please set "isolatedModules: true" in your tsconfig.json. To disable this message, you can set "diagnostics.ignoreCodes" to include 151002 in your ts-jest config. See more at https://kulshekhar.github.io/ts-jest/docs/getting-started/options/diagnostics
+FAIL src/interviews/interviews.service.spec.ts (47.689 s)
+  ● InterviewsService › create() › should throw ConflictException if an active interview exists
+
+    Nest can't resolve dependencies of the InterviewsService (PrismaService, QuestionSelectorService, ?, EMBEDDING_PROVIDER, BullQueue_evaluation). Please make sure that the argument RagQuestionGeneratorService at index [2] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If RagQuestionGeneratorService is a provider, is it part of the current RootTestModule?
+    - If RagQuestionGeneratorService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing RagQuestionGeneratorService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 32 |[39m     evaluationQueue [33m=[39m { add[33m:[39m jest[33m.[39mfn() }[33m;[39m
+     [90m 33 |[39m
+    [31m[1m>[22m[39m[90m 34 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 35 |[39m       providers[33m:[39m [
+     [90m 36 |[39m         [33mInterviewsService[39m[33m,[39m
+     [90m 37 |[39m         { provide[33m:[39m [33mPrismaService[39m[33m,[39m useValue[33m:[39m prisma }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 2)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (interviews/interviews.service.spec.ts:34:35)
+
+  ● InterviewsService › create() › should throw NotFoundException if role not found
+
+    Nest can't resolve dependencies of the InterviewsService (PrismaService, QuestionSelectorService, ?, EMBEDDING_PROVIDER, BullQueue_evaluation). Please make sure that the argument RagQuestionGeneratorService at index [2] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If RagQuestionGeneratorService is a provider, is it part of the current RootTestModule?
+    - If RagQuestionGeneratorService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing RagQuestionGeneratorService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 32 |[39m     evaluationQueue [33m=[39m { add[33m:[39m jest[33m.[39mfn() }[33m;[39m
+     [90m 33 |[39m
+    [31m[1m>[22m[39m[90m 34 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 35 |[39m       providers[33m:[39m [
+     [90m 36 |[39m         [33mInterviewsService[39m[33m,[39m
+     [90m 37 |[39m         { provide[33m:[39m [33mPrismaService[39m[33m,[39m useValue[33m:[39m prisma }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 2)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (interviews/interviews.service.spec.ts:34:35)
+
+  ● InterviewsService › create() › should throw NotFoundException if no questions found
+
+    Nest can't resolve dependencies of the InterviewsService (PrismaService, QuestionSelectorService, ?, EMBEDDING_PROVIDER, BullQueue_evaluation). Please make sure that the argument RagQuestionGeneratorService at index [2] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If RagQuestionGeneratorService is a provider, is it part of the current RootTestModule?
+    - If RagQuestionGeneratorService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing RagQuestionGeneratorService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 32 |[39m     evaluationQueue [33m=[39m { add[33m:[39m jest[33m.[39mfn() }[33m;[39m
+     [90m 33 |[39m
+    [31m[1m>[22m[39m[90m 34 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 35 |[39m       providers[33m:[39m [
+     [90m 36 |[39m         [33mInterviewsService[39m[33m,[39m
+     [90m 37 |[39m         { provide[33m:[39m [33mPrismaService[39m[33m,[39m useValue[33m:[39m prisma }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 2)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (interviews/interviews.service.spec.ts:34:35)
+
+  ● InterviewsService › create() › should create an interview with questions and return it
+
+    Nest can't resolve dependencies of the InterviewsService (PrismaService, QuestionSelectorService, ?, EMBEDDING_PROVIDER, BullQueue_evaluation). Please make sure that the argument RagQuestionGeneratorService at index [2] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If RagQuestionGeneratorService is a provider, is it part of the current RootTestModule?
+    - If RagQuestionGeneratorService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing RagQuestionGeneratorService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 32 |[39m     evaluationQueue [33m=[39m { add[33m:[39m jest[33m.[39mfn() }[33m;[39m
+     [90m 33 |[39m
+    [31m[1m>[22m[39m[90m 34 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 35 |[39m       providers[33m:[39m [
+     [90m 36 |[39m         [33mInterviewsService[39m[33m,[39m
+     [90m 37 |[39m         { provide[33m:[39m [33mPrismaService[39m[33m,[39m useValue[33m:[39m prisma }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 2)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (interviews/interviews.service.spec.ts:34:35)
+
+  ● InterviewsService › create() › should handle optional languageId and frameworkId
+
+    Nest can't resolve dependencies of the InterviewsService (PrismaService, QuestionSelectorService, ?, EMBEDDING_PROVIDER, BullQueue_evaluation). Please make sure that the argument RagQuestionGeneratorService at index [2] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If RagQuestionGeneratorService is a provider, is it part of the current RootTestModule?
+    - If RagQuestionGeneratorService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing RagQuestionGeneratorService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 32 |[39m     evaluationQueue [33m=[39m { add[33m:[39m jest[33m.[39mfn() }[33m;[39m
+     [90m 33 |[39m
+    [31m[1m>[22m[39m[90m 34 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 35 |[39m       providers[33m:[39m [
+     [90m 36 |[39m         [33mInterviewsService[39m[33m,[39m
+     [90m 37 |[39m         { provide[33m:[39m [33mPrismaService[39m[33m,[39m useValue[33m:[39m prisma }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 2)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (interviews/interviews.service.spec.ts:34:35)
+
+  ● InterviewsService › findOne() › should return the interview with questions
+
+    Nest can't resolve dependencies of the InterviewsService (PrismaService, QuestionSelectorService, ?, EMBEDDING_PROVIDER, BullQueue_evaluation). Please make sure that the argument RagQuestionGeneratorService at index [2] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If RagQuestionGeneratorService is a provider, is it part of the current RootTestModule?
+    - If RagQuestionGeneratorService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing RagQuestionGeneratorService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 32 |[39m     evaluationQueue [33m=[39m { add[33m:[39m jest[33m.[39mfn() }[33m;[39m
+     [90m 33 |[39m
+    [31m[1m>[22m[39m[90m 34 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 35 |[39m       providers[33m:[39m [
+     [90m 36 |[39m         [33mInterviewsService[39m[33m,[39m
+     [90m 37 |[39m         { provide[33m:[39m [33mPrismaService[39m[33m,[39m useValue[33m:[39m prisma }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 2)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (interviews/interviews.service.spec.ts:34:35)
+
+  ● InterviewsService › findOne() › should throw NotFoundException if interview does not exist
+
+    Nest can't resolve dependencies of the InterviewsService (PrismaService, QuestionSelectorService, ?, EMBEDDING_PROVIDER, BullQueue_evaluation). Please make sure that the argument RagQuestionGeneratorService at index [2] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If RagQuestionGeneratorService is a provider, is it part of the current RootTestModule?
+    - If RagQuestionGeneratorService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing RagQuestionGeneratorService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 32 |[39m     evaluationQueue [33m=[39m { add[33m:[39m jest[33m.[39mfn() }[33m;[39m
+     [90m 33 |[39m
+    [31m[1m>[22m[39m[90m 34 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 35 |[39m       providers[33m:[39m [
+     [90m 36 |[39m         [33mInterviewsService[39m[33m,[39m
+     [90m 37 |[39m         { provide[33m:[39m [33mPrismaService[39m[33m,[39m useValue[33m:[39m prisma }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 2)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (interviews/interviews.service.spec.ts:34:35)
+
+  ● InterviewsService › findOne() › should throw ForbiddenException if user does not own the interview
+
+    Nest can't resolve dependencies of the InterviewsService (PrismaService, QuestionSelectorService, ?, EMBEDDING_PROVIDER, BullQueue_evaluation). Please make sure that the argument RagQuestionGeneratorService at index [2] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If RagQuestionGeneratorService is a provider, is it part of the current RootTestModule?
+    - If RagQuestionGeneratorService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing RagQuestionGeneratorService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 32 |[39m     evaluationQueue [33m=[39m { add[33m:[39m jest[33m.[39mfn() }[33m;[39m
+     [90m 33 |[39m
+    [31m[1m>[22m[39m[90m 34 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 35 |[39m       providers[33m:[39m [
+     [90m 36 |[39m         [33mInterviewsService[39m[33m,[39m
+     [90m 37 |[39m         { provide[33m:[39m [33mPrismaService[39m[33m,[39m useValue[33m:[39m prisma }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 2)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (interviews/interviews.service.spec.ts:34:35)
+
+  ● InterviewsService › finish() › should mark interview as finished and enqueue evaluation job
+
+    Nest can't resolve dependencies of the InterviewsService (PrismaService, QuestionSelectorService, ?, EMBEDDING_PROVIDER, BullQueue_evaluation). Please make sure that the argument RagQuestionGeneratorService at index [2] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If RagQuestionGeneratorService is a provider, is it part of the current RootTestModule?
+    - If RagQuestionGeneratorService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing RagQuestionGeneratorService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 32 |[39m     evaluationQueue [33m=[39m { add[33m:[39m jest[33m.[39mfn() }[33m;[39m
+     [90m 33 |[39m
+    [31m[1m>[22m[39m[90m 34 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 35 |[39m       providers[33m:[39m [
+     [90m 36 |[39m         [33mInterviewsService[39m[33m,[39m
+     [90m 37 |[39m         { provide[33m:[39m [33mPrismaService[39m[33m,[39m useValue[33m:[39m prisma }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 2)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (interviews/interviews.service.spec.ts:34:35)
+
+  ● InterviewsService › finish() › should throw NotFoundException if interview not found
+
+    Nest can't resolve dependencies of the InterviewsService (PrismaService, QuestionSelectorService, ?, EMBEDDING_PROVIDER, BullQueue_evaluation). Please make sure that the argument RagQuestionGeneratorService at index [2] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If RagQuestionGeneratorService is a provider, is it part of the current RootTestModule?
+    - If RagQuestionGeneratorService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing RagQuestionGeneratorService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 32 |[39m     evaluationQueue [33m=[39m { add[33m:[39m jest[33m.[39mfn() }[33m;[39m
+     [90m 33 |[39m
+    [31m[1m>[22m[39m[90m 34 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 35 |[39m       providers[33m:[39m [
+     [90m 36 |[39m         [33mInterviewsService[39m[33m,[39m
+     [90m 37 |[39m         { provide[33m:[39m [33mPrismaService[39m[33m,[39m useValue[33m:[39m prisma }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 2)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (interviews/interviews.service.spec.ts:34:35)
+
+  ● InterviewsService › finish() › should throw ForbiddenException if user does not own the interview
+
+    Nest can't resolve dependencies of the InterviewsService (PrismaService, QuestionSelectorService, ?, EMBEDDING_PROVIDER, BullQueue_evaluation). Please make sure that the argument RagQuestionGeneratorService at index [2] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If RagQuestionGeneratorService is a provider, is it part of the current RootTestModule?
+    - If RagQuestionGeneratorService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing RagQuestionGeneratorService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 32 |[39m     evaluationQueue [33m=[39m { add[33m:[39m jest[33m.[39mfn() }[33m;[39m
+     [90m 33 |[39m
+    [31m[1m>[22m[39m[90m 34 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 35 |[39m       providers[33m:[39m [
+     [90m 36 |[39m         [33mInterviewsService[39m[33m,[39m
+     [90m 37 |[39m         { provide[33m:[39m [33mPrismaService[39m[33m,[39m useValue[33m:[39m prisma }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 2)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (interviews/interviews.service.spec.ts:34:35)
+
+  ● InterviewsService › finish() › should throw ConflictException if interview is already finished
+
+    Nest can't resolve dependencies of the InterviewsService (PrismaService, QuestionSelectorService, ?, EMBEDDING_PROVIDER, BullQueue_evaluation). Please make sure that the argument RagQuestionGeneratorService at index [2] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If RagQuestionGeneratorService is a provider, is it part of the current RootTestModule?
+    - If RagQuestionGeneratorService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing RagQuestionGeneratorService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m 32 |[39m     evaluationQueue [33m=[39m { add[33m:[39m jest[33m.[39mfn() }[33m;[39m
+     [90m 33 |[39m
+    [31m[1m>[22m[39m[90m 34 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m 35 |[39m       providers[33m:[39m [
+     [90m 36 |[39m         [33mInterviewsService[39m[33m,[39m
+     [90m 37 |[39m         { provide[33m:[39m [33mPrismaService[39m[33m,[39m useValue[33m:[39m prisma }[33m,[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 2)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (interviews/interviews.service.spec.ts:34:35)
+
+ts-jest[config] (WARN) [94mmessage[0m[90m TS151002: [0mUsing hybrid module kind (Node16/18/Next) is only supported in "isolatedModules: true". Please set "isolatedModules: true" in your tsconfig.json. To disable this message, you can set "diagnostics.ignoreCodes" to include 151002 in your ts-jest config. See more at https://kulshekhar.github.io/ts-jest/docs/getting-started/options/diagnostics
+ts-jest[config] (WARN) [94mmessage[0m[90m TS151002: [0mUsing hybrid module kind (Node16/18/Next) is only supported in "isolatedModules: true". Please set "isolatedModules: true" in your tsconfig.json. To disable this message, you can set "diagnostics.ignoreCodes" to include 151002 in your ts-jest config. See more at https://kulshekhar.github.io/ts-jest/docs/getting-started/options/diagnostics
+ts-jest[config] (WARN) [94mmessage[0m[90m TS151002: [0mUsing hybrid module kind (Node16/18/Next) is only supported in "isolatedModules: true". Please set "isolatedModules: true" in your tsconfig.json. To disable this message, you can set "diagnostics.ignoreCodes" to include 151002 in your ts-jest config. See more at https://kulshekhar.github.io/ts-jest/docs/getting-started/options/diagnostics
+ts-jest[config] (WARN) [94mmessage[0m[90m TS151002: [0mUsing hybrid module kind (Node16/18/Next) is only supported in "isolatedModules: true". Please set "isolatedModules: true" in your tsconfig.json. To disable this message, you can set "diagnostics.ignoreCodes" to include 151002 in your ts-jest config. See more at https://kulshekhar.github.io/ts-jest/docs/getting-started/options/diagnostics
+Test Suites: 2 failed, 5 passed, 7 total
+Tests:       13 failed, 52 passed, 65 total
+Snapshots:   0 total
+Time:        91.228 s
+Ran all test suites.
+===EXIT 1===
+14 c:\Users\g5\Documents\University\ProyectoDeGrado\qa\02-pruebas-unitarias\diagnostico_backend_raw.txt

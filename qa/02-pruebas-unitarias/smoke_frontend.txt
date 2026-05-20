@@ -1,0 +1,57 @@
+============================================================
+Frontend — smoke run de Vitest + React Testing Library
+Fecha: 2026-05-19
+Comando: npm run test:cov
+Entorno: Windows 11 + Node 20.19.5 + Vitest 4 + jsdom 28
+============================================================
+
+RESULTADO DEL SMOKE
+-------------------
+Test Files  : 9 passed, 1 failed, 10 total
+Tests       : 30 passed, 1 failed, 31 total
+Tiempo      : 202 s
+Smoke propio (`src/App.test.tsx`): PASSED.
+
+INFRAESTRUCTURA VALIDADA
+------------------------
+- Pipeline Vitest + jsdom + RTL + @testing-library/jest-dom operativo.
+- Globals habilitados (`describe`, `it`, `expect` disponibles sin import).
+- Setup global `src/test/setup.ts` cargado con:
+    * @testing-library/jest-dom matchers.
+    * Mocks de matchMedia, IntersectionObserver y ResizeObserver.
+    * Cleanup automático del DOM tras cada test.
+- Coverage provider: v8.
+- Coverage reporters: text, lcov, html, json-summary.
+- Coverage threshold: 80% en statements/branches/functions/lines.
+- Pool: threads (Windows estable; forks daba "Timeout waiting for worker
+  to respond" debido al setup pesado de jsdom + RTL).
+
+INCIDENCIAS DETECTADAS Y RESUELTAS
+----------------------------------
+1. Workers con timeout en el primer arranque.
+   - Causa: pool 'forks' por defecto + setup de ~12 s en Windows.
+   - Solución: `pool: 'threads'`, `testTimeout: 10000`, `hookTimeout: 15000`
+     en `vite.config.ts`. Los workers ya no se caen.
+
+2. Coverage threshold 80% NO cumplido (esperado).
+   - Statements/branches/functions/lines: por debajo del 80%.
+   - Las pruebas reales del frontend se escriben en la Fase 2.
+
+INCIDENCIAS PENDIENTES (no críticas para la infraestructura)
+------------------------------------------------------------
+1. 1 test fallido en `src/pages/auth/LoginPage.test.tsx`:
+     `screen.getByText('V')` no encuentra el texto — probablemente el
+     componente cambió (logo "V" reemplazado por imagen). Aserción
+     desactualizada, no defecto de infraestructura. A revisar en Fase 2.
+
+2. Importación lenta en Windows (`import 984s` reportado por Vitest).
+   No afecta la corrección, sí la duración. Se mitigará al ejecutar
+   en CI sobre Linux y al reducir el grafo de imports en las pruebas.
+
+SMOKE DEL SHELL DEL APP — App.test.tsx
+--------------------------------------
+✓ App shell > renders without crashing
+
+Reporte HTML completo: `frontend/app/coverage/unit/index.html`
+Reporte LCOV:          `frontend/app/coverage/unit/lcov.info`
+Reporte JSON resumen:  `frontend/app/coverage/unit/coverage-summary.json`

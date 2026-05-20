@@ -1,0 +1,60 @@
+============================================================
+Smoke E2E — Playwright + Chromium
+Fecha: 2026-05-19
+Comando: npm run e2e:smoke
+Entorno: Windows 11 + Node 20.19.5 + Playwright 1.58.2 + Chromium 145
+============================================================
+
+RESULTADO
+---------
+Running 1 test using 1 worker
+
+  ok 1 [chromium] › e2e\suites\00-smoke\smoke.spec.ts:25:7
+       › Smoke — frontend Vinki
+       › la home pública carga y muestra el branding (4.9s)
+
+  1 passed (12.1s)
+
+INFRAESTRUCTURA VALIDADA
+------------------------
+- Playwright 1.58.2 instalado a nivel raíz (paquete pineado en package.json).
+- Chromium headless descargado en `~/AppData/Local/ms-playwright`.
+- `playwright.config.ts` raíz operativo con:
+    * testDir: ./e2e/suites
+    * reporter: list + html
+    * retries: 2 en CI, 0 en local
+    * screenshot: only-on-failure
+    * video: retain-on-failure
+    * trace: on-first-retry
+    * timeout por test: 30 s; navigationTimeout: 60 s
+    * webServer levanta el frontend en localhost:5400
+- Estructura E2E creada:
+    e2e/
+    ├── fixtures/
+    │   ├── auth.fixture.ts        (esqueleto tipado, lógica pendiente Fase 5)
+    │   └── llm-mock.fixture.ts    (page.route a /api/interviews/.../answer|
+    │                               evaluate-now|followup con respuesta
+    │                               determinista)
+    ├── pages/   (placeholder Page Objects)
+    ├── helpers/ (placeholder helpers)
+    └── suites/
+        └── 00-smoke/
+            └── smoke.spec.ts
+
+INCIDENCIAS DETECTADAS Y RESUELTAS
+----------------------------------
+1. EACCES "permission denied" al bindear vite a 5173 y 5174.
+   - Causa: Windows reserva un rango excluido del kernel para Hyper-V/WSL.
+     `netsh int ipv4 show excludedportrange protocol=tcp` mostró el rango
+     5079–5178, que incluye ambos puertos.
+   - Solución: usar puerto 5400 (fuera de cualquier rango reservado).
+     `PLAYWRIGHT_BASE_URL` permite sobreescribirlo en CI/staging.
+
+2. `page.goto` timeout (15 s) en la primera compilación de Vite.
+   - Causa: arranque inicial compila ~70 módulos de Ant Design y Recharts.
+   - Solución: navigationTimeout subido a 60 s y goto con
+     `waitUntil: 'domcontentloaded'` para no esperar imágenes decorativas.
+
+REPORTE HTML
+------------
+`./playwright-report/index.html` (abrir con `npm run e2e:report`)

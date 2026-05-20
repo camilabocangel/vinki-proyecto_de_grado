@@ -88,6 +88,11 @@ export class CacheInterceptor implements NestInterceptor {
   private buildCacheKey(request: any): string {
     const method = request.method;
     const url = request.originalUrl || request.url;
-    return `cache:${method}:${url}`;
+    // RNF-07 / Bug HE-01: incluir el userId del request autenticado en la
+    // clave evita cache poisoning cross-user. Endpoints sin autenticación
+    // (catálogos públicos) caen al sufijo 'anon' y comparten cache como
+    // antes. `JwtCookieStrategy.validate()` deja `userId` en `req.user`.
+    const userId = request.user?.userId ?? 'anon';
+    return `cache:${method}:${url}:u:${userId}`;
   }
 }

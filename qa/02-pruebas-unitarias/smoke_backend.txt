@@ -1,0 +1,72 @@
+============================================================
+Backend — smoke run de Jest + ts-jest
+Fecha: 2026-05-19
+Comando: NODE_OPTIONS=--max-old-space-size=4096 npm run test:cov
+Entorno: Windows 11 + Node 20.19.5 + Jest 30 + ts-jest 29
+============================================================
+
+RESULTADO DEL SMOKE
+-------------------
+Test Suites : 5 passed, 2 failed, 7 total
+Tests       : 52 passed, 13 failed, 65 total
+Tiempo      : 75.3 s
+Smoke propio (`src/app.controller.spec.ts`): 3 tests PASSED.
+
+INFRAESTRUCTURA VALIDADA
+------------------------
+- Pipeline Jest + ts-jest operativo (transformación TypeScript OK).
+- Setup global `test/setup.ts` cargado (sentinel JEST_SETUP_LOADED=1 detectado).
+- Prisma Client generado en `node_modules/@prisma/client` (vía `npx -y prisma@6.19.2 generate`).
+- maxWorkers=2 + workerIdleMemoryLimit=512MB estables en Windows; sin OOM tras los ajustes.
+- Coverage reporters habilitados: text, lcov, html, json-summary.
+- Coverage threshold = 80% en statements/branches/functions/lines (configurado, falla esperada en esta fase).
+
+INCIDENCIAS DETECTADAS Y RESUELTAS
+----------------------------------
+1. OOM y "Test suite failed to run" en el primer arranque.
+   - Causa raíz: Prisma Client no estaba generado en `node_modules`, lo
+     que provocaba errores TS2305 (`Module '@prisma/client' has no
+     exported member 'User'`) cascada que terminaba en OOM del worker.
+   - Solución: ejecutar `npx -y prisma@6.19.2 generate` antes de los tests.
+     Esto debe replicarse en el workflow de CI (paso explícito antes de
+     `npm test`).
+
+2. Coverage threshold 80% NO cumplido (esperado).
+   - Statements: 13.02% (target 80%)
+   - Branches:   10.65% (target 80%)
+   - Functions:  13.12% (target 80%)
+   - Lines:      12.48% (target 80%)
+   - Comentario: las pruebas reales se escriben en la Fase 2 (Prompt 3).
+     La cobertura subirá entonces; el threshold queda configurado al 80%
+     desde ya y bloquea el merge si no se alcanza.
+
+INCIDENCIAS PENDIENTES (no críticas para la infraestructura)
+------------------------------------------------------------
+1. ts-jest emite el warning TS151002 ("Using hybrid module kind ... is
+   only supported in isolatedModules: true"). No afecta la ejecución;
+   se silencia agregando `diagnostics.ignoreCodes: [151002]` en la
+   configuración de ts-jest, o activando isolatedModules en el tsconfig.
+   Acción diferida (no bloquea el smoke).
+
+2. 13 tests fallan en 2 suites preexistentes (no creadas por este
+   prompt). Causas conocidas a inspeccionar en la Fase 2:
+   - Aserciones desactualizadas (UI o lógica de negocio cambió).
+   - Setup de Prisma mock inconsistente con la versión 6.x del cliente.
+   Estos fallos NO bloquean el smoke ni la configuración de Jest:
+   demuestran que el pipeline ejecuta los tests, expone los fallos y
+   produce el reporte de cobertura.
+
+COVERAGE TABLE (resumen — top líneas)
+-------------------------------------
+File                                | % Stmts | % Branch | % Funcs | % Lines
+All files                           |   13.02 |    10.65 |   13.12 |   12.48
+ auth/auth.service.ts               |    87.5 |     90.9 |   88.88 |   87.75
+ evaluation/services/
+   mock-evaluator.service.ts        |     100 |      100 |     100 |     100
+ interviews/interviews.service.ts   |   ~85   |   ~80    |   ~85   |   ~85
+ interviews/answers/answers.service |   ~70   |   ~60    |   ~70   |   ~70
+ reports/reports.service.ts         |   28.02 |    16.05 |   35.71 |    27.2
+
+Reporte HTML completo: `backend/../coverage/lcov-report/index.html`
+Reporte LCOV:          `backend/../coverage/lcov.info`
+Reporte JSON resumen:  `backend/../coverage/coverage-summary.json`

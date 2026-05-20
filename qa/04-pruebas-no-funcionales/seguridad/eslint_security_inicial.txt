@@ -1,0 +1,163 @@
+============================================================
+ESLint security — smoke run inicial
+Fecha: 2026-05-19
+Plugin: eslint-plugin-security 3.0.1
+============================================================
+
+RESUMEN
+-------
+Backend  (npm run lint:security): 0 errors, 36 warnings — EXIT 0
+Frontend (npm run lint:security): 0 errors, 38 warnings — EXIT 0
+
+INTERPRETACIÓN
+--------------
+Todos los hallazgos son warnings, no errors. Las reglas que disparan
+son principalmente:
+  - security/detect-object-injection : accesos del tipo obj[varKey].
+    Falsos positivos esperables en Vinki por uso intensivo de
+    notación dinámica en reducers/agregadores. A revisar en Fase 6,
+    no bloqueante.
+  - security/detect-non-literal-fs-filename : fs.readFileSync con
+    argumento dinámico (en test/setup.ts del backend). Justificado:
+    es código de pruebas que carga .env.test.
+
+Los hallazgos quedan registrados; ningún error de severidad alta
+bloquea el pipeline al cierre de la Fase 1.
+
+====================================================================
+OUTPUT BACKEND
+====================================================================
+
+> backend@0.0.1 lint:security
+> eslint --config eslint.security.config.mjs .
+
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\backend\prisma\seed.ts
+    24:5   warning  Generic Object Injection Sink               security/detect-object-injection
+    47:5   warning  Generic Object Injection Sink               security/detect-object-injection
+    93:5   warning  Generic Object Injection Sink               security/detect-object-injection
+   119:5   warning  Generic Object Injection Sink               security/detect-object-injection
+   138:18  warning  Variable Assigned to Object Injection Sink  security/detect-object-injection
+   141:24  warning  Variable Assigned to Object Injection Sink  security/detect-object-injection
+  1446:23  warning  Generic Object Injection Sink               security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\backend\src\challenges\challenges.service.ts
+  206:39  warning  Generic Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\backend\src\interviews\services\transcription.service.ts
+  45:12  warning  Generic Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\backend\src\interviews\templates.service.ts
+  105:25  warning  Generic Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\backend\src\knowledge\services\knowledge-ingestion.service.ts
+  44:23  warning  Variable Assigned to Object Injection Sink  security/detect-object-injection
+  45:34  warning  Generic Object Injection Sink               security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\backend\src\reports\career-prediction.service.ts
+  170:7   warning  Generic Object Injection Sink  security/detect-object-injection
+  183:26  warning  Generic Object Injection Sink  security/detect-object-injection
+  184:22  warning  Generic Object Injection Sink  security/detect-object-injection
+  188:70  warning  Generic Object Injection Sink  security/detect-object-injection
+  202:19  warning  Generic Object Injection Sink  security/detect-object-injection
+  203:20  warning  Generic Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\backend\src\reports\reports.service.ts
+   98:19  warning  Generic Object Injection Sink  security/detect-object-injection
+   98:40  warning  Generic Object Injection Sink  security/detect-object-injection
+  358:41  warning  Generic Object Injection Sink  security/detect-object-injection
+  608:21  warning  Generic Object Injection Sink  security/detect-object-injection
+  608:42  warning  Generic Object Injection Sink  security/detect-object-injection
+  782:7   warning  Generic Object Injection Sink  security/detect-object-injection
+  782:32  warning  Generic Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\backend\test\prisma.mock.ts
+  31:9   warning  Generic Object Injection Sink  security/detect-object-injection
+  33:14  warning  Generic Object Injection Sink  security/detect-object-injection
+  40:34  warning  Generic Object Injection Sink  security/detect-object-injection
+  42:9   warning  Generic Object Injection Sink  security/detect-object-injection
+  43:16  warning  Generic Object Injection Sink  security/detect-object-injection
+  45:7   warning  Generic Object Injection Sink  security/detect-object-injection
+  46:14  warning  Generic Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\backend\test\setup.ts
+  16:5   warning  Found existsSync from package "fs" with non literal argument at index 0    security/detect-non-literal-fs-filename
+  17:19  warning  Found readFileSync from package "fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  28:10  warning  Generic Object Injection Sink                                              security/detect-object-injection
+  29:7   warning  Generic Object Injection Sink                                              security/detect-object-injection
+
+✖ 36 problems (0 errors, 36 warnings)
+
+
+====================================================================
+OUTPUT FRONTEND
+====================================================================
+
+> app@0.0.0 lint:security
+> eslint --config eslint.security.config.js .
+
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\frontend\app\src\components\Breadcrumbs.tsx
+  56:46  warning  Generic Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\frontend\app\src\pages\dashboard\CareerInsightsPage.tsx
+  121:5   warning  Generic Object Injection Sink  security/detect-object-injection
+  121:36  warning  Generic Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\frontend\app\src\pages\dashboard\DashboardPage.tsx
+  261:42  warning  Generic Object Injection Sink  security/detect-object-injection
+  300:23  warning  Generic Object Injection Sink  security/detect-object-injection
+  310:21  warning  Generic Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\frontend\app\src\pages\feedback\FeedbackHistoryPage.tsx
+   97:42  warning  Generic Object Injection Sink  security/detect-object-injection
+  130:23  warning  Generic Object Injection Sink  security/detect-object-injection
+  140:21  warning  Generic Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\frontend\app\src\pages\feedback\FeedbackPage.tsx
+  145:44  warning  Generic Object Injection Sink        security/detect-object-injection
+  163:5   warning  Generic Object Injection Sink        security/detect-object-injection
+  163:15  warning  Generic Object Injection Sink        security/detect-object-injection
+  273:60  warning  Function Call Object Injection Sink  security/detect-object-injection
+  279:36  warning  Generic Object Injection Sink        security/detect-object-injection
+  377:61  warning  Generic Object Injection Sink        security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\frontend\app\src\pages\feedback\SharedReportPage.tsx
+   95:44  warning  Generic Object Injection Sink  security/detect-object-injection
+  113:5   warning  Generic Object Injection Sink  security/detect-object-injection
+  113:15  warning  Generic Object Injection Sink  security/detect-object-injection
+  185:58  warning  Generic Object Injection Sink  security/detect-object-injection
+  191:36  warning  Generic Object Injection Sink  security/detect-object-injection
+  273:61  warning  Generic Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\frontend\app\src\pages\home\HomePage.tsx
+  136:18  warning  Generic Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\frontend\app\src\pages\interview\InterviewSessionPage.tsx
+  156:22  warning  Variable Assigned to Object Injection Sink  security/detect-object-injection
+  194:22  warning  Variable Assigned to Object Injection Sink  security/detect-object-injection
+  209:22  warning  Variable Assigned to Object Injection Sink  security/detect-object-injection
+  238:26  warning  Variable Assigned to Object Injection Sink  security/detect-object-injection
+  334:20  warning  Variable Assigned to Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\frontend\app\src\pages\interview\InterviewWizardPage.tsx
+  650:61  warning  Generic Object Injection Sink  security/detect-object-injection
+  663:14  warning  Generic Object Injection Sink  security/detect-object-injection
+  665:12  warning  Generic Object Injection Sink  security/detect-object-injection
+  688:26  warning  Generic Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\frontend\app\src\pages\knowledge\KnowledgeBasePage.tsx
+  193:21  warning  Generic Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\frontend\app\src\pages\recruiter\StudentProfilePage.tsx
+  136:42  warning  Generic Object Injection Sink  security/detect-object-injection
+  173:21  warning  Generic Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\frontend\app\src\pages\recruiter\TemplatesPage.tsx
+  166:7   warning  Generic Object Injection Sink  security/detect-object-injection
+  166:23  warning  Generic Object Injection Sink  security/detect-object-injection
+  166:46  warning  Generic Object Injection Sink  security/detect-object-injection
+  166:66  warning  Generic Object Injection Sink  security/detect-object-injection
+
+✖ 38 problems (0 errors, 38 warnings)
+

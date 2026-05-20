@@ -1,0 +1,21 @@
+=== CONTEO ===
+
+ count 
+-------
+     7
+(1 row)
+
+
+=== DETALLE ===
+
+                       conname                       | contype |                                               pg_get_constraintdef                                                
+-----------------------------------------------------+---------+-------------------------------------------------------------------------------------------------------------------
+ chk_answer_evaluations_clarity_of_explanation_range | c       | CHECK (((clarity_of_explanation >= (0)::double precision) AND (clarity_of_explanation <= (5)::double precision)))
+ chk_answer_evaluations_communication_range          | c       | CHECK (((communication >= (0)::double precision) AND (communication <= (5)::double precision)))
+ chk_answer_evaluations_confidence_range             | c       | CHECK (((confidence >= (0)::double precision) AND (confidence <= (5)::double precision)))
+ chk_answer_evaluations_problem_solving_range        | c       | CHECK (((problem_solving >= (0)::double precision) AND (problem_solving <= (5)::double precision)))
+ chk_answer_evaluations_technical_correctness_range  | c       | CHECK (((technical_correctness >= (0)::double precision) AND (technical_correctness <= (5)::double precision)))
+ chk_interview_questions_order_number_positive       | c       | CHECK ((order_number > 0))
+ chk_user_skill_scores_score_range                   | c       | CHECK (((score >= (0)::double precision) AND (score <= (100)::double precision)))
+(7 rows)
+

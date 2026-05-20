@@ -1,0 +1,175 @@
+[90mstderr[2m | src/pages/auth/LoginPage.test.tsx[2m > [22m[2mLoginPage[2m > [22m[2mrenders email and password fields
+[22m[39mWarning: [antd: Space] `direction` is deprecated. Please use `orientation` instead.
+
+[90mstderr[2m | src/pages/auth/LoginPage.test.tsx[2m > [22m[2mLoginPage[2m > [22m[2mhas a submit button
+[22m[39mWarning: [antd: Space] `direction` is deprecated. Please use `orientation` instead.
+
+[90mstderr[2m | src/pages/auth/RegisterPage.test.tsx[2m > [22m[2mRegisterPage[2m > [22m[2mrenders name, email and password fields
+[22m[39mWarning: [antd: Space] `direction` is deprecated. Please use `orientation` instead.
+
+[90mstderr[2m | src/pages/auth/LoginPage.test.tsx[2m > [22m[2mLoginPage[2m > [22m[2mhas a link to the register page
+[22m[39mWarning: [antd: Space] `direction` is deprecated. Please use `orientation` instead.
+
+[90mstderr[2m | src/pages/auth/LoginPage.test.tsx[2m > [22m[2mLoginPage[2m > [22m[2mshows Vinki branding
+[22m[39mWarning: [antd: Space] `direction` is deprecated. Please use `orientation` instead.
+
+[90mstderr[2m | src/pages/auth/RegisterPage.test.tsx[2m > [22m[2mRegisterPage[2m > [22m[2mhas a submit button
+[22m[39mWarning: [antd: Space] `direction` is deprecated. Please use `orientation` instead.
+
+[90mstderr[2m | src/pages/auth/RegisterPage.test.tsx[2m > [22m[2mRegisterPage[2m > [22m[2mhas a link to login page
+[22m[39mWarning: [antd: Space] `direction` is deprecated. Please use `orientation` instead.
+
+[90mstderr[2m | src/pages/auth/RegisterPage.test.tsx[2m > [22m[2mRegisterPage[2m > [22m[2mshows Vinki branding
+[22m[39mWarning: [antd: Space] `direction` is deprecated. Please use `orientation` instead.
+
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/pages/auth/LoginPage.test.tsx[2m > [22mLoginPage[2m > [22mshows Vinki branding
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an element with the text: V. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"css-dev-only-do-not-override-1daqxe2 ant-app css-var-root"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"vinki-auth-page"[39m
+      [36m>[39m
+        [36m<img[39m
+          [33malt[39m=[32m""[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"vinki-auth-deco vinki-auth-deco-sun"[39m
+          [33msrc[39m=[32m"/src/assets/svg/sun.svg"[39m
+        [36m/>[39m
+        [36m<img[39m
+          [33malt[39m=[32m""[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"vinki-auth-deco vinki-auth-deco-waves"[39m
+          [33msrc[39m=[32m"/src/assets/svg/waves.svg"[39m
+        [36m/>[39m
+        [36m<img[39m
+          [33malt[39m=[32m""[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"vinki-auth-deco vinki-auth-deco-arcos"[39m
+          [33msrc[39m=[32m"/src/assets/svg/arcos.svg"[39m
+        [36m/>[39m
+        [36m<img[39m
+          [33malt[39m=[32m""[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"vinki-auth-deco vinki-auth-deco-circles"[39m
+          [33msrc[39m=[32m"/src/assets/svg/circles.svg"[39m
+        [36m/>[39m
+        [36m<img[39m
+          [33malt[39m=[32m""[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"vinki-auth-deco vinki-auth-deco-triangles"[39m
+          [33msrc[39m=[32m"/src/assets/svg/traingles.svg"[39m
+        [36m/>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ant-card ant-card-bordered vinki-auth-card css-dev-only-do-not-override-1daqxe2 css-var-root"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"ant-card-body"[39m
+            [33mstyle[39m=[32m"padding: 40px 36px;"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"vinki-auth-logo"[39m
+            [36m>[39m
+              [36m<h3[39m
+                [33mstyle[39m=[32m"margin-bottom: 4px; color: rgb(219, 242, 39); font-weight: 600; font-size: 2rem;"[39m
+              [36m>[39m
+                [0mHello![0m
+              [36m</h3>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"ant-typography css-dev-only-do-not-override-1daqxe2 css-var-root"[39m
+                [33mstyle[39m=[32m"color: rgb(243, 244, 241); display: block;"[39m
+              [36m>[39m
+                [0mWelcome to Vinki[0m
+              [36m</span>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"ant-typography css-dev-only-do-not-override-1daqxe2 css-var-root"[39m
+                [33mstyle[39m=[32m"color: rgb(243, 244, 241); display: block;"[39m
+              [36m>[39m
+                [0mYour AI interview coach[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<form[39m
+              [33maria-label[39m=[32m"Sign in"[39m
+              [33mclass[39m=[32m"ant-form ant-form-vertical ant-form-large css-var-root ant-form-css-var css-dev-only-do-not-override-1daqxe2"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"ant-form-item css-var-root ant-form-css-var css-dev-only-do-not-override-1daqxe2 ant-form-item-vertical"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"ant-row ant-form-item-row css-dev-only-do-not-override-1daqxe2 css-var-root"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-label css-dev-only-do-not-override-1daqxe2 css-var-root"[39m
+                  [36m>[39m
+                    [36m<label[39m
+                      [33mclass[39m=[32m"ant-form-item-required"[39m
+                      [33mfor[39m=[32m"email"[39m
+                      [33mtitle[39m=[32m"Email"[39m
+                    [36m>[39m
+                      [0mEmail[0m
+                    [36m</label>[39m
+                  [36m</div>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"ant-col ant-form-item-control css-dev-only-do-not-override-1daqxe2 css-var-root"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"ant-form-item-control-input"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"ant-form-item-control-input-content"[39m
+                      [36m>[39m
+                        [36m<span[39m
+                          [33mclass[39m=[32m"ant-input-affix-wrapper ant-input-affix-wrapper-lg css-dev-only-do-not-override-1daqxe2 ant-input-outlined css-var-root ant-input-css-var"[39m
+                        [36m>[39m
+                          [36m<span[39m
+                            [33mclass[39m=[32m"ant-input-prefix"[39m
+                          [36m>[39m
+                            [36m<span[39m
+                              [33maria-label[39m=[32m"mail"[39m
+                              [33mclass[39m=[32m"anticon anticon-mail"[39m
+                              [33mrole[39m=[32m"img"[39m
+                              [33mstyle[39m=[32m"color: var(--color-muted);"[39m
+                            [36m>[39m
+                              [36m<svg[39m
+                                [33maria-hidden[39m=[32m"true"[39m
+                                [33mdata-icon[39m=[32m"mail"[39m
+                                [33mfill[39m=[32m"currentColor"[39m
+                                [33mfocusable[39m=[32m"false"[39m
+                                [33mheight[39m=[32m"1em"[39m
+                                [33mviewBox[39m=[32m"64 64 896 896"[39m
+                                [33mwidth[39m=[32m"1em"[39m
+                              [36m>[39m
+                                [36m<path[39m
+                                  [33md[39m=[32m"M928 160H96c-17.7 0-32 14.3-32 32v640c0 17.7 14.3 32 32 32h832c17.7 0 32-14.3 32-32V192c0-17.7-14.3-32-32-32zm-40 110.8V792H136V270.8l-27.6-21.5 39.3-50.5 42.8 33.3h643.1l42.8-33.3 39.3 50.5-27.7 21.5zM833.6 232L512 482 190.4 232l-42.8-33.3-39.3 50.5 27.6 21.5 341.6 265.6a55.99 55.99 0 0068.7 0L888 270.8l27.6-21.5-39.3-50.5-42.7 33.2z"[39m
+                                [36m/>[39m
+                              [36m</svg>[39m
+                            [36m</span>[39m
+                          [36m</span>[39m
+                          [36m<input[39m
+                            [33maria-required[39m=[32m"true"[39m
+                            [33mclass[39m=[32m"ant-input ant-input-lg css-dev-only-do-not-override-1daqxe2"[39m
+                            [33mid[39m=[32m"email"[39m
+                            [33mplaceholder[39m=[32m"t...
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m src/pages/auth/LoginPage.test.tsx:[2m64:19[22m[39m
+    [90m 62|[39m     )
+    [90m 63|[39m
+    [90m 64|[39m     [34mexpect[39m(screen[33m.[39m[34mgetByText[39m([32m'V'[39m))[33m.[39m[34mtoBeInTheDocument[39m()
+    [90m   |[39m                   [31m^[39m
+    [90m 65|[39m   })
+    [90m 66|[39m })
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+===EXIT 1===
+183 c:\Users\g5\Documents\University\ProyectoDeGrado\qa\02-pruebas-unitarias\diagnostico_frontend_raw.txt

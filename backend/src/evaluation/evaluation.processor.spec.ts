@@ -115,9 +115,13 @@ describe('EvaluationProcessor', () => {
       },
     });
 
-    expect(evaluator.evaluate).toHaveBeenCalledWith([
-      { answerId: 100, questionText: 'What is REST?', answerText: 'My answer' },
-    ]);
+    // El procesador llama a `evaluator.evaluate(answerInputs, isBehavioral)`.
+    // En este flujo el interview mockeado no tiene `mode: 'behavioral'`, por
+    // lo que `isBehavioral === false` (ver evaluation.processor.ts:65).
+    expect(evaluator.evaluate).toHaveBeenCalledWith(
+      [{ answerId: 100, questionText: 'What is REST?', answerText: 'My answer' }],
+      false,
+    );
 
     expect(prisma.answerEvaluation.upsert).toHaveBeenCalledWith(
       expect.objectContaining({

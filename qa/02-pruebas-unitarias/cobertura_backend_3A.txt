@@ -1,0 +1,120 @@
+[32m[Nest] 7316  - [39m05/19/2026, 9:33:50 PM [32m    LOG[39m [38;5;3m[EvaluationProcessor] [39m[32mProcessing evaluation for interview 1[39m
+[32m[Nest] 7316  - [39m05/19/2026, 9:33:50 PM [32m    LOG[39m [38;5;3m[EvaluationProcessor] [39m[32mEvaluation completed for interview 1[39m
+[32m[Nest] 7316  - [39m05/19/2026, 9:33:50 PM [32m    LOG[39m [38;5;3m[EvaluationProcessor] [39m[32mProcessing evaluation for interview 1[39m
+[32m[Nest] 7316  - [39m05/19/2026, 9:33:50 PM [32m    LOG[39m [38;5;3m[EvaluationProcessor] [39m[32mEvaluation completed for interview 1[39m
+[32m[Nest] 7316  - [39m05/19/2026, 9:33:50 PM [32m    LOG[39m [38;5;3m[EvaluationProcessor] [39m[32mProcessing evaluation for interview 1[39m
+[32m[Nest] 7316  - [39m05/19/2026, 9:33:50 PM [32m    LOG[39m [38;5;3m[EvaluationProcessor] [39m[32mEvaluation completed for interview 1[39m
+[32m[Nest] 7316  - [39m05/19/2026, 9:33:50 PM [32m    LOG[39m [38;5;3m[EvaluationProcessor] [39m[32mProcessing evaluation for interview 1[39m
+[33m[Nest] 7316  - [39m05/19/2026, 9:33:50 PM [33m   WARN[39m [38;5;3m[EvaluationProcessor] [39m[33mNo text answers found for interview 1[39m
+[32m[Nest] 7316  - [39m05/19/2026, 9:33:50 PM [32m    LOG[39m [38;5;3m[EvaluationProcessor] [39m[32mProcessing evaluation for interview 1[39m
+[32m[Nest] 7316  - [39m05/19/2026, 9:33:50 PM [32m    LOG[39m [38;5;3m[EvaluationProcessor] [39m[32mEvaluation completed for interview 1[39m
+[32m[Nest] 7316  - [39m05/19/2026, 9:33:50 PM [32m    LOG[39m [38;5;3m[EvaluationProcessor] [39m[32mProcessing evaluation for interview 1[39m
+[32m[Nest] 7316  - [39m05/19/2026, 9:33:50 PM [32m    LOG[39m [38;5;3m[EvaluationProcessor] [39m[32mProcessing evaluation for interview 1[39m
+[32m[Nest] 7316  - [39m05/19/2026, 9:33:50 PM [32m    LOG[39m [38;5;3m[EvaluationProcessor] [39m[32mProcessing evaluation for interview 1[39m
+[32m[Nest] 7316  - [39m05/19/2026, 9:33:50 PM [32m    LOG[39m [38;5;3m[EvaluationProcessor] [39m[32mEvaluation completed for interview 1[39m
+[33m[Nest] 7316  - [39m05/19/2026, 9:33:51 PM [33m   WARN[39m [38;5;3m[CircuitBreaker:test] [39m[33mCircuit test transitioning to HALF_OPEN[39m
+[32m[Nest] 7316  - [39m05/19/2026, 9:33:51 PM [32m    LOG[39m [38;5;3m[CircuitBreaker:test] [39m[32mCircuit test recovered, transitioning to CLOSED[39m
+[33m[Nest] 7316  - [39m05/19/2026, 9:33:51 PM [33m   WARN[39m [38;5;3m[CircuitBreaker:test] [39m[33mCircuit test transitioning to HALF_OPEN[39m
+[32m[Nest] 15228  - [39m05/19/2026, 9:34:05 PM [32m    LOG[39m [38;5;3m[KnowledgeIngestionService] [39m[32mDocument 99: 1 chunks created[39m
+[32m[Nest] 15228  - [39m05/19/2026, 9:34:05 PM [32m    LOG[39m [38;5;3m[KnowledgeIngestionService] [39m[32mDocument 99: ingestion complete[39m
+[32m[Nest] 15228  - [39m05/19/2026, 9:34:05 PM [32m    LOG[39m [38;5;3m[KnowledgeIngestionService] [39m[32mDocument 1: 2 chunks created[39m
+[32m[Nest] 15228  - [39m05/19/2026, 9:34:05 PM [32m    LOG[39m [38;5;3m[KnowledgeIngestionService] [39m[32mDocument 1: ingestion complete[39m
+[32m[Nest] 15228  - [39m05/19/2026, 9:34:05 PM [32m    LOG[39m [38;5;3m[KnowledgeIngestionService] [39m[32mDocument 42: 2 chunks created[39m
+[32m[Nest] 15228  - [39m05/19/2026, 9:34:05 PM [32m    LOG[39m [38;5;3m[KnowledgeIngestionService] [39m[32mDocument 42: ingestion complete[39m
+[32m[Nest] 15228  - [39m05/19/2026, 9:34:06 PM [32m    LOG[39m [38;5;3m[KnowledgeIngestionService] [39m[32mDocument 5: 1 chunks created[39m
+[32m[Nest] 15228  - [39m05/19/2026, 9:34:06 PM [32m    LOG[39m [38;5;3m[KnowledgeIngestionService] [39m[32mDocument 5: ingestion complete[39m
+[32m[Nest] 15228  - [39m05/19/2026, 9:34:06 PM [32m    LOG[39m [38;5;3m[KnowledgeIngestionService] [39m[32mDocument 8: 1 chunks created[39m
+[32m[Nest] 15792  - [39m05/19/2026, 9:34:08 PM [32m    LOG[39m [38;5;3m[RagQuestionGeneratorService] [39m[32mNo knowledge base content found, skipping RAG generation[39m
+[32m[Nest] 15792  - [39m05/19/2026, 9:34:08 PM [32m    LOG[39m [38;5;3m[RagQuestionGeneratorService] [39m[32mRAG generated 1 questions[39m
+[32m[Nest] 15792  - [39m05/19/2026, 9:34:08 PM [32m    LOG[39m [38;5;3m[RagQuestionGeneratorService] [39m[32mRAG generated 1 questions[39m
+[32m[Nest] 15792  - [39m05/19/2026, 9:34:08 PM [32m    LOG[39m [38;5;3m[RagQuestionGeneratorService] [39m[32mRAG generated 3 questions[39m
+[32m[Nest] 15792  - [39m05/19/2026, 9:34:08 PM [32m    LOG[39m [38;5;3m[RagQuestionGeneratorService] [39m[32mRAG generated 0 questions[39m
+------------------------------------|---------|----------|---------|---------|---------------------
+File                                | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s   
+------------------------------------|---------|----------|---------|---------|---------------------
+All files                           |   33.09 |    24.74 |   31.98 |   32.68 |                     
+ achievements                       |       0 |        0 |       0 |       0 |                     
+  achievement.listener.ts           |       0 |        0 |       0 |       0 | 1-19                
+  achievements.controller.ts        |       0 |      100 |       0 |       0 | 1-19                
+  achievements.service.ts           |       0 |        0 |       0 |       0 | 1-198               
+ auth                               |     100 |      100 |     100 |     100 |                     
+  auth.controller.ts                |     100 |      100 |     100 |     100 |                     
+  auth.service.ts                   |     100 |      100 |     100 |     100 |                     
+ auth/guards                        |     100 |      100 |     100 |     100 |                     
+  jwt-cookie.guard.ts               |     100 |      100 |     100 |     100 |                     
+  roles.decorator.ts                |     100 |      100 |     100 |     100 |                     
+  roles.guard.ts                    |     100 |      100 |     100 |     100 |                     
+ auth/strategies                    |   95.65 |       50 |      80 |   94.73 |                     
+  jwt-cookie.strategy.ts            |      90 |        0 |   66.66 |    87.5 | 19                  
+  local.strategy.ts                 |     100 |      100 |     100 |     100 |                     
+ catalogs                           |       0 |        0 |       0 |       0 |                     
+  admin-audit.controller.ts         |       0 |        0 |       0 |       0 | 1-15                
+  admin-questions.controller.ts     |       0 |        0 |       0 |       0 | 1-172               
+  catalogs.controller.ts            |       0 |      100 |       0 |       0 | 1-59                
+  catalogs.service.ts               |       0 |      100 |       0 |       0 | 1-35                
+ challenges                         |       0 |        0 |       0 |       0 |                     
+  challenge.listener.ts             |       0 |        0 |       0 |       0 | 1-19                
+  challenges.controller.ts          |       0 |      100 |       0 |       0 | 1-46                
+  challenges.service.ts             |       0 |        0 |       0 |       0 | 1-357               
+ common                             |    8.62 |        0 |       0 |    5.71 |                     
+  audit.service.ts                  |      50 |        0 |       0 |    37.5 | 6-26                
+  cache.interceptor.ts              |       0 |        0 |       0 |       0 | 1-91                
+  env.validation.ts                 |       0 |        0 |       0 |       0 | 1-90                
+  prisma.service.ts                 |   71.42 |      100 |       0 |      60 | 10-14               
+  redis.service.ts                  |       0 |        0 |       0 |       0 | 1-51                
+ common/filters                     |       0 |        0 |       0 |       0 |                     
+  http-exception.filter.ts          |       0 |        0 |       0 |       0 | 1-32                
+ evaluation                         |     100 |      100 |     100 |     100 |                     
+  rubrics-behavioral.ts             |     100 |      100 |     100 |     100 |                     
+  rubrics.ts                        |     100 |      100 |     100 |     100 |                     
+ evaluation/processors              |     100 |       75 |     100 |     100 |                     
+  evaluation.processor.ts           |     100 |       75 |     100 |     100 | 74-85,119,166       
+ evaluation/services                |     100 |      100 |     100 |     100 |                     
+  mock-evaluator.service.ts         |     100 |      100 |     100 |     100 |                     
+  openai-evaluator.service.ts       |     100 |      100 |     100 |     100 |                     
+ health                             |       0 |        0 |       0 |       0 |                     
+  health.controller.ts              |       0 |        0 |       0 |       0 | 1-91                
+ interviews                         |   34.07 |    40.84 |   18.51 |   33.75 |                     
+  interviews.controller.ts          |       0 |      100 |       0 |       0 | 1-41                
+  interviews.service.ts             |   80.26 |    70.73 |   83.33 |   77.94 | 58-98,113,162-177   
+  templates.controller.ts           |       0 |        0 |       0 |       0 | 1-72                
+  templates.service.ts              |       0 |        0 |       0 |       0 | 1-195               
+ interviews/answers                 |   30.39 |    34.78 |   27.27 |   27.58 |                     
+  answers.controller.ts             |       0 |        0 |       0 |       0 | 1-119               
+  answers.service.ts                |   48.43 |    38.09 |      50 |   47.05 | 97-208              
+ interviews/services                |    8.45 |        0 |       0 |    7.01 |                     
+  embedding.service.ts              |       0 |        0 |       0 |       0 | 1-27                
+  followup.service.ts               |       0 |        0 |       0 |       0 | 1-19                
+  question-generator.service.ts     |       0 |        0 |       0 |       0 | 1-23                
+  question-selector.service.ts      |   23.07 |        0 |       0 |   19.04 | 15-66               
+  transcription.service.ts          |       0 |        0 |       0 |       0 | 1-45                
+ knowledge                          |       0 |        0 |       0 |       0 |                     
+  knowledge.controller.ts           |       0 |        0 |       0 |       0 | 1-134               
+ knowledge/processors               |       0 |      100 |       0 |       0 |                     
+  ingestion.processor.ts            |       0 |      100 |       0 |       0 | 1-36                
+ knowledge/services                 |   95.91 |    89.28 |     100 |   96.55 |                     
+  chunking.service.ts               |   92.72 |    86.36 |     100 |   94.11 | 26-28               
+  knowledge-ingestion.service.ts    |     100 |      100 |     100 |     100 |                     
+  knowledge-retrieval.service.ts    |     100 |      100 |     100 |     100 |                     
+ llm/services                       |     100 |      100 |     100 |     100 |                     
+  circuit-breaker.ts                |     100 |      100 |     100 |     100 |                     
+  gemini-embedding.service.ts       |     100 |      100 |     100 |     100 |                     
+  gemini-llm.service.ts             |     100 |      100 |     100 |     100 |                     
+  mock-embedding.service.ts         |     100 |      100 |     100 |     100 |                     
+  mock-llm.service.ts               |     100 |      100 |     100 |     100 |                     
+  openai-embedding.service.ts       |     100 |      100 |     100 |     100 |                     
+  openai-llm.service.ts             |     100 |      100 |     100 |     100 |                     
+ notifications                      |       0 |        0 |       0 |       0 |                     
+  email.service.ts                  |       0 |        0 |       0 |       0 | 1-63                
+  notification.listener.ts          |       0 |        0 |       0 |       0 | 1-19                
+  notifications.controller.ts       |       0 |        0 |       0 |       0 | 1-114               
+ rag/services                       |     100 |      100 |     100 |     100 |                     
+  rag-question-generator.service.ts |     100 |      100 |     100 |     100 |                     
+ reports                            |   15.33 |    11.66 |   22.15 |   14.94 |                     
+  career-prediction.service.ts      |       0 |        0 |       0 |       0 | 1-247               
+  job-profiles.ts                   |       0 |      100 |     100 |       0 | 9                   
+  reports.controller.ts             |       0 |        0 |       0 |       0 | 1-205               
+  reports.service.ts                |   28.02 |    16.05 |   35.71 |    27.2 | 102,236-332,385-848 
+  shared-report.controller.ts       |       0 |      100 |       0 |       0 | 1-12                
+  transfer-learning.service.ts      |       0 |        0 |       0 |       0 | 1-145               
+------------------------------------|---------|----------|---------|---------|---------------------
