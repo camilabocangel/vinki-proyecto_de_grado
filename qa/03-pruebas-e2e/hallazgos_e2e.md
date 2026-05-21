@@ -18,17 +18,18 @@
 | **HE-04** | Internacionalización — "Cancelar" y mensaje password sin `t()` en Profile | Baja | Documentado | RNF-26 | TC-E-06-003 |
 | **HE-05** | Lógica de negocio — `skill_id` fallback contamina preguntas IA del admin | **MEDIA-ALTA** ⚠ | **Diferido (D-13)** — backlog post-MVP | RF-12, RF-27, RF-42 | TC-E-08 + análisis de código |
 | **HE-06** | Rendimiento (UX) — latencia >5 s en feedback inmediato de modo `practice` con LLM real | **Baja-Media** | **Acotado por D-17** — no afecta flujo principal | RNF-01 (sub-umbral `practice`) | Escenario 4 JMeter (`04-rnf01-real.jmx`) + análisis de flujo |
+| **HE-07** | Seguridad — BOLA/IDOR en `GET /templates/:id` y `POST /templates/:id/start` (templates privados ajenos) | **MEDIA** | ✅ **RESUELTO** (D-18) | RNF-07 | Revisión manual Fase 5-B |
 
-**1 bug de seguridad ALTA detectado y corregido durante la fase. 1 bug
-de lógica de negocio MEDIA-ALTA diferido por Decisión D-13** (registrada
-en `qa/01-plan-maestro/decisiones_qa.md` § D-13; backlog post-MVP
-consolidado en
-[`plan_mejoras_futuras.md`](plan_mejoras_futuras.md)). **1 observación
-de rendimiento (HE-06)** detectada en Fase 5-A, acotada al modo
-`practice` (feedback inmediato opcional) y formalizada en la Decisión
-D-17 con propuesta de sub-umbrales para el RNF-01. Los tres hallazgos
-restantes son mejoras post-MVP no bloqueantes para el cumplimiento de
-requerimientos.
+**2 bugs de seguridad detectados y corregidos durante el proceso de
+QA (HE-01 ALTA en Fase 4, HE-07 MEDIA en Fase 5-B). 1 bug de lógica
+de negocio MEDIA-ALTA diferido por Decisión D-13** (registrada en
+`qa/01-plan-maestro/decisiones_qa.md` § D-13; backlog post-MVP
+consolidado en [`plan_mejoras_futuras.md`](plan_mejoras_futuras.md)).
+**1 observación de rendimiento (HE-06)** detectada en Fase 5-A,
+acotada al modo `practice` (feedback inmediato opcional) y
+formalizada en la Decisión D-17 con propuesta de sub-umbrales para
+el RNF-01. Los tres hallazgos restantes (HE-02, HE-03, HE-04) son
+mejoras post-MVP no bloqueantes para el cumplimiento de requerimientos.
 
 ---
 

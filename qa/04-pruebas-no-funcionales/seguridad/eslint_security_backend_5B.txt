@@ -1,0 +1,92 @@
+
+> backend@0.0.1 lint:security
+> eslint --config eslint.security.config.mjs .
+
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\backend\prisma\seed.ts
+    24:5   warning  Generic Object Injection Sink               security/detect-object-injection
+    47:5   warning  Generic Object Injection Sink               security/detect-object-injection
+    93:5   warning  Generic Object Injection Sink               security/detect-object-injection
+   119:5   warning  Generic Object Injection Sink               security/detect-object-injection
+   138:18  warning  Variable Assigned to Object Injection Sink  security/detect-object-injection
+   141:24  warning  Variable Assigned to Object Injection Sink  security/detect-object-injection
+  1446:23  warning  Generic Object Injection Sink               security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\backend\src\challenges\challenges.service.ts
+  206:39  warning  Generic Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\backend\src\evaluation\services\openai-evaluator.service.spec.ts
+  131:16  warning  Function Call Object Injection Sink  security/detect-object-injection
+  132:16  warning  Function Call Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\backend\src\interviews\services\embedding.service.spec.ts
+  16:7   warning  Generic Object Injection Sink  security/detect-object-injection
+  16:35  warning  Generic Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\backend\src\interviews\services\transcription.service.ts
+  45:12  warning  Generic Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\backend\src\interviews\templates.service.ts
+  105:25  warning  Generic Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\backend\src\knowledge\services\knowledge-ingestion.service.ts
+  44:23  warning  Variable Assigned to Object Injection Sink  security/detect-object-injection
+  45:34  warning  Generic Object Injection Sink               security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\backend\src\reports\career-prediction.service.ts
+  170:7   warning  Generic Object Injection Sink  security/detect-object-injection
+  183:26  warning  Generic Object Injection Sink  security/detect-object-injection
+  184:22  warning  Generic Object Injection Sink  security/detect-object-injection
+  188:70  warning  Generic Object Injection Sink  security/detect-object-injection
+  202:19  warning  Generic Object Injection Sink  security/detect-object-injection
+  203:20  warning  Generic Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\backend\src\reports\reports.service.ts
+   98:19  warning  Generic Object Injection Sink  security/detect-object-injection
+   98:40  warning  Generic Object Injection Sink  security/detect-object-injection
+  358:41  warning  Generic Object Injection Sink  security/detect-object-injection
+  608:21  warning  Generic Object Injection Sink  security/detect-object-injection
+  608:42  warning  Generic Object Injection Sink  security/detect-object-injection
+  782:7   warning  Generic Object Injection Sink  security/detect-object-injection
+  782:32  warning  Generic Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\backend\test\integration\setup.ts
+  23:6   warning  Found existsSync from package "fs" with non literal argument at index 0    security/detect-non-literal-fs-filename
+  30:17  warning  Found readFileSync from package "fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  43:8   warning  Generic Object Injection Sink                                              security/detect-object-injection
+  44:5   warning  Generic Object Injection Sink                                              security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\backend\test\perf\seed-perf.ts
+   29:1   error    Definition for rule 'import/order' was not found                                import/order
+   96:8   warning  Found existsSync from package "node:fs" with non literal argument at index 0    security/detect-non-literal-fs-filename
+  102:19  warning  Found readFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  112:5   warning  Generic Object Injection Sink                                                   security/detect-object-injection
+  295:5   warning  Generic Object Injection Sink                                                   security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\backend\test\perf\start-perf-real.ts
+  31:8   warning  Found existsSync from package "node:fs" with non literal argument at index 0    security/detect-non-literal-fs-filename
+  32:19  warning  Found readFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  40:5   warning  Generic Object Injection Sink                                                   security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\backend\test\perf\start-perf.ts
+  20:8   warning  Found existsSync from package "node:fs" with non literal argument at index 0    security/detect-non-literal-fs-filename
+  26:19  warning  Found readFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  35:5   warning  Generic Object Injection Sink                                                   security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\backend\test\prisma.mock.ts
+  31:9   warning  Generic Object Injection Sink  security/detect-object-injection
+  33:14  warning  Generic Object Injection Sink  security/detect-object-injection
+  40:34  warning  Generic Object Injection Sink  security/detect-object-injection
+  42:9   warning  Generic Object Injection Sink  security/detect-object-injection
+  43:16  warning  Generic Object Injection Sink  security/detect-object-injection
+  45:7   warning  Generic Object Injection Sink  security/detect-object-injection
+  46:14  warning  Generic Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\backend\test\setup.ts
+  16:5   warning  Found existsSync from package "fs" with non literal argument at index 0    security/detect-non-literal-fs-filename
+  17:19  warning  Found readFileSync from package "fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  28:10  warning  Generic Object Injection Sink                                              security/detect-object-injection
+  29:7   warning  Generic Object Injection Sink                                              security/detect-object-injection
+
+✖ 55 problems (1 error, 54 warnings)
+

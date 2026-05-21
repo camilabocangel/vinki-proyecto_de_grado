@@ -1,6 +1,6 @@
 # Estado del proyecto QA — Vinki
 
-> **Última actualización:** 2026-05-21 (Fase 5-A cerrada — 6 perfiles JMeter + RNF-01 real medido + **HE-06 reclasificado por D-17** a observación acotada al modo `practice`; el flujo principal cumple RNF-01 con holgura vía BullMQ)
+> **Última actualización:** 2026-05-21 (**Fase 5 completa cerrada** — Fase 5-A rendimiento + Fase 5-B seguridad. HE-07 detectado y corregido (D-18, BOLA en templates). Suite 653/653 verde.)
 > **Propósito:** punto único de retomada del trabajo de QA. Contiene
 > el resumen ejecutivo del estado actual, decisiones tomadas, próximos
 > pasos y enlaces a todos los artefactos generados.
@@ -17,23 +17,23 @@
 - **Fases QA completadas:** Fase 0 (inventario), Fase 1 (plan
   maestro + matriz), Fase 2 (unitarias backend + frontend), Fase 3
   (integración + integridad de datos), Fase 4 (E2E Playwright).
-- **Fases QA pendientes:** Fase 5-B (seguridad — Semgrep, npm audit,
-  eslint-plugin-security), Fase 6 (evaluación RAG con Ragas / DeepEval),
-  Fase 7 (consolidación informe). **Fase 5-A (rendimiento) cerrada** —
-  6 perfiles JMeter ejecutados con éxito + RNF-01 real medido +
-  **HE-06 reclasificado a observación acotada por D-17** (el flujo
-  principal cumple RNF-01 con holgura vía BullMQ; la latencia >5 s
-  se limita al modo `practice`, feature opcional). 2 perfiles
-  parcial/pendientes documentados como limitación de entorno (8 GB RAM).
-- **Total de tests verde acumulados:** **644** — 371 unitarias
-  backend (368 + 3 regression guards por HE-01) + 134 unitarias
-  frontend + 92 integración + 47 E2E.
+- **Fases QA pendientes:** Fase 6 (evaluación RAG con Ragas / DeepEval),
+  Fase 7 (consolidación informe del Capítulo 3.3.2). **Fase 5 completa
+  cerrada (5-A rendimiento + 5-B seguridad)** — auditoría de dependencias
+  cerrada a 0 críticas y altas (2 moderate residuales sin upstream fix
+  en frontend), revisión manual exhaustiva de RNF-05..08 con HE-07 (BOLA
+  en templates) detectado y corregido (D-18) con verificación a 4 niveles.
+- **Total de tests verde acumulados:** **653** — 375 unitarias
+  backend (368 + 3 regression guards HE-01 + 4 nuevos HE-07) + 134
+  unitarias frontend + 97 integración (+5 cross-user HE-07) + 47 E2E.
 - **Estado de la suite:** **VERDE 100 %** — verificado con
-  `--repeat-each=3` en E2E (141/141). **1 bug de seguridad ALTA
-  detectado por E2E y corregido** (HE-01: cross-tenant data leak en
-  caché — ver § 6). 1 archivo de producción modificado con
-  autorización explícita para corregirlo
-  (`backend/src/common/cache.interceptor.ts`).
+  `--repeat-each=3` en E2E (141/141). **2 bugs de seguridad detectados
+  y corregidos por el proceso de QA:** HE-01 (ALTA, cross-tenant
+  cache leak — Fase 4) y HE-07 (MEDIA, BOLA en templates — Fase 5-B).
+  3 archivos de producción modificados con autorización explícita:
+  `backend/src/common/cache.interceptor.ts` (HE-01),
+  `backend/src/interviews/templates.service.ts` y
+  `backend/src/interviews/templates.controller.ts` (HE-07).
 
 ---
 
@@ -46,8 +46,8 @@
 | Fase 2 — Unitarias | ✅ Cerrada | 502 (368 back + 134 front) | Backend 99 % / Frontend 83 % (post-D-8) | [cierre_fase_2.md](02-pruebas-unitarias/cierre_fase_2.md) |
 | Fase 3 — Integración | ✅ Cerrada | 92 | RNF-05, RNF-07–RNF-20 validados E2E | [cierre_fase_3.md](03-pruebas-integracion/cierre_fase_3.md) |
 | Fase 4 — E2E Playwright | ✅ **Cerrada 100 %** | **47/47** verde, verificado 3 corridas (141/141) | 27 RF + 4 RNF cubiertos extremo a extremo · **1 bug ALTA corregido (HE-01)** · **1 bug MEDIA-ALTA diferido por D-13 (HE-05)** | [cierre_fase_4.md](03-pruebas-e2e/cierre_fase_4.md) + [bug_seguridad_HE01.md](03-pruebas-e2e/bug_seguridad_HE01.md) + [plan_mejoras_futuras.md](03-pruebas-e2e/plan_mejoras_futuras.md) |
-| Fase 5-A — Rendimiento (JMeter) | ⚠ **Cerrada con observaciones** | 6 perfiles ejecutados (smoke/carga/estrés RNF-01 ARQ + smoke/carga RNF-02 + RNF-01 REAL 20 muestras) + 1 parcial (RNF-02 estrés a 30 u) + 2 pendientes (RNF-02 estrés 50 u, RNF-03) | **RNF-01 ARQ: P95=361ms a 50u** ✅ · **RNF-02: P95=90ms a 20u** ✅ · **RNF-01 REAL: P95=7 418ms** ❌ → **HE-06**. Limitación 8 GB RAM. | [reporte_rendimiento.md](04-pruebas-no-funcionales/rendimiento/reporte_rendimiento.md) + [setup_jmeter.md](04-pruebas-no-funcionales/rendimiento/setup_jmeter.md) + [seed_perf.md](04-pruebas-no-funcionales/rendimiento/seed_perf.md) |
-| Fase 5-B — Seguridad (Semgrep, npm audit, eslint-plugin-security) | ⏳ Pendiente | — | Pre-configurado en Fase 2.5 (eslint-security ya activo) | — |
+| Fase 5-A — Rendimiento (JMeter) | ⚠ **Cerrada con observaciones** | 6 perfiles ejecutados (smoke/carga/estrés RNF-01 ARQ + smoke/carga RNF-02 + RNF-01 REAL 20 muestras) + 1 parcial (RNF-02 estrés a 30 u) + 2 pendientes (RNF-02 estrés 50 u, RNF-03) | **RNF-01 ARQ: P95=361ms a 50u** ✅ · **RNF-02: P95=90ms a 20u** ✅ · **RNF-01 REAL: P95=7 418ms** ⚠ HE-06 acotado a `practice` por D-17. Limitación 8 GB RAM. | [reporte_rendimiento.md](04-pruebas-no-funcionales/rendimiento/reporte_rendimiento.md) + [setup_jmeter.md](04-pruebas-no-funcionales/rendimiento/setup_jmeter.md) + [seed_perf.md](04-pruebas-no-funcionales/rendimiento/seed_perf.md) |
+| Fase 5-B — Seguridad (npm audit + ESLint security + revisión manual) | ✅ **Cerrada** | npm audit: 23 → 0 backend, 11 → 2 frontend (residuales DOMPurify sin upstream). ESLint: 92 warnings todos falsos positivos. Revisión manual exhaustiva RNF-05..08. **HE-07 (BOLA templates) detectado y corregido (D-18)**, +4 unit guards + 5 integration cross-user. Semgrep no ejecutable (entorno MSYS2). | [reporte_seguridad.md](04-pruebas-no-funcionales/seguridad/reporte_seguridad.md) + [bug_seguridad_HE07.md](04-pruebas-no-funcionales/seguridad/bug_seguridad_HE07.md) + [cierre_fase_5.md](04-pruebas-no-funcionales/cierre_fase_5.md) |
 | Fase 6 — Evaluación RAG | ⏳ Pendiente | — | — | — |
 | Fase 7 — Consolidación informe | ⏳ Pendiente | — | — | — |
 
@@ -136,7 +136,7 @@ Decisión formal:
 
 ---
 
-## 4. Decisiones QA tomadas (D-1 a D-17)
+## 4. Decisiones QA tomadas (D-1 a D-18)
 
 Detalle completo en [decisiones_qa.md](01-plan-maestro/decisiones_qa.md).
 
@@ -192,6 +192,11 @@ Detalle completo en [decisiones_qa.md](01-plan-maestro/decisiones_qa.md).
   modo `practice` (feature opcional, P95 = 7 418 ms dominada por LLM
   externo). Propuesta de sub-umbrales RNF-01-a (< 500 ms) /
   RNF-01-b (< 8 s) pendiente de validar con el tutor.
+- **D-18** — Corrección de HE-07 (BOLA en `getTemplate` y
+  `startFromTemplate`). Criterio: bugs de autorización con fix viable
+  y sin cambio de UX se corrigen (consistente con HE-01, distinto
+  de HE-05). Severidad MEDIA: expone propiedad intelectual de
+  recruiters, no PII. Verificación a 4 niveles, 0 regresiones.
 
 ---
 
@@ -248,6 +253,9 @@ Lista completa en [notas_tecnicas.md](00-inventario/notas_tecnicas.md).
 - **NT-026** — Toggle LLM real (`start-perf-real.ts`) para D-15: lee
   key real de `backend/.env`, sobrescribe `LLM_SANDBOX=false`, banner
   redacted.
+- **NT-027** — Ownership consistency en TODOS los métodos de acceso
+  a un recurso (no solo en listados). Checklist de 5 puntos +
+  snippet canónico. Lección aprendida del fix de HE-07.
 
 ---
 
@@ -277,55 +285,37 @@ Detalle completo en [diferidos_qa.md](01-plan-maestro/diferidos_qa.md).
 
 ## 7. Próximo paso explícito
 
-> **Estado actual (2026-05-21):** Fase 5-A cerrada. Trabajo
-> consolidado en commit `cfdd3a6` (working tree limpio, suite verde
-> 371/371). HE-06 reclasificado por D-17 (observación acotada al
-> modo `practice`, no bloqueante).
+> **Estado actual (2026-05-21):** **Fase 5 cerrada completa**
+> (5-A rendimiento + 5-B seguridad). Trabajo consolidado en commit
+> ⟨pendiente — se hará al cierre de este turno⟩. Suite verde
+> **653/653** (375 backend + 134 frontend + 97 integración + 47 E2E).
 >
-> ### Próximo paso INMEDIATO: Fase 5-B (Seguridad)
+> ### Próximo paso INMEDIATO: Fase 6 (Evaluación RAG / IA)
 >
-> No requiere JMeter, no requiere mucha memoria, todo se ejecuta en
-> CLI. Tareas:
+> Validación de la **calidad real del LLM** (no la mockeada en Fases
+> 3/4/5), sobre dataset estático curado. Herramientas previstas:
+> **Ragas + DeepEval**. Capacidades a medir:
 >
-> 1. **`npm audit`** en `backend/` y `frontend/app/`. Capturar JSON
->    inicial y posterior (si se aplica algún `npm audit fix` no
->    breaking, registrar deltas). Output a
->    `qa/04-pruebas-no-funcionales/seguridad/audit_{backend,frontend}_{inicial,posterior}.json`.
-> 2. **`npm run lint:security`** en `backend/` (ya configurado con
->    `eslint-plugin-security` desde Fase 2.5; baseline en
->    `seguridad/eslint_security_inicial.txt`). Capturar el delta y
->    triagear cualquier hallazgo nuevo.
-> 3. **Semgrep** contra `backend/src/` con reglas OWASP Top 10 (`-c
->    p/owasp-top-ten` o equivalente). Instalación documentada en
->    [`seguridad/setup_semgrep.md`](04-pruebas-no-funcionales/seguridad/setup_semgrep.md).
->    Output a `seguridad/semgrep.json` + tabla de severidades.
-> 4. **Revisión manual de RNF-05 a RNF-08:**
->    - RNF-05 — bcrypt (no plain text passwords). Ya validado en
->      Fase 3 (TC-I-005), confirmar que el patrón se mantiene.
->    - RNF-06 — HTTPS (objetivo de diseño, D-4). Revisar
->      `docker-compose.prod.yml`.
->    - RNF-07 — Autorización por propiedad (HE-01 corregido). Ya
->      validado E2E ×3; revisar que no haya nuevos endpoints
->      `@Cacheable` que regresionen el patrón.
->    - RNF-08 — Validación estricta de DTOs (TC-I-008). Confirmar
->      que todos los controllers nuevos siguen el patrón
->      `class-validator`.
-> 5. Redactar
->    `qa/04-pruebas-no-funcionales/seguridad/reporte_seguridad.md`
->    con la tabla de hallazgos por severidad + estado por RNF.
-> 6. Generar `qa/04-pruebas-no-funcionales/cierre_fase_5.md`
->    consolidando 5-A (rendimiento) + 5-B (seguridad) como cierre
->    formal de la Fase 5 completa.
+> 1. **IA-01 — Faithfulness**: la respuesta del LLM está fundada en
+>    el contexto recuperado (no alucina).
+> 2. **IA-02 — Answer Relevance**: la respuesta responde a la pregunta
+>    del estudiante.
+> 3. **IA-03 — Context Precision**: los chunks recuperados son
+>    relevantes para la pregunta.
+> 4. **IA-04 — Context Recall**: los chunks relevantes están en el
+>    top-k recuperado.
+> 5. **IA-05 — Answer Correctness**: corrección contra ground-truth
+>    (dataset curado).
+> 6. **IA-06 — Latencia del pipeline RAG completo** (P95 < 5 s,
+>    medida en el flujo asíncrono — ver D-17 sobre la doble ruta).
 >
-> ### Después de Fase 5-B → Fase 6 (Evaluación RAG)
+> Dataset previsto: **25-30 preguntas curadas** con sus contextos
+> esperados y respuestas de referencia. Metodología detallada en
+> [`01-plan-maestro/plan_maestro_pruebas.md § 5.5`](01-plan-maestro/plan_maestro_pruebas.md).
 >
-> Ragas + DeepEval contra dataset estático de 25-30 preguntas
-> curadas para validar las 6 capacidades IA-01 a IA-06 (Faithfulness,
-> Answer Relevance, Context Precision, Context Recall, Answer
-> Correctness, Latencia del pipeline RAG completo). Detalle de la
-> metodología en
-> [plan_maestro_pruebas.md § 5.5](01-plan-maestro/plan_maestro_pruebas.md).
-> Esta fase es la que valida la CALIDAD real del LLM (no la mockeada).
+> Esta fase es independiente del rendimiento medido en Fase 5-A:
+> aquí no se mide latencia bajo carga, sino calidad estadística del
+> LLM contra ground-truth.
 >
 > ### Después de Fase 6 → Fase 7 (Consolidación del Capítulo 3.3.2)
 >
@@ -333,27 +323,22 @@ Detalle completo en [diferidos_qa.md](01-plan-maestro/diferidos_qa.md).
 > proyecto de grado, integrando:
 >
 > - Evidencia objetiva: cobertura, suites, hallazgos, reportes
->   JMeter, reportes RAG.
-> - Las 17 decisiones D-1..D-17 como sección de "metodología y
+>   JMeter, reportes Ragas/DeepEval.
+> - Las **18 decisiones D-1..D-18** como sección de "metodología y
 >   alcance".
-> - Los 6 hallazgos HE-01..HE-06 como sección de "defectos
->   detectados y gestionados".
+> - Los **7 hallazgos HE-01..HE-07** como sección de "defectos
+>   detectados y gestionados" (2 corregidos, 1 acotado, 4 backlog).
 > - Capturas de los reportes HTML (JMeter + Playwright + cobertura).
 >
-> **Hallazgo HE-06 — RECLASIFICADO** (D-17, 2026-05-21).
-> Tras el análisis del flujo real de evaluación
-> ([analisis_flujo_evaluacion.md](04-pruebas-no-funcionales/rendimiento/analisis_flujo_evaluacion.md))
-> se confirmó que el RNF-01 atraviesa dos rutas: el flujo principal
-> del estudiante (modo `evaluation`) es **asíncrono vía BullMQ** y
-> cumple el RNF-01 con holgura (ack ~12 ms); la latencia P95 = 7 418 ms
-> medida en Fase 5-A corresponde al modo `practice` (feature opcional
-> de feedback inmediato), donde está dominada por el proveedor LLM
-> externo. **HE-06 queda reclasificado a observación acotada de
-> severidad Baja-Media**, no bloqueante para el cierre de Fase 5-A.
-> La propuesta de sub-umbrales RNF-01-a / RNF-01-b queda pendiente
-> de validación con el tutor. Detalle técnico en
-> [reporte_rendimiento.md § 6](04-pruebas-no-funcionales/rendimiento/reporte_rendimiento.md)
-> y registro formal en [decisiones_qa.md § D-17](01-plan-maestro/decisiones_qa.md).
+> **Hallazgos relevantes para revisión con el tutor:**
+>
+> - **HE-06** (D-17): propuesta de sub-umbrales RNF-01-a (< 500 ms,
+>   acuse) y RNF-01-b (< 8 s, feedback inmediato modo `practice`).
+>   Si el tutor valida, actualizar `docs/requerimientos.md`.
+> - **RNF-02 estrés 50u** + **RNF-03 dedicado**: no completados por
+>   limitación de memoria del entorno (8 GB RAM). Plan `.jmx` y CSV
+>   de 50 usuarios listos para re-ejecutar en infraestructura ≥ 16 GB
+>   si el tutor exige cobertura completa.
 
 ---
 
@@ -410,9 +395,16 @@ qa/
     │   ├── planes/                 # 5 planes .jmx + perf-students.csv.
     │   ├── resultados/             # 7 .jtl + 7 HTML reports.
     │   └── capturas/               # (vacío — pendiente para informe).
-    └── seguridad/                  # Fase 5-B — pendiente.
-        ├── setup_semgrep.md
-        └── eslint_security_inicial.txt
+    ├── seguridad/                  # Fase 5-B — cerrada.
+    │   ├── reporte_seguridad.md    # Reporte completo Fase 5-B.
+    │   ├── bug_seguridad_HE07.md   # Reporte ejecutivo BOLA en templates.
+    │   ├── audit_backend_{inicial,fix,posterior}.{json,txt}
+    │   ├── audit_frontend_{inicial,fix,posterior}.{json,txt}
+    │   ├── audit_frontend_force_dryrun.txt
+    │   ├── eslint_security_{backend,frontend}_5B.txt
+    │   ├── eslint_security_inicial.txt   (baseline Fase 2.5)
+    │   └── setup_semgrep.md
+    └── cierre_fase_5.md            # Cierre formal de la Fase 5 completa.
 ```
 
 Adicionalmente, fuera de `qa/` viven los specs y la infra de pruebas:
@@ -484,23 +476,26 @@ asistente) para continuar el trabajo de QA:
 2. Adjunta `docs/requerimientos.md` para contexto del SUT.
 3. Indica explícitamente:
 
-   > "Quiero continuar con la **Fase 5-B — Pruebas de seguridad**.
-   > El contexto completo está en el archivo adjunto
-   > (`qa/ESTADO_DEL_PROYECTO_QA.md`). Procede con el **Prompt 5-B**."
+   > "Quiero continuar con la **Fase 6 — Evaluación RAG / IA**
+   > (Ragas + DeepEval). El contexto completo está en el archivo
+   > adjunto (`qa/ESTADO_DEL_PROYECTO_QA.md`). Procede con el
+   > **Prompt 6**."
 
 4. (Opcional, recomendado) Adjunta también:
    - `qa/01-plan-maestro/plan_maestro_pruebas.md` para la sección
-     5.5 (criterios) y referencias a OWASP / RNF-05 a RNF-08.
-   - `qa/04-pruebas-no-funcionales/rendimiento/reporte_rendimiento.md`
-     y `analisis_flujo_evaluacion.md` si el tutor requiere contexto
-     de Fase 5-A para justificar HE-06 / D-17.
+     5.5 (criterios de evaluación RAG IA-01..IA-06).
+   - `qa/04-pruebas-no-funcionales/cierre_fase_5.md` con el resumen
+     consolidado de Fase 5 (rendimiento + seguridad).
 
-### Estado de Git al pausar (2026-05-21)
+### Estado de Git al cerrar Fase 5 (2026-05-21)
 
-- HEAD: **`cfdd3a6`** — `test(perf): Fase 5-A rendimiento JMeter (RNF-01/02) + HE-06 reclasificado (D-14..D-17)`.
-- Working tree: **limpio**. Todo el trabajo de Fase 5-A + afinamiento HE-06 + D-17 está commiteado.
-- Suite verde: **48/48 suites, 371/371 tests** post-commit.
-- Sin procesos huérfanos (java, node, JMeter — todos detenidos).
+- HEAD: **commit de Fase 5-B (pendiente en este turno)** — incluye
+  fix HE-07 + audit fix + reportes seguridad + cierre_fase_5 +
+  matriz + decisiones (D-18) + notas (NT-027) + ESTADO actualizado.
+- Working tree: limpio (al cerrar).
+- Suite verde: **97 suites · 653/653 tests** (backend 48/375 +
+  frontend 30/134 + integración 9/97 + E2E 10/47).
+- Sin procesos huérfanos.
 
 ---
 

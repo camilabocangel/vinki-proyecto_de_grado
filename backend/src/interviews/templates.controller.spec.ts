@@ -74,25 +74,27 @@ describe('TemplatesController', () => {
   });
 
   describe('GET /interviews/templates/:id', () => {
-    it('should delegate to TemplatesService.getTemplate with the parsed id', async () => {
+    // HE-07 fix: findOne now forwards userId + role for ownership check.
+    it('should delegate to TemplatesService.getTemplate with id, userId and role', async () => {
       templatesService.getTemplate.mockResolvedValue({ id: 5 } as any);
+      const req = { user: { userId: 7, role: 'recruiter' } };
 
-      const result = await controller.findOne(5);
+      const result = await controller.findOne(req, 5);
 
-      expect(templatesService.getTemplate).toHaveBeenCalledWith(5);
+      expect(templatesService.getTemplate).toHaveBeenCalledWith(5, 7, 'recruiter');
       expect(result).toEqual({ id: 5 });
     });
   });
 
   describe('POST /interviews/templates', () => {
-    it('should delegate to TemplatesService.createTemplate with userId and DTO', async () => {
+    it('should delegate to TemplatesService.createTemplate with userId, role and DTO', async () => {
       templatesService.createTemplate.mockResolvedValue({ id: 9 } as any);
       const dto = { name: 'T', description: 'D', companyType: 'startup', roleId: 1, levelId: 2, questionIds: [10] } as any;
       const req = { user: { userId: 7, role: 'recruiter' } };
 
       const result = await controller.create(req, dto);
 
-      expect(templatesService.createTemplate).toHaveBeenCalledWith(7, dto);
+      expect(templatesService.createTemplate).toHaveBeenCalledWith(7, 'recruiter', dto);
       expect(result).toEqual({ id: 9 });
     });
   });
@@ -110,13 +112,14 @@ describe('TemplatesController', () => {
   });
 
   describe('POST /interviews/templates/:id/start', () => {
-    it('should delegate to TemplatesService.startFromTemplate with templateId and userId', async () => {
+    // HE-07 fix: start now also forwards role for ownership check.
+    it('should delegate to TemplatesService.startFromTemplate with templateId, userId and role', async () => {
       templatesService.startFromTemplate.mockResolvedValue({ id: 99 } as any);
       const req = { user: { userId: 7, role: 'student' } };
 
       const result = await controller.start(req, 5);
 
-      expect(templatesService.startFromTemplate).toHaveBeenCalledWith(5, 7);
+      expect(templatesService.startFromTemplate).toHaveBeenCalledWith(5, 7, 'student');
       expect(result).toEqual({ id: 99 });
     });
   });

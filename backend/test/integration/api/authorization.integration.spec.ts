@@ -186,6 +186,164 @@ describe('API — Autorización (RNF-07, roles)', () => {
   });
 
   // -----------------------------------------------------------------
+  // RNF-07 — Aislamiento en /interviews/templates (regression de HE-07,
+  //          Broken Object Level Authorization — OWASP A01).
+  //
+  // Antes del fix de HE-07: GET /api/interviews/templates/:id y
+  // POST /api/interviews/templates/:id/start NO verificaban
+  // `isPublic` ni `createdById`. Cualquier autenticado podía leer e
+  // iniciar templates privados de otros recruiters.
+  // -----------------------------------------------------------------
+
+  describe('RNF-07 — HE-07 regression: templates ownership', () => {
+    async function seedPrivateTemplateFor(
+      recruiterId: number,
+    ): Promise<{ id: number; questionId: number }> {
+      const question = await createQuestion(catalogs);
+      const template = await prisma.interviewTemplate.create({
+        data: {
+          name: 'Plantilla privada B',
+          description: 'Privada — solo el dueño y admin',
+          companyType: 'startup',
+          roleId: catalogs.roleId,
+          levelId: catalogs.levelJuniorId,
+          languageId: catalogs.languageId,
+          isPublic: false,
+          createdById: recruiterId,
+        },
+      });
+      await prisma.templateQuestion.create({
+        data: { templateId: template.id, questionId: question.id, orderNumber: 1 },
+      });
+      return { id: template.id, questionId: question.id };
+    }
+
+    it("recruiter A NO debe poder leer template privado de recruiter B (403)", async () => {
+      const recruiterA = await createUser({
+        email: 'ra@vinki.dev',
+        password: 'pass-ra',
+        role: 'recruiter',
+      });
+      const recruiterB = await createUser({
+        email: 'rb@vinki.dev',
+        password: 'pass-rb',
+        role: 'recruiter',
+      });
+      const tplB = await seedPrivateTemplateFor(recruiterB.id);
+
+      const cookieA = await loginAs(recruiterA.email, recruiterA.rawPassword);
+      await request(server)
+        .get(`/api/interviews/templates/${tplB.id}`)
+        .set('Cookie', cookieA)
+        .expect(403);
+    });
+
+    it("student NO debe poder leer template privado de un recruiter (403)", async () => {
+      const recruiter = await createUser({
+        email: 'r1@vinki.dev',
+        password: 'pass-r1',
+        role: 'recruiter',
+      });
+      const student = await createUser({
+        email: 's1@vinki.dev',
+        password: 'pass-s1',
+        role: 'student',
+      });
+      const tpl = await seedPrivateTemplateFor(recruiter.id);
+
+      const cookieS = await loginAs(student.email, student.rawPassword);
+      await request(server)
+        .get(`/api/interviews/templates/${tpl.id}`)
+        .set('Cookie', cookieS)
+        .expect(403);
+    });
+
+    it("student NO debe poder INICIAR una entrevista basada en template privado ajeno (403)", async () => {
+      const recruiter = await createUser({
+        email: 'r2@vinki.dev',
+        password: 'pass-r2',
+        role: 'recruiter',
+      });
+      const student = await createUser({
+        email: 's2@vinki.dev',
+        password: 'pass-s2',
+        role: 'student',
+      });
+      const tpl = await seedPrivateTemplateFor(recruiter.id);
+
+      const cookieS = await loginAs(student.email, student.rawPassword);
+      await request(server)
+        .post(`/api/interviews/templates/${tpl.id}/start`)
+        .set('Cookie', cookieS)
+        .expect(403);
+
+      // Defensa en profundidad: el intento de start NO debe haber
+      // creado una entrevista (efecto colateral).
+      const interviewsCount = await prisma.interview.count({
+        where: { userId: student.id },
+      });
+      expect(interviewsCount).toBe(0);
+    });
+
+    it("admin SÍ debe poder leer cualquier template privado (200)", async () => {
+      const recruiter = await createUser({
+        email: 'r3@vinki.dev',
+        password: 'pass-r3',
+        role: 'recruiter',
+      });
+      const admin = await createUser({
+        email: 'admin1@vinki.dev',
+        password: 'pass-admin1',
+        role: 'admin',
+      });
+      const tpl = await seedPrivateTemplateFor(recruiter.id);
+
+      const cookieAdmin = await loginAs(admin.email, admin.rawPassword);
+      const res = await request(server)
+        .get(`/api/interviews/templates/${tpl.id}`)
+        .set('Cookie', cookieAdmin)
+        .expect(200);
+      expect(res.body.id).toBe(tpl.id);
+    });
+
+    it("recruiter SÍ debe poder leer template PÚBLICO de otro recruiter (200)", async () => {
+      const recruiterA = await createUser({
+        email: 'ra2@vinki.dev',
+        password: 'pass-ra2',
+        role: 'recruiter',
+      });
+      const recruiterB = await createUser({
+        email: 'rb2@vinki.dev',
+        password: 'pass-rb2',
+        role: 'recruiter',
+      });
+      const question = await createQuestion(catalogs);
+      const publicTpl = await prisma.interviewTemplate.create({
+        data: {
+          name: 'Plantilla pública',
+          description: 'Compartida públicamente entre recruiters',
+          companyType: 'enterprise',
+          roleId: catalogs.roleId,
+          levelId: catalogs.levelJuniorId,
+          languageId: catalogs.languageId,
+          isPublic: true,
+          createdById: recruiterB.id,
+        },
+      });
+      await prisma.templateQuestion.create({
+        data: { templateId: publicTpl.id, questionId: question.id, orderNumber: 1 },
+      });
+
+      const cookieA = await loginAs(recruiterA.email, recruiterA.rawPassword);
+      const res = await request(server)
+        .get(`/api/interviews/templates/${publicTpl.id}`)
+        .set('Cookie', cookieA)
+        .expect(200);
+      expect(res.body.id).toBe(publicTpl.id);
+    });
+  });
+
+  // -----------------------------------------------------------------
   // Endpoints protegidos sin cookies → 401
   // -----------------------------------------------------------------
 

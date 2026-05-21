@@ -87,11 +87,17 @@ describe('TemplatesService', () => {
   });
 
   describe('getTemplate()', () => {
-    it('should return the template with full relations when found', async () => {
-      const template = { id: 5, name: 'Backend Junior', questions: [] };
+    it('should return the template with full relations when caller is the owner', async () => {
+      const template = {
+        id: 5,
+        name: 'Backend Junior',
+        questions: [],
+        isPublic: false,
+        createdById: studentUserId,
+      };
       prisma.interviewTemplate.findUnique.mockResolvedValue(template);
 
-      const result = await service.getTemplate(5);
+      const result = await service.getTemplate(5, studentUserId, 'recruiter');
 
       expect(prisma.interviewTemplate.findUnique).toHaveBeenCalledWith(
         expect.objectContaining({ where: { id: 5 } }),
@@ -102,7 +108,52 @@ describe('TemplatesService', () => {
     it('should throw NotFoundException when template does not exist', async () => {
       prisma.interviewTemplate.findUnique.mockResolvedValue(null);
 
-      await expect(service.getTemplate(999)).rejects.toThrow(NotFoundException);
+      await expect(
+        service.getTemplate(999, studentUserId, 'recruiter'),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    // Regression guard for HE-07 (Broken Object Level Authorization).
+    // Antes del fix, getTemplate() exponía CUALQUIER template a cualquier
+    // autenticado, incluidos los privados de otros recruiters.
+    it("should throw ForbiddenException when non-owner requests another user's private template (HE-07 guard)", async () => {
+      prisma.interviewTemplate.findUnique.mockResolvedValue({
+        id: 5,
+        isPublic: false,
+        createdById: 999, // owner is somebody else
+      });
+
+      await expect(
+        service.getTemplate(5, studentUserId, 'recruiter'),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    it('should return any template to admin role (HE-07 guard)', async () => {
+      const template = {
+        id: 5,
+        isPublic: false,
+        createdById: 999,
+        questions: [],
+      };
+      prisma.interviewTemplate.findUnique.mockResolvedValue(template);
+
+      const result = await service.getTemplate(5, adminUserId, 'admin');
+
+      expect(result).toEqual(template);
+    });
+
+    it('should return public templates to any authenticated user (HE-07 guard)', async () => {
+      const template = {
+        id: 5,
+        isPublic: true,
+        createdById: 999,
+        questions: [],
+      };
+      prisma.interviewTemplate.findUnique.mockResolvedValue(template);
+
+      const result = await service.getTemplate(5, studentUserId, 'student');
+
+      expect(result).toEqual(template);
     });
   });
 
@@ -140,7 +191,7 @@ describe('TemplatesService', () => {
         ...baseDto,
       });
 
-      const result = await service.createTemplate(adminUserId, baseDto as any);
+      const result = await service.createTemplate(adminUserId, 'admin', baseDto as any);
 
       expect(txTemplate).toHaveBeenCalledWith({
         data: expect.objectContaining({
@@ -166,12 +217,12 @@ describe('TemplatesService', () => {
     it('should throw BadRequestException listing missing question IDs', async () => {
       prisma.question.findMany.mockResolvedValue([{ id: 10 }]);
 
-      await expect(service.createTemplate(adminUserId, baseDto as any)).rejects.toThrow(
+      await expect(service.createTemplate(adminUserId, 'admin', baseDto as any)).rejects.toThrow(
         BadRequestException,
       );
       // Las IDs faltantes deben aparecer en el mensaje (20, 30).
       try {
-        await service.createTemplate(adminUserId, baseDto as any);
+        await service.createTemplate(adminUserId, 'admin', baseDto as any);
       } catch (err) {
         expect((err as Error).message).toContain('20');
         expect((err as Error).message).toContain('30');
@@ -182,7 +233,7 @@ describe('TemplatesService', () => {
       prisma.question.findMany.mockResolvedValue([{ id: 10 }, { id: 20 }, { id: 30 }]);
       prisma.role.findUnique.mockResolvedValue(null);
 
-      await expect(service.createTemplate(adminUserId, baseDto as any)).rejects.toThrow(
+      await expect(service.createTemplate(adminUserId, 'admin', baseDto as any)).rejects.toThrow(
         NotFoundException,
       );
     });
@@ -192,7 +243,7 @@ describe('TemplatesService', () => {
       prisma.role.findUnique.mockResolvedValue({ id: 1, name: 'Backend' });
       prisma.level.findUnique.mockResolvedValue(null);
 
-      await expect(service.createTemplate(adminUserId, baseDto as any)).rejects.toThrow(
+      await expect(service.createTemplate(adminUserId, 'admin', baseDto as any)).rejects.toThrow(
         NotFoundException,
       );
     });
@@ -254,6 +305,8 @@ describe('TemplatesService', () => {
         levelId: 2,
         languageId: 3,
         frameworkId: 4,
+        isPublic: true, // any authenticated user can start (HE-07 guard)
+        createdById: 999,
         questions: [
           { questionId: 10, orderNumber: 1, question: { questionText: 'Q1' } },
           { questionId: 20, orderNumber: 2, question: { questionText: 'Q2' } },
@@ -273,7 +326,7 @@ describe('TemplatesService', () => {
       const fullInterview = { id: 88, questions: [] };
       prisma.interview.findUnique.mockResolvedValue(fullInterview);
 
-      const result = await service.startFromTemplate(5, studentUserId);
+      const result = await service.startFromTemplate(5, studentUserId, 'student');
 
       expect(txInterview).toHaveBeenCalledWith({
         data: expect.objectContaining({
@@ -294,7 +347,7 @@ describe('TemplatesService', () => {
     it('should throw ConflictException when the user already has an active interview', async () => {
       prisma.interview.findFirst.mockResolvedValue({ id: 99, finishedAt: null });
 
-      await expect(service.startFromTemplate(5, studentUserId)).rejects.toThrow(
+      await expect(service.startFromTemplate(5, studentUserId, 'student')).rejects.toThrow(
         ConflictException,
       );
     });
@@ -303,7 +356,7 @@ describe('TemplatesService', () => {
       prisma.interview.findFirst.mockResolvedValue(null);
       prisma.interviewTemplate.findUnique.mockResolvedValue(null);
 
-      await expect(service.startFromTemplate(999, studentUserId)).rejects.toThrow(
+      await expect(service.startFromTemplate(999, studentUserId, 'student')).rejects.toThrow(
         NotFoundException,
       );
     });
@@ -314,12 +367,32 @@ describe('TemplatesService', () => {
         id: 5,
         roleId: 1,
         levelId: 2,
+        isPublic: true,
+        createdById: 999,
         questions: [],
       });
 
-      await expect(service.startFromTemplate(5, studentUserId)).rejects.toThrow(
+      await expect(service.startFromTemplate(5, studentUserId, 'student')).rejects.toThrow(
         BadRequestException,
       );
+    });
+
+    // Regression guard for HE-07: startFromTemplate also exposed private
+    // templates to anyone (before fix it didn't verify ownership/isPublic).
+    it("should throw ForbiddenException when starting another user's private template (HE-07 guard)", async () => {
+      prisma.interview.findFirst.mockResolvedValue(null);
+      prisma.interviewTemplate.findUnique.mockResolvedValue({
+        id: 5,
+        roleId: 1,
+        levelId: 2,
+        isPublic: false,
+        createdById: 999,
+        questions: [{ questionId: 10, orderNumber: 1, question: { questionText: 'Q' } }],
+      });
+
+      await expect(
+        service.startFromTemplate(5, studentUserId, 'student'),
+      ).rejects.toThrow(ForbiddenException);
     });
   });
 });

@@ -1,0 +1,151 @@
+# npm audit report
+
+@nestjs/core  <=11.1.17 || 12.0.0-alpha.0 - 12.0.0-alpha.2
+Severity: high
+@nestjs/core Improperly Neutralizes Special Elements in Output Used by a Downstream Component ('Injection') - https://github.com/advisories/GHSA-36xv-jgw5-4q75
+Depends on vulnerable versions of path-to-regexp
+fix available via `npm audit fix`
+node_modules/@nestjs/core
+
+ajv  7.0.0-alpha.0 - 8.17.1
+Severity: moderate
+ajv has ReDoS when using `$data` option - https://github.com/advisories/GHSA-2g4f-4pwh-qvx6
+fix available via `npm audit fix`
+node_modules/@angular-devkit/core/node_modules/ajv
+node_modules/@nestjs/schematics/node_modules/ajv
+  @angular-devkit/core  12.0.0-next.0 - 19.2.22 || 20.0.0-next.0 - 20.3.21 || 21.0.0-next.0 - 21.2.4 || 22.0.0-next.0 - 22.0.0-next.3
+  Depends on vulnerable versions of ajv
+  Depends on vulnerable versions of picomatch
+  node_modules/@angular-devkit/core
+  node_modules/@nestjs/schematics/node_modules/@angular-devkit/core
+    @angular-devkit/schematics  12.0.0-next.0 - 19.2.21 || 20.0.0-next.0 - 20.3.17 || 21.0.0-next.0 - 21.1.4 || 21.2.0-next.0 - 21.2.0-rc.2
+    Depends on vulnerable versions of @angular-devkit/core
+    node_modules/@angular-devkit/schematics
+    node_modules/@nestjs/schematics/node_modules/@angular-devkit/schematics
+    @angular-devkit/schematics-cli  0.1200.0-next.0 - 19.2.21 || 20.0.0-next.0 - 20.3.17 || 21.0.0-next.0 - 21.1.4 || 21.2.0-next.0 - 21.2.0-rc.2
+    Depends on vulnerable versions of @angular-devkit/core
+    Depends on vulnerable versions of @angular-devkit/schematics
+    node_modules/@angular-devkit/schematics-cli
+    @nestjs/cli  8.0.0 - 11.0.16
+    Depends on vulnerable versions of @angular-devkit/core
+    Depends on vulnerable versions of @angular-devkit/schematics
+    Depends on vulnerable versions of @angular-devkit/schematics-cli
+    node_modules/@nestjs/cli
+    @nestjs/schematics  8.0.0 - 11.0.9
+    Depends on vulnerable versions of @angular-devkit/core
+    Depends on vulnerable versions of @angular-devkit/schematics
+    node_modules/@nestjs/schematics
+
+brace-expansion  <=1.1.12 || 2.0.0 - 2.0.2 || 4.0.0 - 5.0.5
+Severity: moderate
+brace-expansion: Zero-step sequence causes process hang and memory exhaustion - https://github.com/advisories/GHSA-f886-m6hf-6m8v
+brace-expansion: Zero-step sequence causes process hang and memory exhaustion - https://github.com/advisories/GHSA-f886-m6hf-6m8v
+brace-expansion: Zero-step sequence causes process hang and memory exhaustion - https://github.com/advisories/GHSA-f886-m6hf-6m8v
+brace-expansion: Large numeric range defeats documented `max` DoS protection - https://github.com/advisories/GHSA-jxxr-4gwj-5jf2
+fix available via `npm audit fix`
+node_modules/@jest/reporters/node_modules/brace-expansion
+node_modules/@typescript-eslint/typescript-estree/node_modules/brace-expansion
+node_modules/brace-expansion
+node_modules/glob/node_modules/brace-expansion
+node_modules/jest-config/node_modules/brace-expansion
+node_modules/jest-runtime/node_modules/brace-expansion
+
+defu  <=6.1.4
+Severity: high
+defu: Prototype pollution via `__proto__` key in defaults argument - https://github.com/advisories/GHSA-737v-mqg7-c878
+fix available via `npm audit fix`
+node_modules/defu
+
+effect  <3.20.0
+Severity: high
+Effect `AsyncLocalStorage` context lost/contaminated inside Effect fibers under concurrent load with RPC - https://github.com/advisories/GHSA-38f7-945m-qr2g
+fix available via `npm audit fix`
+node_modules/effect
+  @prisma/config  6.13.0-dev.1 - 6.19.2 || 6.20.0-dev.1 - 7.6.0-integration-feat-prisma-bootstrap.13
+  Depends on vulnerable versions of effect
+  node_modules/@prisma/config
+    prisma  6.13.0-dev.1 - 6.19.2 || 6.20.0-dev.1 - 7.6.0-integration-feat-prisma-bootstrap.13
+    Depends on vulnerable versions of @prisma/config
+    node_modules/prisma
+
+fast-uri  <=3.1.1
+Severity: high
+fast-uri vulnerable to path traversal via percent-encoded dot segments - https://github.com/advisories/GHSA-q3j6-qgpj-74h6
+fast-uri vulnerable to host confusion via percent-encoded authority delimiters - https://github.com/advisories/GHSA-v39h-62p7-jpjc
+fix available via `npm audit fix`
+node_modules/fast-uri
+
+handlebars  4.0.0 - 4.7.8
+Severity: critical
+Handlebars.js has JavaScript Injection via AST Type Confusion by tampering @partial-block - https://github.com/advisories/GHSA-3mfm-83xf-c92r
+Handlebars.js has JavaScript Injection via AST Type Confusion - https://github.com/advisories/GHSA-2w6w-674q-4c4q
+Handlebars.js has Prototype Pollution Leading to XSS through Partial Template Injection - https://github.com/advisories/GHSA-2qvq-rjwj-gvw9
+Handlebars.js has a Prototype Method Access Control Gap via Missing __lookupSetter__ Blocklist Entry - https://github.com/advisories/GHSA-7rx3-28cr-v5wh
+Handlebars.js has a Property Access Validation Bypass in container.lookup - https://github.com/advisories/GHSA-442j-39wm-28r2
+Handlebars.js has JavaScript Injection via AST Type Confusion when passing an object as dynamic partial - https://github.com/advisories/GHSA-xhpv-hc6g-r9c6
+Handlebars.js has Denial of Service via Malformed Decorator Syntax in Template Compilation - https://github.com/advisories/GHSA-9cx6-37pm-9jff
+Handlebars.js has JavaScript Injection in CLI Precompiler via Unescaped Names and Options - https://github.com/advisories/GHSA-xjpj-3mr7-gcpf
+fix available via `npm audit fix`
+node_modules/handlebars
+
+lodash  <=4.17.23
+Severity: high
+lodash vulnerable to Code Injection via `_.template` imports key names - https://github.com/advisories/GHSA-r5fr-rjxr-66jc
+lodash vulnerable to Prototype Pollution via array path bypass in `_.unset` and `_.omit` - https://github.com/advisories/GHSA-f23m-r3pf-42rh
+fix available via `npm audit fix`
+node_modules/lodash
+  @nestjs/config  1.1.6 - 4.0.3
+  Depends on vulnerable versions of lodash
+  node_modules/@nestjs/config
+  @nestjs/swagger  1.1.0 - 1.1.4 || 3.0.1 - 11.2.6
+  Depends on vulnerable versions of lodash
+  Depends on vulnerable versions of path-to-regexp
+  node_modules/@nestjs/swagger
+
+nodemailer  <=8.0.4
+Severity: moderate
+Nodemailer has SMTP command injection due to unsanitized `envelope.size` parameter - https://github.com/advisories/GHSA-c7w3-x93f-qmm8
+Nodemailer Vulnerable to SMTP Command Injection via CRLF in Transport name Option (EHLO/HELO)  - https://github.com/advisories/GHSA-vvjj-xcjg-gr5g
+fix available via `npm audit fix`
+node_modules/nodemailer
+
+path-to-regexp  8.0.0 - 8.3.0
+Severity: high
+path-to-regexp vulnerable to Denial of Service via sequential optional groups - https://github.com/advisories/GHSA-j3q9-mxjg-w52f
+path-to-regexp vulnerable to Regular Expression Denial of Service via multiple wildcards - https://github.com/advisories/GHSA-27v5-c462-wpq7
+fix available via `npm audit fix`
+node_modules/path-to-regexp
+  @nestjs/platform-express  11.0.3 - 11.1.17 || 12.0.0-alpha.0 - 12.0.0-alpha.2
+  Depends on vulnerable versions of path-to-regexp
+  node_modules/@nestjs/platform-express
+
+picomatch  <=2.3.1 || 4.0.0 - 4.0.3
+Severity: high
+Picomatch: Method Injection in POSIX Character Classes causes incorrect Glob Matching - https://github.com/advisories/GHSA-3v7f-55p6-f55p
+Picomatch: Method Injection in POSIX Character Classes causes incorrect Glob Matching - https://github.com/advisories/GHSA-3v7f-55p6-f55p
+Picomatch has a ReDoS vulnerability via extglob quantifiers - https://github.com/advisories/GHSA-c2c7-rcm5-vvqj
+Picomatch has a ReDoS vulnerability via extglob quantifiers - https://github.com/advisories/GHSA-c2c7-rcm5-vvqj
+fix available via `npm audit fix`
+node_modules/anymatch/node_modules/picomatch
+node_modules/jest-haste-map/node_modules/picomatch
+node_modules/jest-message-util/node_modules/picomatch
+node_modules/jest-util/node_modules/picomatch
+node_modules/micromatch/node_modules/picomatch
+node_modules/picomatch
+node_modules/tinyglobby/node_modules/picomatch
+
+uuid  11.0.0 - 11.1.0 || 13.0.0
+Severity: moderate
+uuid: Missing buffer bounds check in v3/v5/v6 when buf is provided - https://github.com/advisories/GHSA-w5hq-g745-h8pq
+uuid: Missing buffer bounds check in v3/v5/v6 when buf is provided - https://github.com/advisories/GHSA-w5hq-g745-h8pq
+fix available via `npm audit fix`
+node_modules/bullmq/node_modules/uuid
+node_modules/uuid
+  bullmq  5.66.1 - 5.76.1
+  Depends on vulnerable versions of uuid
+  node_modules/bullmq
+
+23 vulnerabilities (10 moderate, 12 high, 1 critical)
+
+To address all issues, run:
+  npm audit fix

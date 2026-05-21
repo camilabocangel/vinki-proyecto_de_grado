@@ -34,7 +34,7 @@ export class TemplatesService {
     });
   }
 
-  async getTemplate(id: number) {
+  async getTemplate(id: number, userId: number, role: string) {
     const template = await this.prisma.interviewTemplate.findUnique({
       where: { id },
       include: {
@@ -59,10 +59,17 @@ export class TemplatesService {
     });
 
     if (!template) throw new NotFoundException('Template not found');
+    if (
+      role !== 'admin' &&
+      !template.isPublic &&
+      template.createdById !== userId
+    ) {
+      throw new ForbiddenException();
+    }
     return template;
   }
 
-  async createTemplate(userId: number, dto: CreateTemplateDto) {
+  async createTemplate(userId: number, userRole: string, dto: CreateTemplateDto) {
     // Validate that all questions exist
     const questions = await this.prisma.question.findMany({
       where: { id: { in: dto.questionIds } },
@@ -108,7 +115,7 @@ export class TemplatesService {
         });
       }
 
-      return this.getTemplate(template.id);
+      return this.getTemplate(template.id, userId, userRole);
     });
   }
 
@@ -126,7 +133,7 @@ export class TemplatesService {
     return { deleted: true };
   }
 
-  async startFromTemplate(templateId: number, userId: number) {
+  async startFromTemplate(templateId: number, userId: number, role: string) {
     // Check no active interview
     const active = await this.prisma.interview.findFirst({
       where: { userId, finishedAt: null },
@@ -146,6 +153,13 @@ export class TemplatesService {
     });
 
     if (!template) throw new NotFoundException('Template not found');
+    if (
+      role !== 'admin' &&
+      !template.isPublic &&
+      template.createdById !== userId
+    ) {
+      throw new ForbiddenException();
+    }
 
     if (template.questions.length === 0) {
       throw new BadRequestException('Template has no questions');

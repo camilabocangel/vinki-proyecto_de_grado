@@ -797,6 +797,76 @@ matriz reflejará dos filas (RNF-01-a y RNF-01-b) en lugar de una.
 
 ---
 
+## D-18 — Corrección de HE-07 (BOLA en endpoints de templates)
+
+**Fecha:** 2026-05-21
+
+**Contexto:** Durante la revisión manual sistemática de RNF-07 en
+Fase 5-B (motivada por el antecedente HE-01) se detectó que dos
+endpoints del controlador `interviews/templates` no verificaban la
+propiedad del recurso ni el flag `isPublic`:
+
+- `GET /api/interviews/templates/:id` (`findOne` → `getTemplate`).
+- `POST /api/interviews/templates/:id/start` (`start` → `startFromTemplate`).
+
+Cualquier usuario autenticado podía leer e iniciar entrevistas a
+partir de templates **privados** (`isPublic: false`) de otros
+recruiters, enumerando IDs autoincrementales. Es una vulnerabilidad
+de tipo **Broken Object Level Authorization (BOLA / IDOR)** — OWASP
+API1:2023 + OWASP A01:2021. El detalle técnico completo está en
+[`bug_seguridad_HE07.md`](../04-pruebas-no-funcionales/seguridad/bug_seguridad_HE07.md).
+
+**Decisión:** **CORREGIR ahora.** El criterio es: los bugs de
+autorización con fix viable y sin cambio de UX se corrigen,
+consistente con HE-01 y distinto de HE-05 (que requería cambio de
+UX y por eso se difirió).
+
+**Severidad de HE-07:** **MEDIA** — no expone datos personales de
+estudiantes (PII como en HE-01), sino propiedad intelectual de
+recruiters (preguntas curadas y estructura de templates).
+
+**Fix aplicado:**
+
+- `templates.service.ts` (3 funciones modificadas):
+  - `getTemplate(id, userId, role)` — verifica
+    `role === 'admin' || template.isPublic || template.createdById === userId`;
+    de lo contrario lanza `ForbiddenException`.
+  - `startFromTemplate(templateId, userId, role)` — misma verificación.
+  - `createTemplate(userId, userRole, dto)` — firma ampliada porque
+    internamente llama a `getTemplate(id, userId, userRole)` para
+    devolver el detalle del template recién creado.
+- `templates.controller.ts` — los handlers `findOne`, `create` y
+  `start` reenvían `user.userId` y `user.role` al service.
+
+**Decisión secundaria — código de respuesta:** se mantiene el
+patrón del SUT (`404` si no existe, `403` si no es dueño), en lugar
+de adoptar la práctica moderna de "404 universal para enumeración".
+Justificación: consistencia con el resto del SUT (interviews,
+knowledge documents, templates.deleteTemplate ya usan este patrón).
+Cambiar solo templates a "404 universal" rompería la consistencia.
+Un refactor SUT-wide hacia "404 universal" se documenta como mejora
+futura.
+
+**Verificación a 4 niveles (patrón HE-01):**
+
+1. Unitario aislado (`jest templates`): 25 → **29 verde** (+4 guards).
+2. Unitario backend completo: 371 → **375 verde** (sin regresiones).
+3. Integración: 92 → **97 verde** (+5 tests cross-user en
+   `authorization.integration.spec.ts`).
+4. Frontend unitario: **134/134 verde** (fix no toca frontend).
+
+**Reversibilidad:** Totalmente reversible — revertir el commit del
+fix restauraría el comportamiento anterior. Pero al tratarse de
+una vulnerabilidad de seguridad de severidad MEDIA, no hay razón
+para revertirlo. El fix queda como parte permanente del SUT.
+
+**Lección sistematizada (NT-027):** "La autorización por propiedad
+debe ser CONSISTENTE en TODOS los métodos que exponen un recurso, no
+solo en los listados". Checklist de 5 puntos en
+[`notas_tecnicas.md`](../00-inventario/notas_tecnicas.md).
+
+---
+
 ## Resumen de decisiones
 
 | ID | Tema | Decisión | Artefacto generado |
@@ -818,6 +888,7 @@ matriz reflejará dos filas (RNF-01-a y RNF-01-b) en lugar de una.
 | D-15 | Medición de rendimiento del RNF-01 | Estrategia dual: carga con mock (arquitectura) + subset reducido con LLM real (latencia end-to-end) | Plan JMeter principal con `LLM_SANDBOX=true` + plan complementario con LLM real |
 | D-16 | Seed para pruebas de rendimiento | Seed dedicado `seed-perf.ts` independiente del seed E2E | `backend/test/perf/seed-perf.ts` + script `seed:perf` + `seed_perf.md` |
 | D-17 | Interpretación del RNF-01 según flujo (`evaluation` vs `practice`) | Cumplimiento se valida sobre el flujo principal asíncrono (BullMQ, ack ~12 ms). HE-06 acotada al modo `practice` (feature opcional, P95 = 7 418 ms con LLM real, latencia externa). Propuesta de sub-umbrales RNF-01-a (< 500 ms) / RNF-01-b (< 8 s) pendiente de validar con tutor. | `analisis_flujo_evaluacion.md` + reclasificación HE-06 en `reporte_rendimiento.md` + matriz RNF-01 actualizada |
+| D-18 | Corrección de HE-07 (BOLA en `getTemplate` + `startFromTemplate`) | **Corregir** ahora — bug de autorización con fix viable sin cambio de UX, consistente con HE-01 y distinto de HE-05. Severidad MEDIA: expone propiedad intelectual de recruiters, no PII. Verificación a 4 niveles, 0 regresiones. | `bug_seguridad_HE07.md` + 6 tests unitarios + 5 tests integración + NT-027 + 2 archivos SUT modificados |
 
 > Las decisiones D-1 a D-8 y D-10 a D-12 son **supuestos adoptados** por
 > el equipo de QA ante la ausencia de respuesta del tutor; pueden ser

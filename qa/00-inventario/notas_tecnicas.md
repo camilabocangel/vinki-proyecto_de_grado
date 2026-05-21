@@ -568,3 +568,58 @@ Guardrails activos:
 **Uso EXCLUSIVO** para el Escenario 4 de Fase 5-A (20 muestras a baja
 concurrencia, costo <$0.01 USD). Tras la corrida, regresar al wrapper
 mock (`npm run start:perf`).
+
+## NT-027 — Ownership consistency en TODOS los métodos de acceso a un recurso
+
+**Fecha:** 2026-05-21 (Fase 5-B — D-18 / HE-07).
+
+Lección aprendida del bug HE-07 (BOLA en `templates.getTemplate` y
+`templates.startFromTemplate`): la autorización por propiedad debe
+ser **CONSISTENTE en TODOS los métodos** que exponen un recurso, no
+solo en los listados.
+
+**Patrón vulnerable detectado en HE-07:**
+
+- `listX(userId, role)` filtraba correctamente
+  (`OR: [{ isPublic: true }, { createdById: userId }]`).
+- `getX(id)` NO filtraba — exponía cualquier recurso a cualquier
+  autenticado.
+- `actionX(id, userId)` NO filtraba — permitía ejecutar lógica sobre
+  recurso ajeno.
+
+Es un patrón frecuente cuando se itera endpoint por endpoint sin un
+checklist transversal.
+
+**Checklist sistemático para nuevos endpoints que acceden a un
+recurso por ID:**
+
+1. ¿El service recibe `userId` y `role`?
+2. ¿Verifica que el recurso existe? (`NotFoundException`)
+3. ¿Verifica ownership / `isPublic` / `role === 'admin'`?
+   (`ForbiddenException`)
+4. ¿Tiene un test unitario de regresión por cada rama (dueño, admin,
+   público, ajeno)?
+5. ¿Tiene un test de integración cross-user (otro usuario intenta
+   acceder y recibe 403)?
+
+**Snippet canónico del proyecto** (NT-027 patrón) — ver
+`backend/src/interviews/templates.service.ts` tras el fix de HE-07:
+
+```ts
+async getTemplate(id: number, userId: number, role: string) {
+  const template = await this.prisma.X.findUnique({ where: { id }, include: { ... } });
+  if (!template) throw new NotFoundException('X not found');
+  if (
+    role !== 'admin' &&
+    !template.isPublic &&
+    template.createdById !== userId
+  ) {
+    throw new ForbiddenException();
+  }
+  return template;
+}
+```
+
+Aplicable a cualquier recurso del SUT con noción de propiedad
+(`createdById`, `userId`, `ownerId`, etc.) + flag opcional de
+publicación (`isPublic`).

@@ -1,0 +1,69 @@
+
+> app@0.0.0 lint:security
+> eslint --config eslint.security.config.js .
+
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\frontend\app\src\components\Breadcrumbs.tsx
+  56:46  warning  Generic Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\frontend\app\src\pages\dashboard\CareerInsightsPage.tsx
+  121:5   warning  Generic Object Injection Sink  security/detect-object-injection
+  121:36  warning  Generic Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\frontend\app\src\pages\dashboard\DashboardPage.tsx
+  261:42  warning  Generic Object Injection Sink  security/detect-object-injection
+  300:23  warning  Generic Object Injection Sink  security/detect-object-injection
+  310:21  warning  Generic Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\frontend\app\src\pages\feedback\FeedbackHistoryPage.tsx
+   97:42  warning  Generic Object Injection Sink  security/detect-object-injection
+  130:23  warning  Generic Object Injection Sink  security/detect-object-injection
+  140:21  warning  Generic Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\frontend\app\src\pages\feedback\FeedbackPage.tsx
+  145:44  warning  Generic Object Injection Sink        security/detect-object-injection
+  163:5   warning  Generic Object Injection Sink        security/detect-object-injection
+  163:15  warning  Generic Object Injection Sink        security/detect-object-injection
+  273:60  warning  Function Call Object Injection Sink  security/detect-object-injection
+  279:36  warning  Generic Object Injection Sink        security/detect-object-injection
+  377:61  warning  Generic Object Injection Sink        security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\frontend\app\src\pages\feedback\SharedReportPage.tsx
+   95:44  warning  Generic Object Injection Sink  security/detect-object-injection
+  113:5   warning  Generic Object Injection Sink  security/detect-object-injection
+  113:15  warning  Generic Object Injection Sink  security/detect-object-injection
+  185:58  warning  Generic Object Injection Sink  security/detect-object-injection
+  191:36  warning  Generic Object Injection Sink  security/detect-object-injection
+  273:61  warning  Generic Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\frontend\app\src\pages\home\HomePage.tsx
+  136:18  warning  Generic Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\frontend\app\src\pages\interview\InterviewSessionPage.tsx
+  156:22  warning  Variable Assigned to Object Injection Sink  security/detect-object-injection
+  194:22  warning  Variable Assigned to Object Injection Sink  security/detect-object-injection
+  209:22  warning  Variable Assigned to Object Injection Sink  security/detect-object-injection
+  238:26  warning  Variable Assigned to Object Injection Sink  security/detect-object-injection
+  334:20  warning  Variable Assigned to Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\frontend\app\src\pages\interview\InterviewWizardPage.tsx
+  650:61  warning  Generic Object Injection Sink  security/detect-object-injection
+  663:14  warning  Generic Object Injection Sink  security/detect-object-injection
+  665:12  warning  Generic Object Injection Sink  security/detect-object-injection
+  688:26  warning  Generic Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\frontend\app\src\pages\knowledge\KnowledgeBasePage.tsx
+  193:21  warning  Generic Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\frontend\app\src\pages\recruiter\StudentProfilePage.tsx
+  136:42  warning  Generic Object Injection Sink  security/detect-object-injection
+  173:21  warning  Generic Object Injection Sink  security/detect-object-injection
+
+C:\Users\g5\Documents\University\ProyectoDeGrado\frontend\app\src\pages\recruiter\TemplatesPage.tsx
+  166:7   warning  Generic Object Injection Sink  security/detect-object-injection
+  166:23  warning  Generic Object Injection Sink  security/detect-object-injection
+  166:46  warning  Generic Object Injection Sink  security/detect-object-injection
+  166:66  warning  Generic Object Injection Sink  security/detect-object-injection
+
+✖ 38 problems (0 errors, 38 warnings)
+

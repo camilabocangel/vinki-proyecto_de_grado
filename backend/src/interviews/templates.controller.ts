@@ -48,15 +48,16 @@ export class TemplatesController {
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.templatesService.getTemplate(id);
+  findOne(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
+    const user = req.user;
+    return this.templatesService.getTemplate(id, user.userId, user.role);
   }
 
   @Post()
   @Roles('recruiter', 'admin')
   create(@Req() req: any, @Body() dto: CreateTemplateDto) {
     const user = req.user;
-    return this.templatesService.createTemplate(user.userId, dto);
+    return this.templatesService.createTemplate(user.userId, user.role, dto);
   }
 
   @Delete(':id')
@@ -69,6 +70,6 @@ export class TemplatesController {
   @Post(':id/start')
   start(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
     const user = req.user;
-    return this.templatesService.startFromTemplate(id, user.userId);
+    return this.templatesService.startFromTemplate(id, user.userId, user.role);
   }
 }
