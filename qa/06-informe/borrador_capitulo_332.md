@@ -29,7 +29,7 @@ desarrollan en las siguientes subsecciones: las pruebas funcionales,
 orientadas a verificar que el sistema realice correctamente las
 operaciones declaradas, y las pruebas no funcionales, orientadas a
 verificar las propiedades transversales de rendimiento, seguridad y
-calidad del componente de inteligencia artificial.
+calidad del componente de inteligencia artificial (ISTQB, 2018).
 
 ## Pruebas funcionales
 
@@ -405,7 +405,7 @@ con la función `path.resolve` a partir del directorio del módulo,
 sin involucrar entrada del usuario. No se detectó ninguna
 vulnerabilidad real por esta vía. Adicionalmente, se planificó la
 ejecución de la herramienta **Semgrep** con reglas alineadas al
-OWASP Top 10 [CITA: OWASP Top 10 2021]; la ejecución local resultó
+OWASP Top 10 (OWASP Foundation, 2021); la ejecución local resultó
 inviable debido a una incompatibilidad del entorno Python del
 sistema con las dependencias compiladas de Semgrep, limitación que
 quedó documentada con alternativas viables (ejecución vía contenedor
@@ -469,8 +469,10 @@ de `JWT_SECRET`) arrojó cero coincidencias.
 Control.** La pieza más relevante del proceso de seguridad consiste
 en que el propio proceso de QA detectó y corrigió, antes del
 despliegue, dos vulnerabilidades de la categoría OWASP A01:2021 —
-Broken Access Control [CITA: OWASP Top 10 2021], que es la categoría
-con mayor prevalencia en aplicaciones web modernas. La primera
+Broken Access Control (OWASP Foundation, 2021), categoría que ocupa
+la primera posición del OWASP Top 10 2021 y que la propia
+fundación reporta haber observado en el 94 % de las aplicaciones
+evaluadas durante la elaboración del informe. La primera
 vulnerabilidad, identificada como **HE-01**, fue una fuga de datos
 entre inquilinos en la capa de caché del backend: el interceptor de
 caché del sistema construía su clave omitiendo el identificador del
@@ -545,9 +547,9 @@ producir salidas distintas en ejecuciones sucesivas, lo que vuelve
 inaplicable el criterio binario de "pasa" o "no pasa" característico
 de las pruebas tradicionales. En su lugar, se adoptaron métricas
 agregadas sobre un conjunto curado de preguntas, evaluadas con dos
-herramientas reconocidas en la industria: **Ragas** [CITA: Ragas —
-Es et al., Exploding Gradients] y **DeepEval** [CITA: DeepEval —
-Confident AI]. Ragas aporta métricas estándar de la disciplina —
+herramientas reconocidas en la industria: **Ragas** (Es et al.,
+2024) y **DeepEval** (Ip, 2025). Ragas aporta métricas estándar de
+la disciplina —
 *Faithfulness*, *Answer Relevancy*, *Context Precision*, *Context
 Recall* y *Answer Correctness* —, mientras que DeepEval permite
 verificaciones cruzadas con jueces distintos y aserciones
@@ -769,8 +771,8 @@ honestamente ante preguntas fuera de dominio.
 
 La pieza más significativa del proceso reside en que la propia
 infraestructura de pruebas detectó y corrigió, antes del despliegue,
-**dos vulnerabilidades reales de Broken Access Control** [CITA:
-OWASP Top 10 2021], la categoría con mayor prevalencia en
+**dos vulnerabilidades reales de Broken Access Control** (OWASP
+Foundation, 2021), la categoría con mayor prevalencia en
 aplicaciones web modernas. La primera vulnerabilidad (HE-01) fue
 detectada por la suite end-to-end, demostrando empíricamente el
 valor que aporta la capa superior de la pirámide; la segunda
@@ -811,22 +813,12 @@ anexos metodológicos y de evidencia detallada:
 
 ## Referencias citadas en el capítulo
 
-Cohn, M. (2009). *Succeeding with Agile: Software Development Using
-Scrum*. Addison-Wesley Professional.
+Cohn, M. (2009). *Succeeding with Agile: Software Development Using Scrum*. Addison-Wesley Professional.
 
-> **Marcadores de citación pendientes de completar por el autor del
-> informe (referencias no verificadas en este borrador):**
->
-> - `[CITA: OWASP Top 10 2021]` — referenciar la publicación oficial
->   del Open Worldwide Application Security Project del año 2021,
->   en particular la categoría A01:2021 Broken Access Control.
-> - `[CITA: Ragas — Es et al., Exploding Gradients]` — referenciar
->   la publicación o documentación oficial del framework Ragas para
->   evaluación de sistemas RAG.
-> - `[CITA: DeepEval — Confident AI]` — referenciar la documentación
->   oficial del framework DeepEval.
->
-> Estos tres marcadores se dejaron explícitos en el borrador en
-> lugar de inventar referencias bibliográficas que no estuvieran
-> verificadas. El autor del informe debe completar las referencias
-> consultando las fuentes oficiales antes de la entrega.
+Es, S., James, J., Espinosa-Anke, L., & Schockaert, S. (2024). RAGAs: Automated Evaluation of Retrieval Augmented Generation. En *Proceedings of the 18th Conference of the European Chapter of the Association for Computational Linguistics: System Demonstrations* (pp. 150–158). Association for Computational Linguistics. https://aclanthology.org/2024.eacl-demo.16/
+
+International Software Testing Qualifications Board. (2018). *Certified Tester Foundation Level Syllabus* (Versión 2018). ISTQB.
+
+Ip, J. (2025). *DeepEval: The open-source LLM evaluation framework*. Confident AI. https://deepeval.com/
+
+OWASP Foundation. (2021). *A01:2021 – Broken Access Control. OWASP Top 10:2021*. https://owasp.org/Top10/2021/A01_2021-Broken_Access_Control/
