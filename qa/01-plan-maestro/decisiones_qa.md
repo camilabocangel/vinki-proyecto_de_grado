@@ -439,6 +439,364 @@ extender/restringir según las necesidades de las suites futuras.
 
 ---
 
+## D-13 — Diferimiento de la corrección de HE-05 (`skill_id` en generación IA del admin)
+
+**Fecha:** 2026-05-20
+
+**Contexto:** Durante la consolidación de los hallazgos de la Fase 4
+se identificó un bug de severidad MEDIA-ALTA en el feature "Generar
+con IA" de `AdminQuestionsPage`. El flujo del frontend
+(`frontend/app/src/pages/admin/AdminQuestionsPage.tsx:165-176`) NO
+envía el campo `skillId` al backend cuando persiste las preguntas
+generadas por IA, y el backend
+(`backend/src/catalogs/admin-questions.controller.ts:127-129`) aplica
+el fallback `body.skillId ?? (await prisma.skill.findFirst())?.id ?? 1`.
+Resultado: todas las preguntas generadas por el admin quedan
+etiquetadas con el primer skill alfabético/por-id de la tabla,
+independientemente del tema real. Afecta RF-12 (selección
+inteligente), RF-27 (cálculo de UserSkillScore) y RF-42 (calidad del
+banco de preguntas). El diagnóstico completo está en
+`qa/03-pruebas-e2e/hallazgos_e2e.md` § HE-05.
+
+**Decisión:** **Diferir la corrección.** El hallazgo queda registrado
+como **bug conocido del MVP** en el plan de mejoras futuras
+(`qa/03-pruebas-e2e/plan_mejoras_futuras.md`) con el fix técnico ya
+especificado. No se modifica código de producción en este turno.
+
+**Justificación (gestión profesional de defectos por severidad e impacto en el alcance):**
+
+1. **No compromete seguridad ni privacidad** — a diferencia de HE-01
+   (cross-tenant data leak), HE-05 no expone datos entre usuarios. La
+   contaminación de metadata es visible solo al dueño de la entrevista
+   o al admin que generó las preguntas.
+2. **Afecta una funcionalidad administrativa**, no el recorrido
+   crítico del MVP del estudiante. RF-42 (gestión del banco) tiene
+   prioridad **Baja** en el documento de requerimientos; los flujos
+   centrales del estudiante (RF-09 a RF-28) funcionan correctamente
+   con el banco actual de preguntas curadas.
+3. **Su corrección implica modificar el diseño de la UI** (agregar un
+   selector de "Habilidad" obligatorio en el modal "Generar con IA"),
+   lo que excede el alcance de corrección de defectos y entra en
+   desarrollo de features. Cambios de UX requieren validación con el
+   tutor académico y eventuales pruebas de usabilidad — fuera del
+   ciclo de cierre del proyecto de grado.
+
+**Diferencia con HE-01:**
+
+| Criterio | HE-01 | HE-05 |
+|---|---|---|
+| Tipo | Seguridad / privacidad | Calidad de datos / lógica de negocio |
+| Compromete RNF-07 | Sí, directamente | No |
+| Alcance de la corrección | 1 línea (cache key + userId) | UI nueva: selector de skill obligatorio |
+| Implica cambio de UX | No (transparente al usuario) | Sí (el admin debe seleccionar habilidad) |
+| Severidad | ALTA | MEDIA-ALTA |
+| Decisión | **Corregir** (con autorización) | **Diferir** |
+
+La asimetría de decisión refleja la práctica estándar de gestión de
+defectos: severidad ALTA + fix sin cambio de UX → corregir
+inmediatamente; severidad MEDIA-ALTA + fix con cambio de UX y en
+feature de prioridad Baja → diferir al backlog priorizado.
+
+**Plan de remediación futura — Opción A (recomendada):**
+
+Agregar un `Form.Item` con Select de "Habilidad" obligatorio al modal
+"Generar con IA" de `AdminQuestionsPage.tsx`. El backend ya acepta el
+campo `skillId` opcional, por lo que el cambio es UI-only.
+
+```tsx
+<Form.Item name="skillId" label={t('feedback.skill')} rules={[{ required: true }]}>
+  <Select options={skills.map((s) => ({ value: s.id, label: s.name }))} />
+</Form.Item>
+```
+
+Y en `addQuestionsMutation` añadir el `skillId` seleccionado al payload.
+
+**Esfuerzo estimado del fix:** Bajo (~30 líneas TSX + 1 línea en la
+mutation + 1-2 tests unitarios opcionales del controller).
+
+**Reversibilidad:** **Totalmente reversible.** El fix está
+especificado y listo para implementar cuando se amplíe el alcance
+post-MVP. Mientras tanto:
+
+- El admin puede mitigar manualmente: editar cada pregunta generada
+  vía el modal de edición y asignarle el skill correcto.
+- Las preguntas generadas hoy con skill incorrecto no causarán fallos
+  funcionales — sólo distorsionan los buckets de RF-12 y RF-27 según
+  el grado de uso del feature.
+
+**Visibilidad del hallazgo:**
+
+- `qa/03-pruebas-e2e/hallazgos_e2e.md` § HE-05 — análisis técnico
+  completo con verificación empírica.
+- `qa/03-pruebas-e2e/plan_mejoras_futuras.md` — backlog priorizado
+  para el anexo del informe.
+- `qa/01-plan-maestro/matriz_trazabilidad.md` — RF-12, RF-27 y RF-42
+  marcados "⚠ Verde con observación (D-13 / HE-05)".
+- `qa/ESTADO_DEL_PROYECTO_QA.md` — registro en sección de hallazgos
+  y de decisiones.
+
+---
+
+## D-14 — Externalización de límites del `ThrottlerModule` a variables de entorno
+
+**Fecha:** 2026-05-20
+
+**Contexto:** El `ThrottlerModule` configurado en
+`backend/src/app.module.ts:42-53` define límites de rate limiting
+**hardcodeados**:
+
+```ts
+ThrottlerModule.forRoot([
+  { name: 'short', ttl: 60000, limit: 100 },
+  { name: 'long',  ttl: 60000, limit: 300 },
+]),
+```
+
+100 req/60 s por IP es razonable como protección anti-abuso en
+producción, pero **mata las pruebas de carga**: JMeter desde
+`127.0.0.1` con 50 usuarios concurrentes (RNF-03) dispararía
+respuestas 429 en cuestión de segundos, impidiendo medir el
+rendimiento real del sistema. La limitación se anticipó en
+`qa/04-pruebas-no-funcionales/rendimiento/analisis_endpoints_rendimiento.md`
+§ 4.5.
+
+**Decisión:** Refactorizar `ThrottlerModule.forRoot(...)` a
+`ThrottlerModule.forRootAsync(...)` inyectando `ConfigService`, con
+fallback a los valores actuales (100/60 s short, 300/60 s long)
+cuando las variables de entorno no estén presentes. Las nuevas
+variables de entorno son:
+
+- `THROTTLE_SHORT_LIMIT` (default 100)
+- `THROTTLE_SHORT_TTL` (default 60000 ms)
+- `THROTTLE_LONG_LIMIT` (default 300)
+- `THROTTLE_LONG_TTL` (default 60000 ms)
+
+En `backend/.env.test` se configuran límites altos
+(`THROTTLE_SHORT_LIMIT=100000`, etc.) para permitir las corridas de
+JMeter.
+
+**Justificación:**
+
+1. **Buena práctica de por sí.** Externalizar configuración de rate
+   limiting a variables de entorno es estándar en cualquier
+   aplicación productiva moderna; permite ajustar políticas por
+   entorno (dev, staging, prod) sin recompilar.
+2. **No altera el comportamiento de producción.** Los defaults son
+   los valores actuales; si no se setean las nuevas variables, el
+   sistema se comporta idénticamente.
+3. **Habilita las pruebas de Fase 5** (D-9: JMeter). Sin este
+   refactor, RNF-03 no se puede medir desde una IP única.
+4. **Cambio localizado.** Solo se modifica un bloque de
+   `app.module.ts`; no hay tests específicos del Throttler que
+   necesiten actualización (verificado: 0 `ThrottlerModule` ni
+   `@Throttle` en specs).
+
+**Acción ejecutada:**
+
+- `backend/src/app.module.ts` refactorizado de `forRoot()` a
+  `forRootAsync()` con `ConfigService.get<number>(KEY, DEFAULT)`.
+- `backend/.env.test` ampliado con los 4 valores altos para pruebas
+  de carga.
+- `backend/.env.example` documentado con las 4 variables y sus
+  defaults.
+
+**Reversibilidad:** Totalmente reversible — basta sustituir el
+`forRootAsync` por el `forRoot` original con literales. Las
+variables nuevas son opcionales en cualquier entorno productivo.
+
+---
+
+## D-15 — Estrategia dual de medición de rendimiento del componente IA (RNF-01)
+
+**Fecha:** 2026-05-20
+
+**Contexto:** Con `LLM_SANDBOX=true` el `MockEvaluatorService`,
+`MockEmbeddingService` y `MockLlmService` responden **en ~0 ms**
+(verificado leyendo los 3 servicios en
+`backend/src/evaluation/services/mock-evaluator.service.ts`,
+`backend/src/llm/services/mock-embedding.service.ts` y
+`backend/src/llm/services/mock-llm.service.ts`). Esto significa que
+la latencia medida en JMeter con mock activo refleja únicamente el
+overhead arquitectónico (NestJS + Prisma + pgvector + BullMQ +
+Redis), no el costo real del LLM. Medir solo con mock subestimaría
+la latencia end-to-end real del flujo productivo.
+
+**Decisión:** Estrategia dual de medición del RNF-01:
+
+1. **Pruebas de carga, concurrencia y throughput** (RNF-01
+   arquitectónico, RNF-02, RNF-03) con `LLM_SANDBOX=true`. Esto
+   aísla el rendimiento de la arquitectura de la latencia variable
+   del proveedor externo. JMeter ejecuta volúmenes altos sin costo
+   de tokens.
+2. **Medición complementaria de latencia end-to-end real del
+   RNF-01** con un subconjunto reducido (10-20 muestras, baja
+   concurrencia) usando el proveedor LLM real (OpenAI o Gemini). Es
+   suficiente para obtener un P95 representativo del flujo
+   productivo completo sin saturar al proveedor ni encarecer las
+   pruebas (~$0.05-0.10 USD por corrida).
+
+**Justificación:**
+
+- **Metodológicamente correcto:** la latencia del LLM externo es
+  variable y ajena al control del sistema (depende del proveedor,
+  del modelo elegido y de la carga global del proveedor). Medirla
+  por separado de la arquitectura es la práctica estándar en la
+  industria (separar "lo controlable" de "lo no controlable").
+- **Alineado con D-3** (RNF-04 como validación arquitectónica): se
+  reporta lo medible y se declara explícitamente lo que cae fuera
+  del scope de carga.
+- **Económicamente sostenible:** un subset de 10-20 muestras con
+  OpenAI no excede $0.10 USD por corrida (modelo `gpt-4o-mini` o
+  equivalente). Hacer 50 usuarios × 10 minutos contra LLM real
+  costaría órdenes de magnitud más.
+
+**Acción a ejecutar (en el Prompt 5-A):**
+
+- Plan principal JMeter con `LLM_SANDBOX=true` → métrica
+  arquitectónica.
+- Plan complementario JMeter (1 thread, 10-20 iteraciones, ramp-up
+  largo) con `LLM_SANDBOX=false` y `OPENAI_API_KEY` válida → métrica
+  end-to-end real.
+- Reportar las dos métricas por separado en el informe, con la
+  limitación declarada explícitamente.
+
+**Reversibilidad:** N/A (decisión metodológica).
+
+**Limitación declarada:** Las mediciones de carga con mock
+representan el rendimiento arquitectónico, no la latencia total con
+LLM real. Esto se documentará explícitamente en el reporte final
+del rendimiento y en el informe del proyecto de grado.
+
+---
+
+## D-16 — Seed dedicado para pruebas de rendimiento
+
+**Fecha:** 2026-05-20
+
+**Contexto:** El query de búsqueda semántica (RNF-02) en
+`backend/src/knowledge/services/knowledge-retrieval.service.ts:36`
+filtra por `kd.status = 'ready'`, mientras que el seed E2E sembraba
+los documentos con `status='completed'` (literal distinto). Si se
+reutiliza el seed E2E directamente, todas las búsquedas devolverán
+vacío y la medición de RNF-02 sería inválida. Adicionalmente,
+RNF-02 especifica medir con hasta **10 000 preguntas**, volumen
+mucho mayor al de los 20 ítems del seed E2E.
+
+**Decisión:** Crear un seed dedicado para pruebas de rendimiento
+(`backend/test/perf/seed-perf.ts`) **independiente del seed E2E**,
+que:
+
+- Use el `status='ready'` correcto para knowledge documents.
+- Pueble un volumen alto de preguntas con embeddings deterministas
+  (vectores de la dimensión correcta — 1536 según
+  `EMBEDDING_DIMENSIONS` por defecto), insertados vía raw SQL
+  pgvector (patrón NT-016).
+- Cree los 3 usuarios de pruebas (`perf-student@test.local`,
+  `perf-recruiter@test.local`, `perf-admin@test.local`) con
+  credenciales conocidas.
+- Sea parametrizable por cantidad de preguntas (default 10 000
+  para la corrida oficial de RNF-02; ejecutable con 1 000 o menos
+  para iteración rápida durante desarrollo).
+- Use **batch inserts** para evitar tiempos de seed excesivos.
+- Cree al menos 1 entrevista activa para el `perf-student` (para
+  RNF-01 vía `evaluate-now`).
+
+**Justificación:**
+
+- **No tocar el seed E2E** evita el riesgo de romper la suite de 47
+  tests E2E (estable a 141/141 verificado con `--repeat-each=3`).
+- Un seed dedicado permite volúmenes representativos para RNF-02
+  sin afectar otras suites.
+- Mantener el seed de perf en `backend/test/perf/` lo agrupa con
+  las pruebas (no con el código de aplicación) y deja claro que es
+  un artefacto de testing.
+
+**Acción ejecutada:**
+
+- Creado `backend/test/perf/seed-perf.ts` (script ejecutable vía
+  `ts-node`).
+- Agregado script `seed:perf` a `backend/package.json`.
+- Documentado en `qa/04-pruebas-no-funcionales/rendimiento/seed_perf.md`.
+
+**Reversibilidad:** Totalmente reversible — es un archivo nuevo
+aislado en `backend/test/perf/`. Eliminarlo no afecta el SUT ni
+otras suites.
+
+---
+
+## D-17 — Interpretación del RNF-01 según el flujo (`evaluation` vs `practice`)
+
+**Fecha:** 2026-05-21
+
+**Contexto:** El análisis de flujo
+([`qa/04-pruebas-no-funcionales/rendimiento/analisis_flujo_evaluacion.md`](../04-pruebas-no-funcionales/rendimiento/analisis_flujo_evaluacion.md)),
+realizado tras las corridas de Fase 5-A, reveló que el sistema tiene
+**dos caminos de evaluación**:
+
+- **Modo `evaluation` (flujo principal del estudiante, formal):** la
+  evaluación se procesa de forma asíncrona vía cola BullMQ. El
+  endpoint `POST /interviews/:id/finish` solo encola el job y
+  responde inmediatamente con `evaluationStatus: 'processing'`
+  (ack medido ~12 ms). El usuario aterriza en
+  `InterviewConfirmationPage` con un tag *"processing"* y el copy
+  explícito *"Your evaluation is being processed by our AI. You'll
+  receive a notification when it's ready"*. **Sin bloqueo.** El
+  `EvaluationProcessor` (BullMQ worker) consume el mismo
+  `EVALUATOR_SERVICE` que el camino síncrono y emite el evento
+  `evaluation.completed` al terminar.
+- **Modo `practice` (funcionalidad opcional de feedback inmediato):**
+  el frontend, tras `submitAnswer.mutate()`, auto-encadena
+  `evaluateNow.mutate(question.id)`, que llama al endpoint síncrono
+  `POST /interviews/:id/questions/:qid/evaluate-now`. La UI muestra
+  un `<Spin />` con la etiqueta `interview.evaluatingAnswer` mientras
+  espera la respuesta del LLM. **Aquí el usuario sí se bloquea** —
+  P95 medido = 7 418 ms con `gpt-4o-mini` (Escenario 4 de JMeter,
+  Fase 5-A).
+
+El RNF-01 original (P95 < 5 s) fue redactado sin diferenciar estos
+dos caminos, lo que generó una aparente contradicción: el sistema lo
+incumple medido sobre `evaluate-now`, pero lo cumple con holgura
+masiva medido sobre `/finish`.
+
+**Decisión:** El cumplimiento del RNF-01 se valida sobre el **flujo
+principal (modo `evaluation`, asíncrono)**, que cumple con amplia
+holgura (ack ~12 ms). La latencia superior al umbral (**HE-06**) se
+**acota al modo `practice`**, funcionalidad opcional cuya latencia
+está dominada por el proveedor LLM externo (~95 % del tiempo del
+request lo aporta `gpt-4o-mini` según comparación arquitectónico vs
+real en
+[`reporte_rendimiento.md` § 5.3](../04-pruebas-no-funcionales/rendimiento/reporte_rendimiento.md)).
+Esta latencia es un factor ajeno al control de diseño del sistema.
+
+**Recomendación (a discutir con el tutor):** diferenciar el RNF-01
+en sub-umbrales:
+
+- **RNF-01-a (acuse del envío):** P95 < 500 ms. Cumplido con holgura
+  masiva en ambos caminos (`/finish` ack ~12 ms; `/answer` smoke ~5 ms).
+- **RNF-01-b (feedback inmediato en modo `practice`):** P95 < 8 s,
+  compatible con LLMs económicos modernos (mediana medida 4.4 s,
+  umbral propuesto deja margen al P95 de 7.4 s).
+
+Alternativa técnica si se prefiere mantener el umbral original:
+implementar **streaming** de la respuesta del LLM (`stream: true` en
+OpenAI) para reducir el TTFB percibido a < 1 s aunque el TTLR
+completo siga siendo similar. Es la palanca de UX de mayor impacto
+sin cambiar el modelo.
+
+**Severidad de HE-06:** **Baja-Media** — no afecta el flujo crítico
+del estudiante (modo `evaluation`); el usuario en modo `practice`
+acepta explícitamente esperar con un spinner visible, no es una
+latencia oculta. Se documenta como **observación acotada** y queda
+pendiente de la decisión del tutor sobre la recalibración formal
+del RNF-01.
+
+**Reversibilidad:** N/A — decisión interpretativa, documentada para
+revisión del tutor. Si el tutor valida los sub-umbrales, se
+actualizará formalmente `RNF-01` en `docs/requerimientos.md` y la
+matriz reflejará dos filas (RNF-01-a y RNF-01-b) en lugar de una.
+
+---
+
 ## Resumen de decisiones
 
 | ID | Tema | Decisión | Artefacto generado |
@@ -455,9 +813,21 @@ extender/restringir según las necesidades de las suites futuras.
 | D-10 | LLM en E2E | Mockeado siempre (interceptores Playwright + `LLM_SANDBOX`) | `e2e/fixtures/llm-mock.fixture.ts` |
 | D-11 | Audio en E2E | `getUserMedia` + `MediaRecorder` stubeados + `/audio` interceptado | `mockAudio` fixture |
 | D-12 | Seed E2E | Determinista, una sola vez por `globalSetup` | `e2e/fixtures/seed.ts` + `e2e/global-setup.ts` |
+| D-13 | HE-05 (`skill_id` en generación IA del admin) | **Diferir** la corrección — bug conocido en backlog post-MVP | `plan_mejoras_futuras.md` + nota en matriz para RF-12/27/42 |
+| D-14 | Límites del `ThrottlerModule` | Externalizados a variables de entorno (`THROTTLE_*_LIMIT`, `THROTTLE_*_TTL`) con defaults iguales a los valores anteriores | Refactor de `app.module.ts` a `forRootAsync` + `.env.test` con límites altos para perf |
+| D-15 | Medición de rendimiento del RNF-01 | Estrategia dual: carga con mock (arquitectura) + subset reducido con LLM real (latencia end-to-end) | Plan JMeter principal con `LLM_SANDBOX=true` + plan complementario con LLM real |
+| D-16 | Seed para pruebas de rendimiento | Seed dedicado `seed-perf.ts` independiente del seed E2E | `backend/test/perf/seed-perf.ts` + script `seed:perf` + `seed_perf.md` |
+| D-17 | Interpretación del RNF-01 según flujo (`evaluation` vs `practice`) | Cumplimiento se valida sobre el flujo principal asíncrono (BullMQ, ack ~12 ms). HE-06 acotada al modo `practice` (feature opcional, P95 = 7 418 ms con LLM real, latencia externa). Propuesta de sub-umbrales RNF-01-a (< 500 ms) / RNF-01-b (< 8 s) pendiente de validar con tutor. | `analisis_flujo_evaluacion.md` + reclasificación HE-06 en `reporte_rendimiento.md` + matriz RNF-01 actualizada |
 
 > Las decisiones D-1 a D-8 y D-10 a D-12 son **supuestos adoptados** por
 > el equipo de QA ante la ausencia de respuesta del tutor; pueden ser
 > ajustadas si el tutor se manifiesta en sentido contrario.
 > **La decisión D-9 es una instrucción directa del tutor — no es supuesto
 > y no es reversible.**
+> **Las decisiones D-13 (y previamente la autorización para corregir
+> HE-01) son decisiones explícitas del tutor sobre gestión de defectos
+> detectados en Fase 4 — totalmente reversibles si se amplía el alcance
+> post-MVP.**
+> **La decisión D-17 es interpretativa** (no modifica código ni
+> umbrales) y queda pendiente de la decisión del tutor sobre la
+> recalibración formal del RNF-01 en `docs/requerimientos.md`.

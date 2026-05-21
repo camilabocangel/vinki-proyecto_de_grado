@@ -1,0 +1,50 @@
+{
+  "POST /api/auth/login (perf-recruiter)" : {
+    "transaction" : "POST /api/auth/login (perf-recruiter)",
+    "sampleCount" : 30,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 167.53333333333336,
+    "medianResTime" : 164.5,
+    "minResTime" : 71.0,
+    "maxResTime" : 306.0,
+    "pct1ResTime" : 255.40000000000006,
+    "pct2ResTime" : 292.79999999999995,
+    "pct3ResTime" : 306.0,
+    "throughput" : 0.8592049490205064,
+    "receivedKBytesPerSec" : 2.2696771358403027,
+    "sentKBytesPerSec" : 0.23493885324779473
+  },
+  "Total" : {
+    "transaction" : "Total",
+    "sampleCount" : 13839,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 38.13628152323155,
+    "medianResTime" : 37.0,
+    "minResTime" : 4.0,
+    "maxResTime" : 306.0,
+    "pct1ResTime" : 63.0,
+    "pct2ResTime" : 70.0,
+    "pct3ResTime" : 92.0,
+    "throughput" : 395.0500984841997,
+    "receivedKBytesPerSec" : 1059.7330589781195,
+    "sentKBytesPerSec" : 552.2593493084696
+  },
+  "POST /api/knowledge/search [SAMPLED]" : {
+    "transaction" : "POST /api/knowledge/search [SAMPLED]",
+    "sampleCount" : 13809,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 37.85516692012468,
+    "medianResTime" : 37.0,
+    "minResTime" : 4.0,
+    "maxResTime" : 180.0,
+    "pct1ResTime" : 62.0,
+    "pct2ResTime" : 69.0,
+    "pct3ResTime" : 90.0,
+    "throughput" : 397.49568221070814,
+    "receivedKBytesPerSec" : 1066.3287490554835,
+    "sentKBytesPerSec" : 556.6492268458549
+  }
+}

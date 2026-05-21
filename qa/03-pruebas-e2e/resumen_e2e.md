@@ -88,23 +88,29 @@ Trazabilidad detallada en [matriz_trazabilidad.md](../01-plan-maestro/matriz_tra
 
 ## Hallazgos detectados
 
-5 hallazgos en total — **1 bug de seguridad ALTA detectado y CORREGIDO,
-4 mejoras post-MVP**:
+5 hallazgos en total — **1 bug de seguridad ALTA corregido, 1 bug de
+lógica MEDIA-ALTA pendiente de decisión, 3 mejoras post-MVP**:
 
-- **HE-01** — 🚨 **Bug de seguridad ALTA — cross-tenant data leak en
-  caché.** El `CacheInterceptor` cacheaba respuestas de endpoints
-  per-user con una clave global (sin `userId`), causando que el
-  usuario B obtuviera datos del dashboard/percentiles del usuario A.
-  **Detectado por TC-E-05-003 y CORREGIDO** en
-  `backend/src/common/cache.interceptor.ts`. Verificado con 141/141
-  E2E (3 corridas seguidas), 11/11 unitarias del interceptor (+3
-  *regression guards*), 371/371 unitarias backend y 92/92 integración
-  sin regresiones. Reporte ejecutivo dedicado en
+| ID | Tipo | Severidad | Estado |
+|---|---|---|---|
+| HE-01 | Seguridad — cross-tenant data leak | **ALTA** | ✅ **Corregido** |
+| HE-02 | Accesibilidad | Baja | Documentado |
+| HE-03 | i18n | Baja | Documentado |
+| HE-04 | i18n | Baja | Documentado |
+| HE-05 | Lógica de negocio — `skill_id` contaminado en IA admin | **MEDIA-ALTA** ⚠ | **Pendiente decisión** |
+
+- **HE-01** — 🚨 Bug de seguridad ALTA: cross-tenant data leak en
+  caché del backend. **Detectado por TC-E-05-003 y CORREGIDO**.
+  Reporte ejecutivo dedicado en
   [`bug_seguridad_HE01.md`](bug_seguridad_HE01.md).
-- **HE-02** — Falta `aria-label="Cerrar sesión"` en el dropdown del header.
-- **HE-03** — `KnowledgeBasePage` tiene textos hardcoded sin i18n.
-- **HE-04** — `ProfilePage` línea 217 y 244: "Cancelar" y mensaje mínimo de password sin `t()`.
-- **HE-05** — Generación de preguntas por IA con `skill_id` hardcoded en admin.
+- **HE-05** — ⚠ Bug de lógica MEDIA-ALTA: el feature "Generar con IA"
+  del admin persiste todas las preguntas con un `skill_id` por
+  defecto incorrecto (el frontend no envía el campo). Afecta RF-12
+  (selección inteligente), RF-27 (UserSkillScore) y RF-42 (calidad
+  del banco). Detalle en [`hallazgos_e2e.md`](hallazgos_e2e.md) §
+  HE-05. Requiere autorización del tutor para arreglar (mismo
+  procedimiento que HE-01).
+- **HE-02 a HE-04** — Mejoras post-MVP de UX/accesibilidad/i18n.
 
 Detalle completo en [`hallazgos_e2e.md`](hallazgos_e2e.md). **Cero
 cambios al código de producción** según la regla del prompt.

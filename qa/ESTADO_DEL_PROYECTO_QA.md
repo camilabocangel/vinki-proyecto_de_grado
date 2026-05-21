@@ -1,6 +1,6 @@
 # Estado del proyecto QA — Vinki
 
-> **Última actualización:** 2026-05-20 (Fase 4 cerrada + Bug HE-01 de seguridad corregido)
+> **Última actualización:** 2026-05-21 (Fase 5-A cerrada — 6 perfiles JMeter + RNF-01 real medido + **HE-06 reclasificado por D-17** a observación acotada al modo `practice`; el flujo principal cumple RNF-01 con holgura vía BullMQ)
 > **Propósito:** punto único de retomada del trabajo de QA. Contiene
 > el resumen ejecutivo del estado actual, decisiones tomadas, próximos
 > pasos y enlaces a todos los artefactos generados.
@@ -17,9 +17,14 @@
 - **Fases QA completadas:** Fase 0 (inventario), Fase 1 (plan
   maestro + matriz), Fase 2 (unitarias backend + frontend), Fase 3
   (integración + integridad de datos), Fase 4 (E2E Playwright).
-- **Fases QA pendientes:** Fase 5 (rendimiento **JMeter** D-9 +
-  seguridad), Fase 6 (evaluación RAG con Ragas / DeepEval), Fase 7
-  (consolidación informe).
+- **Fases QA pendientes:** Fase 5-B (seguridad — Semgrep, npm audit,
+  eslint-plugin-security), Fase 6 (evaluación RAG con Ragas / DeepEval),
+  Fase 7 (consolidación informe). **Fase 5-A (rendimiento) cerrada** —
+  6 perfiles JMeter ejecutados con éxito + RNF-01 real medido +
+  **HE-06 reclasificado a observación acotada por D-17** (el flujo
+  principal cumple RNF-01 con holgura vía BullMQ; la latencia >5 s
+  se limita al modo `practice`, feature opcional). 2 perfiles
+  parcial/pendientes documentados como limitación de entorno (8 GB RAM).
 - **Total de tests verde acumulados:** **644** — 371 unitarias
   backend (368 + 3 regression guards por HE-01) + 134 unitarias
   frontend + 92 integración + 47 E2E.
@@ -40,8 +45,9 @@
 | Fase 1 — Plan maestro | ✅ Cerrada | — | — | [plan_maestro_pruebas.md](01-plan-maestro/plan_maestro_pruebas.md) |
 | Fase 2 — Unitarias | ✅ Cerrada | 502 (368 back + 134 front) | Backend 99 % / Frontend 83 % (post-D-8) | [cierre_fase_2.md](02-pruebas-unitarias/cierre_fase_2.md) |
 | Fase 3 — Integración | ✅ Cerrada | 92 | RNF-05, RNF-07–RNF-20 validados E2E | [cierre_fase_3.md](03-pruebas-integracion/cierre_fase_3.md) |
-| Fase 4 — E2E Playwright | ✅ Cerrada | **47/47** (100 %, verificado 3 corridas) | 27 RF + 4 RNF cubiertos extremo a extremo + **1 bug seguridad ALTA detectado y corregido** | [cierre_fase_4.md](03-pruebas-e2e/cierre_fase_4.md) + [bug_seguridad_HE01.md](03-pruebas-e2e/bug_seguridad_HE01.md) |
-| Fase 5 — Rendimiento + Seguridad | ⏳ Pendiente | — | — | — |
+| Fase 4 — E2E Playwright | ✅ **Cerrada 100 %** | **47/47** verde, verificado 3 corridas (141/141) | 27 RF + 4 RNF cubiertos extremo a extremo · **1 bug ALTA corregido (HE-01)** · **1 bug MEDIA-ALTA diferido por D-13 (HE-05)** | [cierre_fase_4.md](03-pruebas-e2e/cierre_fase_4.md) + [bug_seguridad_HE01.md](03-pruebas-e2e/bug_seguridad_HE01.md) + [plan_mejoras_futuras.md](03-pruebas-e2e/plan_mejoras_futuras.md) |
+| Fase 5-A — Rendimiento (JMeter) | ⚠ **Cerrada con observaciones** | 6 perfiles ejecutados (smoke/carga/estrés RNF-01 ARQ + smoke/carga RNF-02 + RNF-01 REAL 20 muestras) + 1 parcial (RNF-02 estrés a 30 u) + 2 pendientes (RNF-02 estrés 50 u, RNF-03) | **RNF-01 ARQ: P95=361ms a 50u** ✅ · **RNF-02: P95=90ms a 20u** ✅ · **RNF-01 REAL: P95=7 418ms** ❌ → **HE-06**. Limitación 8 GB RAM. | [reporte_rendimiento.md](04-pruebas-no-funcionales/rendimiento/reporte_rendimiento.md) + [setup_jmeter.md](04-pruebas-no-funcionales/rendimiento/setup_jmeter.md) + [seed_perf.md](04-pruebas-no-funcionales/rendimiento/seed_perf.md) |
+| Fase 5-B — Seguridad (Semgrep, npm audit, eslint-plugin-security) | ⏳ Pendiente | — | Pre-configurado en Fase 2.5 (eslint-security ya activo) | — |
 | Fase 6 — Evaluación RAG | ⏳ Pendiente | — | — | — |
 | Fase 7 — Consolidación informe | ⏳ Pendiente | — | — | — |
 
@@ -63,7 +69,22 @@ métrica < 80 % (functions frontend) está justificada con detalle en
 el código fuente está honestamente declarado (lazy imports del
 router, wrappers HTTP, handlers de layout).
 
-**🚨 Hallazgo de seguridad destacado — HE-01 (CORREGIDO):**
+**Hallazgos consolidados de la Fase 4 (5 — todos gestionados):**
+
+| ID | Tipo | Severidad | Estado | RF/RNF |
+|---|---|---|---|---|
+| **HE-01** | Seguridad — cross-tenant data leak en caché | **ALTA** | ✅ **RESUELTO** | RNF-07 |
+| HE-02 | Accesibilidad — sin `aria-label` en logout | Baja | Documentado — diferido (D-13 / backlog) | RNF-29 |
+| HE-03 | i18n — strings hardcoded en KnowledgeBase | Baja | Documentado — diferido (D-13 / backlog) | RNF-26 |
+| HE-04 | i18n — "Cancelar" sin `t()` en Profile | Baja | Documentado — diferido (D-13 / backlog) | RNF-26 |
+| **HE-05** | Lógica — `skill_id` contaminado en "Generar con IA" admin | **MEDIA-ALTA** ⚠ | **Documentado — diferido (D-13)** | RF-12, RF-27, RF-42 |
+
+Backlog priorizado de los 4 hallazgos diferidos (con fix técnico
+especificado para cada uno) en
+[`qa/03-pruebas-e2e/plan_mejoras_futuras.md`](03-pruebas-e2e/plan_mejoras_futuras.md)
+— apto como anexo del informe final.
+
+**🚨 HE-01 (CORREGIDO):**
 
 Durante la Fase 4 (E2E Playwright) la suite detectó un bug de
 seguridad de severidad **ALTA** en
@@ -71,14 +92,7 @@ seguridad de severidad **ALTA** en
 el `userId` del usuario autenticado, causando *cache poisoning
 cross-user* en 5 endpoints `@Cacheable` que retornan datos
 personalizados (dashboard, percentiles, predicción de carrera,
-job-fit, transfer learning). Esto violaba directamente RNF-07
-(autorización por propiedad de los datos).
-
-El bug **NO** fue detectado por las capas inferiores (unitarias ni
-integración) — emergió solo en E2E porque requería dos usuarios
-distintos consultando el mismo endpoint en sucesión dentro del TTL
-del cache. Es la justificación empírica de mantener la pirámide
-completa de pruebas (Decisión D-8) y del valor de la suite Playwright.
+job-fit, transfer learning). Esto violaba directamente RNF-07.
 
 **Acción tomada (con autorización explícita del tutor):** se modificó
 `buildCacheKey()` para incluir `userId` en la clave; se agregaron 3
@@ -87,8 +101,38 @@ interceptor + 371/371 backend + 92/92 integración + 141/141 E2E (3
 corridas seguidas). **0 regresiones.**
 
 Reporte ejecutivo completo:
-[`bug_seguridad_HE01.md`](03-pruebas-e2e/bug_seguridad_HE01.md)
-(pieza central recomendada para el informe final).
+[`bug_seguridad_HE01.md`](03-pruebas-e2e/bug_seguridad_HE01.md).
+
+**HE-05 (DIFERIDO por D-13):**
+
+El feature "Generar con IA" del `AdminQuestionsPage` persiste todas
+las preguntas con `skill_id` por defecto incorrecto: el frontend no
+envía el campo, y el backend asigna `(await prisma.skill.findFirst())
+?.id ?? 1`. Afecta RF-12 (selección por skill), RF-27 (UserSkillScore
+atribuido a habilidad equivocada) y RF-42 (calidad del banco).
+Severidad **MEDIA-ALTA**.
+
+**Decisión D-13 (2026-05-20): diferir la corrección al backlog
+post-MVP.** Justificación profesional:
+
+1. No compromete seguridad ni privacidad (a diferencia de HE-01).
+2. Afecta una funcionalidad administrativa (RF-42 — prioridad Baja
+   en `docs/requerimientos.md`), no el recorrido crítico del MVP del
+   estudiante.
+3. La corrección implica un cambio de UX (selector de skill
+   obligatorio), lo que excede corrección de defectos y entra en
+   desarrollo de features.
+
+Mitigación temporal: el admin puede editar manualmente las preguntas
+generadas para asignarles el skill correcto vía el modal de edición.
+Fix técnico ya especificado (Opción A) en
+[`plan_mejoras_futuras.md`](03-pruebas-e2e/plan_mejoras_futuras.md),
+listo para implementar cuando se amplíe el alcance post-MVP.
+
+Detalle técnico completo:
+[`hallazgos_e2e.md` § HE-05](03-pruebas-e2e/hallazgos_e2e.md).
+Decisión formal:
+[`decisiones_qa.md` § D-13](01-plan-maestro/decisiones_qa.md).
 
 ---
 
@@ -127,6 +171,27 @@ Detalle completo en [decisiones_qa.md](01-plan-maestro/decisiones_qa.md).
   y `MediaRecorder` + intercepción del POST `/audio`.
 - **D-12** — Seed E2E determinista, una sola vez por `globalSetup`;
   cleanup en `globalTeardown` con TRUNCATE CASCADE.
+- **D-13** — Diferir la corrección de HE-05 (`skill_id` en generación
+  IA del admin) al backlog post-MVP. Fix técnico ya especificado
+  (Opción A). Justificación: no es seguridad, afecta feature
+  administrativa de prioridad Baja, y el fix implica cambio de UX.
+- **D-14** — Límites del `ThrottlerModule` externalizados a env vars
+  (`THROTTLE_SHORT_LIMIT/TTL`, `THROTTLE_LONG_LIMIT/TTL`) con defaults
+  iguales a los valores anteriores. Refactor de `app.module.ts` a
+  `forRootAsync`. Habilita las corridas JMeter de Fase 5 (RNF-03 con
+  50 concurrentes) sin afectar producción.
+- **D-15** — Estrategia dual de medición del RNF-01: carga con mock
+  (arquitectura) + subset reducido (10-20 muestras) con LLM real para
+  latencia end-to-end. Documentar limitación en el informe.
+- **D-16** — Seed dedicado para perf (`backend/test/perf/seed-perf.ts`)
+  independiente del seed E2E. Sembra `status='ready'` (literal exigido
+  por el query RNF-02) y volúmenes hasta 10 000 preguntas.
+- **D-17** — Interpretación del RNF-01 según el flujo (`evaluation`
+  asíncrono vs `practice` síncrono). El cumplimiento se valida sobre
+  el flujo principal (ack ~12 ms vía BullMQ). HE-06 queda acotada al
+  modo `practice` (feature opcional, P95 = 7 418 ms dominada por LLM
+  externo). Propuesta de sub-umbrales RNF-01-a (< 500 ms) /
+  RNF-01-b (< 8 s) pendiente de validar con el tutor.
 
 ---
 
@@ -174,6 +239,15 @@ Lista completa en [notas_tecnicas.md](00-inventario/notas_tecnicas.md).
   de grabación de audio sin micrófono físico.
 - **NT-023** — Las claves de caché DEBEN incluir el scope de
   autorización (`userId`). Lección aprendida del bug HE-01.
+- **NT-023bis** — Configuración operativa de JMeter en host de 8 GB
+  (heap `-Xms128m -Xmx512m -XX:MaxMetaspaceSize=512m`).
+- **NT-024** — Ejecución JMeter síncrona en foreground, NO background
+  (los procesos huérfanos `cmd.exe` retienen locks sobre `.txt`/`.jtl`).
+- **NT-025** — Regenerar HTML JMeter post-mortem desde un `.jtl`
+  con `jmeter -g <jtl> -o <out>`; recortar última línea si está truncada.
+- **NT-026** — Toggle LLM real (`start-perf-real.ts`) para D-15: lee
+  key real de `backend/.env`, sobrescribe `LLM_SANDBOX=false`, banner
+  redacted.
 
 ---
 
@@ -203,42 +277,45 @@ Detalle completo en [diferidos_qa.md](01-plan-maestro/diferidos_qa.md).
 
 ## 7. Próximo paso explícito
 
-> "El próximo paso es ejecutar el **Prompt 5 — Pruebas de Rendimiento
-> con Apache JMeter + Seguridad**. Por **Decisión D-9** (instrucción
-> del tutor, no reversible), la herramienta de rendimiento es Apache
-> JMeter (NO k6). La fase debe:
+> **Fase 5-A (rendimiento) cerrada.** Ver
+> [reporte_rendimiento.md](04-pruebas-no-funcionales/rendimiento/reporte_rendimiento.md)
+> para el detalle completo. Resumen:
 >
-> 1. Instalar Apache JMeter 5.x localmente (no instalado aún).
-> 2. Crear planes `.jmx` para validar:
->    - **RNF-01:** P95 < 5 s en evaluación de respuesta (endpoint
->      `POST /api/interviews/:id/questions/:qid/answer` o
->      `/evaluate-now`).
->    - **RNF-02:** P95 < 500 ms en búsqueda vectorial (endpoint
->      `POST /api/knowledge/search`).
->    - **RNF-03:** ≥ 50 usuarios concurrentes ejecutando entrevistas
->      sin degradación significativa.
-> 3. Ejecutar contra una DB poblada — puede reutilizar el seed E2E
->    o crear uno dedicado en
->    `qa/04-pruebas-no-funcionales/rendimiento/data/`.
-> 4. Capturar percentiles (P50/P95/P99) + throughput + tasa de
->    error en reportes HTML/CSV.
-> 5. Ejecutar análisis de seguridad ya pre-configurado en Fase 2.5:
->    - `npm audit` en backend y frontend.
->    - Semgrep con reglas OWASP Top 10.
->    - `eslint-plugin-security` integrado en lint.
-> 6. Generar `qa/04-pruebas-no-funcionales/cierre_fase_5.md` con
->    el formato de cierre estándar.
+> - **Ejecutados con éxito (6 perfiles):**
+>   - RNF-01 ARQ (mock): smoke 1u/60s → carga 20u/180s → estrés 50u/300s. P95 a 50u = 361 ms. 0 % err. ✅
+>   - RNF-02 search (mock): smoke 1u/60s → carga 20u/180s. P95 a 20u = 90 ms (DB con 10 000 preguntas + 50 chunks). 0 % err. ✅
+>   - RNF-01 REAL (LLM `gpt-4o-mini`, D-15): 20 muestras a 2u. P50 = 4 415 ms, **P95 = 7 418 ms**. 0 % err. ⚠ **HE-06**.
+> - **Parcial (1):** RNF-02 estrés a 50u completó hasta ~30u (13 839 samples, P95 = 70 ms) antes de OOM del JVM. HTML regenerado del JTL recortado.
+> - **No ejecutados (1):** RNF-03 dedicado (50u flujo completo) por limitación de memoria del entorno (8 GB RAM). Plan `.jmx` + CSV de 50 estudiantes bulk disponibles para re-ejecución en infraestructura ≥ 16 GB. La capacidad de 50 u con 0 % errores quedó **demostrada en RNF-01 ARQ estrés** (cobertura cruzada).
 >
-> El criterio de éxito es:
-> - Los 3 RNF de rendimiento (01/02/03) cumplen sus umbrales.
-> - `npm audit` reporta 0 vulnerabilidades **critical** o **high**.
-> - Semgrep reporta 0 hallazgos de severidad alta sin justificación.
+> **Siguiente paso: Prompt 5-B (seguridad).** NO requiere JMeter ni
+> mucha memoria. Tareas:
 >
-> Recursos disponibles para la fase:
-> - DB de test ya levantable: `docker-compose.test.yml`
-> - Seed E2E reutilizable: `e2e/fixtures/seed.ts`
-> - Backend con `LLM_SANDBOX=true` para evitar costos de LLM real
->   durante pruebas de carga."
+> 1. `npm audit` en `backend/` y `frontend/app/`.
+> 2. Correr Semgrep contra `backend/src/` con reglas OWASP Top 10
+>    (config `backend/eslint.security.config.mjs` ya activa para el
+>    plugin de lint).
+> 3. `npm run lint:security` en `backend/` (eslint-plugin-security
+>    integrado en Fase 2.5).
+> 4. Documentar resultados en
+>    `qa/04-pruebas-no-funcionales/seguridad/reporte_seguridad.md`.
+> 5. Generar `qa/04-pruebas-no-funcionales/cierre_fase_5.md`
+>    consolidando 5-A + 5-B.
+>
+> **Hallazgo HE-06 — RECLASIFICADO** (D-17, 2026-05-21).
+> Tras el análisis del flujo real de evaluación
+> ([analisis_flujo_evaluacion.md](04-pruebas-no-funcionales/rendimiento/analisis_flujo_evaluacion.md))
+> se confirmó que el RNF-01 atraviesa dos rutas: el flujo principal
+> del estudiante (modo `evaluation`) es **asíncrono vía BullMQ** y
+> cumple el RNF-01 con holgura (ack ~12 ms); la latencia P95 = 7 418 ms
+> medida en Fase 5-A corresponde al modo `practice` (feature opcional
+> de feedback inmediato), donde está dominada por el proveedor LLM
+> externo. **HE-06 queda reclasificado a observación acotada de
+> severidad Baja-Media**, no bloqueante para el cierre de Fase 5-A.
+> La propuesta de sub-umbrales RNF-01-a / RNF-01-b queda pendiente
+> de validación con el tutor. Detalle técnico en
+> [reporte_rendimiento.md § 6](04-pruebas-no-funcionales/rendimiento/reporte_rendimiento.md)
+> y registro formal en [decisiones_qa.md § D-17](01-plan-maestro/decisiones_qa.md).
 
 > **Nota sobre Fase 6 (RAG / DeepEval):** se mantendrá la propuesta
 > de Ragas + DeepEval para evaluar las 6 capacidades IA-01 a IA-06

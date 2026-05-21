@@ -1,0 +1,2 @@
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,URL,Latency,IdleTime,Connect
+1779327106149,56,GET /api/health,200,OK,"Smoke (1 user, 1 iter) 1-1",text,true,,1378,127,1,1,http://127.0.0.1:3002/api/health,48,0,30

@@ -483,3 +483,88 @@ con `page.route` y responde con una transcripción mock determinista.
 
 (El archivo se irá complementando con notas adicionales conforme
 avancen las fases).
+
+
+## NT-023 — Configuración operativa de JMeter en host con 8 GB RAM (Fase 5-A)
+
+**Fecha:** 2026-05-20 (Fase 5-A — D-9 / D-14 / D-15).
+
+JMeter 5.6.3 quedó instalado en `F:\apache-jmeter-5.6.3\apache-jmeter-5.6.3\`
+(no en `PATH`; invocación por ruta absoluta). En esta máquina (Windows 11,
+8 GB RAM, pagefile administrado por el sistema):
+
+- El default `jmeter.bat` asigna `-Xms1g -Xmx1g -XX:MaxMetaspaceSize=256m`
+  y aborta con `paging file too small` antes de cargar la primera clase.
+- **Workaround vigente:** exportar la variable de entorno `HEAP` antes
+  de cada invocación:
+
+  ```powershell
+  $env:HEAP = '-Xms128m -Xmx512m -XX:MaxMetaspaceSize=512m'
+  ```
+
+  Cubre todas las corridas de Fase 5-A excepto las de estrés a 50 u
+  sostenidos (RNF-02 estrés y RNF-03), que se quedan sin heap durante
+  la rampa. Estos escenarios se documentan como limitación de entorno
+  en `reporte_rendimiento.md` § 3 y son re-ejecutables en host ≥ 16 GB.
+
+## NT-024 — Ejecución JMeter síncrona (no background)
+
+**Fecha:** 2026-05-20 (Fase 5-A).
+
+Las corridas de JMeter se ejecutan **síncronas en foreground con
+timeout explícito** (`timeout 300000` desde Bash, o el timeout del
+tool de PowerShell). El uso de `Start-Process … -WindowStyle Hidden`
+o `run_in_background` deja procesos `cmd.exe` huérfanos que retienen
+locks sobre los archivos de output cuando el `java` muere por OOM,
+bloqueando los reintentos. Los `Tee-Object`/`Out-File` sobre el
+output redirigido pueden fallar con `process cannot access the file`
+si el proceso padre quedó vivo tras una excepción del hijo.
+
+**Recuperación recomendada en caso de cuelgue:**
+1. `Get-Process -Name java | Stop-Process -Force` (matar el JMeter).
+2. `Get-Process -Name cmd | Where-Object { $_.StartTime -gt (Get-Date).AddMinutes(-30) } | Stop-Process -Force`.
+3. Si el `.jtl` quedó parcial: recortar la última línea (probablemente
+   truncada por kill mid-flush) con `Get-Content … | Select-Object -First N`
+   y regenerar HTML con `jmeter -g <jtl> -o <out-dir>` (NT-025).
+
+## NT-025 — Regenerar HTML JMeter post-mortem desde un `.jtl`
+
+**Fecha:** 2026-05-20 (Fase 5-A).
+
+Para regenerar el reporte HTML de un `.jtl` válido (típicamente tras
+una corrida que falló durante la fase de generación HTML por OOM):
+
+```powershell
+$env:JMETER_HOME = 'F:\apache-jmeter-5.6.3\apache-jmeter-5.6.3'
+$env:HEAP = '-Xms128m -Xmx512m -XX:MaxMetaspaceSize=512m'
+& "$env:JMETER_HOME\bin\jmeter.bat" -g <ruta\al.jtl> -o <ruta\out-html>
+```
+
+Si el `.jtl` tiene la última línea truncada (kill mid-flush), el
+parser rechaza el archivo. Recortar primero esa línea
+(`Select-Object -First (Count-1)`) y reusar el archivo con sufijo
+`.fixed`. Usado en Fase 5-A para recuperar la corrida parcial
+RNF-02 estrés a 30 u (13 839 samples válidos de 13 840).
+
+## NT-026 — Toggle LLM real para mediciones de RNF-01 (D-15)
+
+**Fecha:** 2026-05-20 (Fase 5-A — D-15).
+
+El wrapper `backend/test/perf/start-perf-real.ts` arranca el backend
+en el mismo modo que `start:perf` (DB de test, puerto 3002, throttle
+elevado) pero sobrescribe:
+
+- `LLM_SANDBOX=false`
+- `LLM_TEXT_PROVIDER=openai`
+- `LLM_EMBEDDING_PROVIDER=openai`
+- `OPENAI_API_KEY` ← cargado desde `backend/.env` (clave real con saldo)
+
+Guardrails activos:
+- Aborta si `backend/.env` no contiene una key `sk-…` real (>= 30 chars).
+- Aborta si `DATABASE_URL` apunta a la DB de desarrollo (puerto 5433).
+- Banner imprime solo el prefijo de la key (redacted), nunca el valor
+  completo.
+
+**Uso EXCLUSIVO** para el Escenario 4 de Fase 5-A (20 muestras a baja
+concurrencia, costo <$0.01 USD). Tras la corrida, regresar al wrapper
+mock (`npm run start:perf`).

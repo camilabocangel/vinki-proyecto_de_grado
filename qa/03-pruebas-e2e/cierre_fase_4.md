@@ -91,24 +91,35 @@ Bitácora completa: [`qa/00-inventario/notas_tecnicas.md`](../00-inventario/nota
 
 ## Hallazgos detectados
 
-5 hallazgos documentados en [`hallazgos_e2e.md`](hallazgos_e2e.md):
+5 hallazgos documentados con detalle en
+[`hallazgos_e2e.md`](hallazgos_e2e.md). Resumen consolidado:
 
-- **HE-01 — 🚨 Bug de seguridad ALTA, CORREGIDO** — cross-tenant data
-  leak en `CacheInterceptor`. Detectado originalmente como "flake" del
-  TC-E-05-003; el diagnóstico riguroso reveló que era un bug real de
-  producción que violaba RNF-07. Fix aplicado y verificado a 4 niveles
-  (unit + integración + E2E ×3 + regression guards). **Reporte
-  ejecutivo dedicado en
-  [`bug_seguridad_HE01.md`](bug_seguridad_HE01.md)** — pieza central
-  para el informe final.
-- **HE-02** — Botón "Cerrar sesión" sin `aria-label` explícito.
-- **HE-03** — `KnowledgeBasePage` con textos hardcoded sin i18n.
-- **HE-04** — `ProfilePage` con "Cancelar" sin `t()`.
-- **HE-05** — Generación de preguntas IA con `skill_id` hardcoded.
+| ID | Tipo | Severidad | Estado | RF/RNF | Detectado por |
+|---|---|---|---|---|---|
+| **HE-01** | Seguridad — cross-tenant data leak | **ALTA** | ✅ **RESUELTO** | RNF-07 | TC-E-05-003 |
+| **HE-02** | Accesibilidad — `aria-label` ausente | Baja | Documentado | RNF-29 | TC-E-00-005 |
+| **HE-03** | i18n — strings hardcoded en KnowledgeBase | Baja | Documentado | RNF-26 | TC-E-07 |
+| **HE-04** | i18n — "Cancelar" y validación sin `t()` en Profile | Baja | Documentado | RNF-26 | TC-E-06-003 |
+| **HE-05** | Lógica — `skill_id` fallback contamina preguntas IA admin | **MEDIA-ALTA** ⚠ | **Pendiente decisión** | RF-12, RF-27, RF-42 | TC-E-08 + análisis |
 
-HE-02 a HE-05 son mejoras post-MVP (accesibilidad, i18n, robustez de
-tests) y se difieren a iteraciones posteriores al cierre del proyecto
-de grado.
+**Lectura para el informe:**
+
+- **HE-01** — Bug de seguridad detectado por E2E y corregido en este
+  proyecto. **Pieza central recomendada para el capítulo de
+  resultados** del informe: justificación empírica de mantener la
+  pirámide de testing completa. Reporte ejecutivo dedicado en
+  [`bug_seguridad_HE01.md`](bug_seguridad_HE01.md).
+- **HE-05** — Bug de lógica de negocio detectado por análisis del
+  flujo "Generar con IA" del admin. **Severidad revaluada a MEDIA-ALTA**
+  tras inspección del código: el frontend NUNCA envía `skillId` al
+  generar IA, y el backend asigna por defecto el primer skill del
+  catálogo. Contamina metadata de preguntas y degrada RF-12 (selección
+  inteligente) y RF-27 (cálculo de UserSkillScore por habilidad).
+  **Requiere autorización del tutor** para arreglar (mismo
+  procedimiento que HE-01).
+- **HE-02 a HE-04** — Mejoras post-MVP de accesibilidad e i18n. No
+  bloqueantes para el cumplimiento de requerimientos del proyecto de
+  grado. Documentadas en el plan de mejoras futuras.
 
 ---
 

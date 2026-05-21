@@ -38,19 +38,26 @@ import { ChallengesModule } from './challenges/challenges.module.js';
       },
     }),
 
-    // Rate limiting
-    ThrottlerModule.forRoot([
-      {
-        name: 'short',
-        ttl: 60000,
-        limit: 100,
-      },
-      {
-        name: 'long',
-        ttl: 60000,
-        limit: 300,
-      },
-    ]),
+    // Rate limiting — D-14: límites externalizados a variables de entorno.
+    // Defaults: 100 req/60 s (short) y 300 req/60 s (long), iguales a los
+    // valores hardcodeados anteriores. En `.env.test` se elevan para
+    // permitir corridas de carga de Fase 5 (JMeter — D-9).
+    ThrottlerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => [
+        {
+          name: 'short',
+          ttl: config.get<number>('THROTTLE_SHORT_TTL', 60000),
+          limit: config.get<number>('THROTTLE_SHORT_LIMIT', 100),
+        },
+        {
+          name: 'long',
+          ttl: config.get<number>('THROTTLE_LONG_TTL', 60000),
+          limit: config.get<number>('THROTTLE_LONG_LIMIT', 300),
+        },
+      ],
+    }),
 
     // BullMQ
     BullModule.forRootAsync({

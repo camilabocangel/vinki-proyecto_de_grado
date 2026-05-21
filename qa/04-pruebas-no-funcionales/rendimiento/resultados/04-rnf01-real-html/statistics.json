@@ -1,0 +1,50 @@
+{
+  "POST /api/auth/login (perf-student)" : {
+    "transaction" : "POST /api/auth/login (perf-student)",
+    "sampleCount" : 2,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 324.5,
+    "medianResTime" : 324.5,
+    "minResTime" : 189.0,
+    "maxResTime" : 460.0,
+    "pct1ResTime" : 460.0,
+    "pct2ResTime" : 460.0,
+    "pct3ResTime" : 460.0,
+    "throughput" : 3.1695721077654517,
+    "receivedKBytesPerSec" : 8.3232220681458,
+    "sentKBytesPerSec" : 0.8542987321711569
+  },
+  "Total" : {
+    "transaction" : "Total",
+    "sampleCount" : 22,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 4274.681818181817,
+    "medianResTime" : 4303.5,
+    "minResTime" : 189.0,
+    "maxResTime" : 7454.0,
+    "pct1ResTime" : 6391.799999999999,
+    "pct2ResTime" : 7347.049999999998,
+    "pct3ResTime" : 7454.0,
+    "throughput" : 0.4641350210970464,
+    "receivedKBytesPerSec" : 1.266976529535865,
+    "sentKBytesPerSec" : 0.5919534546413502
+  },
+  "POST evaluate-now [SAMPLED REAL]" : {
+    "transaction" : "POST evaluate-now [SAMPLED REAL]",
+    "sampleCount" : 20,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 4669.7,
+    "medianResTime" : 4415.0,
+    "minResTime" : 3344.0,
+    "maxResTime" : 7454.0,
+    "pct1ResTime" : 6624.600000000002,
+    "pct2ResTime" : 7418.349999999999,
+    "pct3ResTime" : 7454.0,
+    "throughput" : 0.4261303106489965,
+    "receivedKBytesPerSec" : 1.1676553111816594,
+    "sentKBytesPerSec" : 0.5863453200238633
+  }
+}
