@@ -1,6 +1,6 @@
 # Estado del proyecto QA — Vinki
 
-> **Última actualización:** 2026-05-21 (**Fase 5 completa cerrada** — Fase 5-A rendimiento + Fase 5-B seguridad. HE-07 detectado y corregido (D-18, BOLA en templates). Suite 653/653 verde.)
+> **Última actualización:** 2026-05-21 (**Fase 6-PRE completa** — caracterización del pipeline RAG + dataset de 15 preguntas con ground truth humano + entorno Docker `vinki-rag-eval:6pre` con Ragas 0.3.2 + script `evaluar_rag.py` dry-run verde. Pendiente autorización del docente para corrida live.)
 > **Propósito:** punto único de retomada del trabajo de QA. Contiene
 > el resumen ejecutivo del estado actual, decisiones tomadas, próximos
 > pasos y enlaces a todos los artefactos generados.
@@ -48,7 +48,8 @@
 | Fase 4 — E2E Playwright | ✅ **Cerrada 100 %** | **47/47** verde, verificado 3 corridas (141/141) | 27 RF + 4 RNF cubiertos extremo a extremo · **1 bug ALTA corregido (HE-01)** · **1 bug MEDIA-ALTA diferido por D-13 (HE-05)** | [cierre_fase_4.md](03-pruebas-e2e/cierre_fase_4.md) + [bug_seguridad_HE01.md](03-pruebas-e2e/bug_seguridad_HE01.md) + [plan_mejoras_futuras.md](03-pruebas-e2e/plan_mejoras_futuras.md) |
 | Fase 5-A — Rendimiento (JMeter) | ⚠ **Cerrada con observaciones** | 6 perfiles ejecutados (smoke/carga/estrés RNF-01 ARQ + smoke/carga RNF-02 + RNF-01 REAL 20 muestras) + 1 parcial (RNF-02 estrés a 30 u) + 2 pendientes (RNF-02 estrés 50 u, RNF-03) | **RNF-01 ARQ: P95=361ms a 50u** ✅ · **RNF-02: P95=90ms a 20u** ✅ · **RNF-01 REAL: P95=7 418ms** ⚠ HE-06 acotado a `practice` por D-17. Limitación 8 GB RAM. | [reporte_rendimiento.md](04-pruebas-no-funcionales/rendimiento/reporte_rendimiento.md) + [setup_jmeter.md](04-pruebas-no-funcionales/rendimiento/setup_jmeter.md) + [seed_perf.md](04-pruebas-no-funcionales/rendimiento/seed_perf.md) |
 | Fase 5-B — Seguridad (npm audit + ESLint security + revisión manual) | ✅ **Cerrada** | npm audit: 23 → 0 backend, 11 → 2 frontend (residuales DOMPurify sin upstream). ESLint: 92 warnings todos falsos positivos. Revisión manual exhaustiva RNF-05..08. **HE-07 (BOLA templates) detectado y corregido (D-18)**, +4 unit guards + 5 integration cross-user. Semgrep no ejecutable (entorno MSYS2). | [reporte_seguridad.md](04-pruebas-no-funcionales/seguridad/reporte_seguridad.md) + [bug_seguridad_HE07.md](04-pruebas-no-funcionales/seguridad/bug_seguridad_HE07.md) + [cierre_fase_5.md](04-pruebas-no-funcionales/cierre_fase_5.md) |
-| Fase 6 — Evaluación RAG | ⏳ Pendiente | — | — | — |
+| Fase 6-PRE — Evaluación RAG (preparación) | 🟡 **Completa** | Caracterización pipeline RAG (chunking 800/100, top-5 pgvector, gpt-4o-mini) + dataset de 15 preguntas con ground truth humano (10 in-domain + 3 edge + 2 OOD) + entorno Docker `vinki-rag-eval:6pre` (Ragas 0.3.2) + script `evaluar_rag.py` dry-run verde. | [caracterizacion_rag.md](05-evaluacion-rag/caracterizacion_rag.md) + [dataset_evaluacion.json](05-evaluacion-rag/dataset_evaluacion.json) + [metodologia_dataset.md](05-evaluacion-rag/metodologia_dataset.md) + [metricas_rag.md](05-evaluacion-rag/metricas_rag.md) + [setup_entorno_rag.md](05-evaluacion-rag/setup_entorno_rag.md) + [evaluar_rag.py](05-evaluacion-rag/evaluar_rag.py) |
+| Fase 6-RUN — Evaluación RAG (corrida live) | ⏳ Pendiente | Espera autorización del docente para usar la `OPENAI_API_KEY` (costo estimado $0.02-0.20 USD). | — |
 | Fase 7 — Consolidación informe | ⏳ Pendiente | — | — | — |
 
 ---
@@ -285,12 +286,33 @@ Detalle completo en [diferidos_qa.md](01-plan-maestro/diferidos_qa.md).
 
 ## 7. Próximo paso explícito
 
-> **Estado actual (2026-05-21):** **Fase 5 cerrada completa**
-> (5-A rendimiento + 5-B seguridad). Trabajo consolidado en commit
-> ⟨pendiente — se hará al cierre de este turno⟩. Suite verde
-> **653/653** (375 backend + 134 frontend + 97 integración + 47 E2E).
+> **Estado actual (2026-05-21):** **Fase 6-PRE completa**. Toda la
+> infraestructura de evaluación RAG montada y validada (dry-run verde).
+> Suite del SUT sin cambios: **653/653 verde** (375 backend + 134
+> frontend + 97 integración + 47 E2E).
 >
-> ### Próximo paso INMEDIATO: Fase 6 (Evaluación RAG / IA)
+> ### Próximo paso INMEDIATO: Fase 6-RUN (Corrida live)
+>
+> Esperando **autorización del docente** para usar la `OPENAI_API_KEY`.
+> Costo estimado: **$0.02-0.20 USD** (15 preguntas × ~10 llamadas LLM
+> entre answerer + jueces Ragas/DeepEval + embedder, con `gpt-4o-mini`
+> como modelo económico).
+>
+> Pasos al recibir autorización (todo documentado en
+> [`setup_entorno_rag.md` § 2.3](05-evaluacion-rag/setup_entorno_rag.md)):
+>
+> 1. Levantar backend con `npm run start:perf:real` + sembrar corpus
+>    de los 5 documentos del seed dev.
+> 2. Login como recruiter, capturar cookie, exportar `BACKEND_COOKIE`.
+> 3. `docker run --rm -v "${PWD}:/workspace" -w /workspace -e BACKEND_COOKIE vinki-rag-eval:6pre python qa/05-evaluacion-rag/evaluar_rag.py --live`
+> 4. Revisar `resultados_rag.json` + `resultados_rag.md` contra los
+>    umbrales del plan maestro § 5.5 + `metricas_rag.md`.
+> 5. Redactar `qa/05-evaluacion-rag/reporte_rag.md` con conclusión
+>    (Verde/Amarillo/Rojo) y mapeo a IA-01..IA-06 + Hallucination Rate.
+>
+> ### Anterior próximo paso (mantengo histórico):
+>
+> Fase 6 (preparación) — completa 2026-05-21.
 >
 > Validación de la **calidad real del LLM** (no la mockeada en Fases
 > 3/4/5), sobre dataset estático curado. Herramientas previstas:
@@ -405,6 +427,15 @@ qa/
     │   ├── eslint_security_inicial.txt   (baseline Fase 2.5)
     │   └── setup_semgrep.md
     └── cierre_fase_5.md            # Cierre formal de la Fase 5 completa.
+
+qa/05-evaluacion-rag/                # Fase 6 — evaluación RAG (PRE completa, RUN pendiente).
+├── caracterizacion_rag.md           # Pipeline RAG real del SUT: chunking, retrieval, generación.
+├── dataset_evaluacion.json          # 15 preguntas curadas con ground truth humano.
+├── metodologia_dataset.md           # Justificación: N=15, distribución, no sesgo circular.
+├── metricas_rag.md                  # Mapeo IA-01..IA-06 ↔ Ragas/DeepEval + umbrales.
+├── setup_entorno_rag.md             # Docker `vinki-rag-eval:6pre` + Opción B WSL2.
+├── Dockerfile                       # Imagen reproducible con Ragas 0.3.2 + DeepEval 2.9.7.
+└── evaluar_rag.py                   # Script de evaluación (modo --dry-run + --live).
 ```
 
 Adicionalmente, fuera de `qa/` viven los specs y la infra de pruebas:
@@ -476,10 +507,10 @@ asistente) para continuar el trabajo de QA:
 2. Adjunta `docs/requerimientos.md` para contexto del SUT.
 3. Indica explícitamente:
 
-   > "Quiero continuar con la **Fase 6 — Evaluación RAG / IA**
-   > (Ragas + DeepEval). El contexto completo está en el archivo
-   > adjunto (`qa/ESTADO_DEL_PROYECTO_QA.md`). Procede con el
-   > **Prompt 6**."
+   > "Quiero continuar con la **Fase 6-RUN** — la corrida live de la
+   > evaluación RAG (el docente ya autorizó el uso de la key). El
+   > contexto completo está en el archivo adjunto
+   > (`qa/ESTADO_DEL_PROYECTO_QA.md`). Procede con el **Prompt 6-RUN**."
 
 4. (Opcional, recomendado) Adjunta también:
    - `qa/01-plan-maestro/plan_maestro_pruebas.md` para la sección
@@ -487,14 +518,14 @@ asistente) para continuar el trabajo de QA:
    - `qa/04-pruebas-no-funcionales/cierre_fase_5.md` con el resumen
      consolidado de Fase 5 (rendimiento + seguridad).
 
-### Estado de Git al cerrar Fase 5 (2026-05-21)
+### Estado de Git al cerrar Fase 6-PRE (2026-05-21)
 
-- HEAD: **commit de Fase 5-B (pendiente en este turno)** — incluye
-  fix HE-07 + audit fix + reportes seguridad + cierre_fase_5 +
-  matriz + decisiones (D-18) + notas (NT-027) + ESTADO actualizado.
+- HEAD: **commit de Fase 6-PRE** — incluye caracterización RAG +
+  dataset 15 preguntas + Dockerfile + script + 4 docs metodológicos
+  + ESTADO actualizado.
 - Working tree: limpio (al cerrar).
-- Suite verde: **97 suites · 653/653 tests** (backend 48/375 +
-  frontend 30/134 + integración 9/97 + E2E 10/47).
+- Suite del SUT sin cambios: **97 suites · 653/653 tests** (Fase
+  6-PRE NO toca código del SUT).
 - Sin procesos huérfanos.
 
 ---

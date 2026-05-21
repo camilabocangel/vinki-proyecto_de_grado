@@ -1,0 +1,143 @@
+[
+  {
+    "id": 1,
+    "category": "in-domain",
+    "source_document": "Node.js Event Loop y Arquitectura Asíncrona",
+    "question": "¿Cuáles son las fases del event loop de Node.js?",
+    "ground_truth": "El event loop de Node.js tiene seis fases: (1) Timers — ejecuta callbacks programados por setTimeout y setInterval; (2) Pending callbacks — ejecuta callbacks de I/O diferidos al siguiente ciclo; (3) Idle/Prepare — uso interno de Node.js; (4) Poll — recupera nuevos eventos de I/O y bloquea aquí cuando sea apropiado; (5) Check — invoca callbacks de setImmediate; (6) Close callbacks — callbacks de cierre como socket.on('close').",
+    "ground_truth_context": "Fases del Event Loop:\n1. Timers: Ejecuta callbacks programados por setTimeout() y setInterval().\n2. Pending callbacks: Ejecuta callbacks de I/O diferidos al siguiente ciclo.\n3. Idle/Prepare: Usado internamente por Node.js.\n4. Poll: Recupera nuevos eventos de I/O. Node.js se bloqueará aquí cuando sea apropiado.\n5. Check: Los callbacks de setImmediate() se invocan aquí.\n6. Close callbacks: Callbacks de cierre como socket.on('close').",
+    "expected_doc_title": "Node.js Event Loop y Arquitectura Asíncrona"
+  },
+  {
+    "id": 2,
+    "category": "in-domain",
+    "source_document": "Node.js Event Loop y Arquitectura Asíncrona",
+    "question": "¿Cómo se debe manejar el backpressure en streams writable de Node.js?",
+    "ground_truth": "El backpressure ocurre cuando un stream writable no puede consumir datos tan rápido como se producen. Para manejarlo se debe implementar el método pipe() correctamente y respetar el valor de retorno de write(): si write() retorna false, hay que esperar al evento 'drain' antes de continuar escribiendo.",
+    "ground_truth_context": "Manejo de backpressure en streams:\nCuando un stream writable no puede consumir datos tan rápido como se producen, se genera backpressure. Se debe implementar el método pipe() correctamente y respetar el valor de retorno de write(). Si write() retorna false, se debe esperar al evento 'drain' antes de continuar escribiendo.",
+    "expected_doc_title": "Node.js Event Loop y Arquitectura Asíncrona"
+  },
+  {
+    "id": 3,
+    "category": "in-domain",
+    "source_document": "Diseño de APIs RESTful - Mejores Prácticas",
+    "question": "¿Qué código HTTP corresponde a un cliente que ya está autenticado pero no tiene permiso para acceder al recurso solicitado?",
+    "ground_truth": "El código HTTP 403 Forbidden corresponde a un cliente autenticado pero sin permisos. Se distingue de 401 Unauthorized, que indica que el cliente no está autenticado.",
+    "ground_truth_context": "Códigos de respuesta HTTP:\n- 401 Unauthorized: No autenticado\n- 403 Forbidden: Autenticado pero sin permisos",
+    "expected_doc_title": "Diseño de APIs RESTful - Mejores Prácticas"
+  },
+  {
+    "id": 4,
+    "category": "in-domain",
+    "source_document": "Diseño de APIs RESTful - Mejores Prácticas",
+    "question": "¿Qué algoritmos de rate limiting menciona la guía para APIs REST y qué headers estándar se devuelven?",
+    "ground_truth": "Los algoritmos mencionados son token bucket y sliding window. Los headers estándar para informar al cliente son X-RateLimit-Limit, X-RateLimit-Remaining y X-RateLimit-Reset. Para estado distribuido se recomienda usar Redis.",
+    "ground_truth_context": "Rate Limiting:\nImplementar con token bucket o sliding window. Headers estándar: X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset. Usar Redis para estado distribuido.",
+    "expected_doc_title": "Diseño de APIs RESTful - Mejores Prácticas"
+  },
+  {
+    "id": 5,
+    "category": "in-domain",
+    "source_document": "PostgreSQL - Optimización y Patrones Avanzados",
+    "question": "¿Qué tipos de índices soporta PostgreSQL y para qué tipo de datos sirve cada uno?",
+    "ground_truth": "PostgreSQL soporta cinco tipos principales de índices: B-tree (el default, para comparaciones de igualdad y rango), Hash (solo para igualdad), GiST (datos geométricos y full-text search), GIN (arrays, JSONB y full-text search) y BRIN (datos ordenados naturalmente como timestamps).",
+    "ground_truth_context": "PostgreSQL soporta varios tipos de índices: B-tree (default, para comparaciones de igualdad y rango), Hash (solo igualdad), GiST (datos geométricos, full-text search), GIN (arrays, JSONB, full-text search), BRIN (datos ordenados naturalmente como timestamps).",
+    "expected_doc_title": "PostgreSQL - Optimización y Patrones Avanzados"
+  },
+  {
+    "id": 6,
+    "category": "in-domain",
+    "source_document": "PostgreSQL - Optimización y Patrones Avanzados",
+    "question": "¿Cuál es la diferencia entre los modos session, transaction y statement de PgBouncer?",
+    "ground_truth": "En modo 'session' PgBouncer asigna una conexión por sesión del cliente. En modo 'transaction' reasigna la conexión después de cada transacción — es más eficiente. En modo 'statement' cada query individual puede usar una conexión diferente.",
+    "ground_truth_context": "Connection Pooling:\nPgBouncer es el estándar para pooling de conexiones. Modos: session (una conexión por sesión), transaction (reasigna después de cada transacción — más eficiente), statement (cada query puede usar diferente conexión).",
+    "expected_doc_title": "PostgreSQL - Optimización y Patrones Avanzados"
+  },
+  {
+    "id": 7,
+    "category": "in-domain",
+    "source_document": "Arquitectura de Microservicios con NestJS",
+    "function_decorators_relevant": true,
+    "question": "En NestJS, ¿qué decorador se usa para definir un handler de tipo request-response en microservicios y cuál para eventos?",
+    "ground_truth": "@MessagePattern('pattern') se usa para handlers de tipo request-response (el cliente envía un mensaje y espera una respuesta). @EventPattern('event') se usa para handlers de eventos (el emisor publica un evento sin esperar respuesta).",
+    "ground_truth_context": "Implementación con NestJS:\n- @MessagePattern('pattern') para request-response\n- @EventPattern('event') para eventos\n- ClientProxy para enviar mensajes desde el cliente",
+    "expected_doc_title": "Arquitectura de Microservicios con NestJS"
+  },
+  {
+    "id": 8,
+    "category": "in-domain",
+    "source_document": "Arquitectura de Microservicios con NestJS",
+    "question": "¿Cuáles son los tres estados de un Circuit Breaker y qué hace cada uno?",
+    "ground_truth": "Los tres estados son: Closed (estado normal, las llamadas pasan al servicio), Open (rechaza llamadas porque el servicio está fallando) y Half-Open (prueba periódicamente si el servicio se recuperó antes de volver a Closed).",
+    "ground_truth_context": "Circuit Breaker Pattern:\nPreviene llamadas a servicios que están fallando. Estados: Closed (normal), Open (rechaza llamadas), Half-Open (prueba si el servicio se recuperó). Implementable con librerías como opossum o cockatiel.",
+    "expected_doc_title": "Arquitectura de Microservicios con NestJS"
+  },
+  {
+    "id": 9,
+    "category": "in-domain",
+    "source_document": "Seguridad en Aplicaciones Backend",
+    "question": "¿Cuáles son las prácticas recomendadas para usar tokens JWT de forma segura?",
+    "ground_truth": "Las prácticas recomendadas para JWT son: usar algoritmos asimétricos como RS256 (en lugar de simétricos como HS256) en entornos distribuidos; mantener el access token con vida corta (15 minutos) en memoria del cliente; usar refresh tokens con vida larga (7 días) en HttpOnly cookies; implementar token blacklisting para logout; incluir un jti (JWT ID) para tracking individual; y validar los claims issuer (iss) y audience (aud).",
+    "ground_truth_context": "JWT Security Best Practices:\n- Usar algoritmos asimétricos (RS256) en lugar de simétricos (HS256) para entornos distribuidos\n- Access token: vida corta (15 min), en memoria del cliente\n- Refresh token: vida larga (7 días), en HttpOnly cookie\n- Implementar token blacklisting para logout\n- Incluir jti (JWT ID) para tracking individual de tokens\n- Validar issuer (iss) y audience (aud) claims",
+    "expected_doc_title": "Seguridad en Aplicaciones Backend"
+  },
+  {
+    "id": 10,
+    "category": "in-domain",
+    "source_document": "Seguridad en Aplicaciones Backend",
+    "question": "¿Cómo se previene Insecure Direct Object References (IDOR) según OWASP?",
+    "ground_truth": "Para prevenir IDOR se debe: verificar la autorización en cada endpoint (que el recurso pertenezca al usuario), no exponer IDs internos directamente al cliente, usar UUIDs en lugar de IDs autoincrementales, e implementar row-level security en la base de datos.",
+    "ground_truth_context": "4. Insecure Direct Object References (IDOR):\nPrevención: Verificar autorización en cada endpoint, no exponer IDs internos, usar UUIDs, implementar row-level security.",
+    "expected_doc_title": "Seguridad en Aplicaciones Backend"
+  },
+  {
+    "id": 11,
+    "category": "edge-case",
+    "source_document": "Diseño de APIs RESTful + Seguridad en Aplicaciones Backend (cruzados)",
+    "question": "Si tengo que diseñar la autenticación de una SPA, ¿qué patrón se recomienda combinando lo dicho sobre cookies y JWT?",
+    "ground_truth": "Para una SPA se recomienda combinar dos elementos del corpus: (a) Session cookies con flags HttpOnly + Secure + SameSite — específicamente mencionado como patrón para SPAs — y (b) JWT con access token corto (15 min) en memoria del cliente y refresh token largo (7 días) en HttpOnly cookie. El access token se mantiene en memoria de la SPA mientras que el refresh token viaja como cookie httpOnly que el frontend no puede leer, mitigando exfiltración por XSS.",
+    "ground_truth_context": "(de RESTful) Session cookies: HttpOnly + Secure + SameSite para SPAs. + (de Seguridad) Access token: vida corta (15 min), en memoria del cliente. Refresh token: vida larga (7 días), en HttpOnly cookie.",
+    "expected_doc_title": "Diseño de APIs RESTful - Mejores Prácticas (+ Seguridad en Aplicaciones Backend)",
+    "edge_case_reason": "La respuesta combina información de DOS documentos del corpus. Mide la capacidad de RAG de recuperar contexto distribuido y sintetizar."
+  },
+  {
+    "id": 12,
+    "category": "edge-case",
+    "source_document": "PostgreSQL - Optimización y Patrones Avanzados",
+    "question": "Tengo una tabla con 50 millones de filas que se consulta filtrando por fecha. ¿Qué estrategia menciona la guía para mejorar el rendimiento?",
+    "ground_truth": "La guía menciona dos estrategias aplicables: (a) un índice B-tree sobre la columna de fecha (B-tree es óptimo para comparaciones de rango), o más específicamente un BRIN si las fechas están ordenadas naturalmente; (b) particionamiento por rangos (range partitioning) de fechas, que además del rendimiento facilita el mantenimiento (DROP PARTITION en lugar de DELETE masivo).",
+    "ground_truth_context": "BRIN (datos ordenados naturalmente como timestamps). + Particionamiento de tablas: Range partitioning: Por rangos de fechas o IDs. Mejora el rendimiento de queries que filtran por la clave de partición y facilita el mantenimiento (DROP PARTITION vs DELETE masivo).",
+    "expected_doc_title": "PostgreSQL - Optimización y Patrones Avanzados",
+    "edge_case_reason": "Pregunta semi-abierta. Acepta múltiples respuestas válidas del corpus (BRIN, B-tree sobre fecha, particionamiento). Mide si RAG recupera información relevante aunque la pregunta no apunte a una única sentencia."
+  },
+  {
+    "id": 13,
+    "category": "edge-case",
+    "source_document": "Arquitectura de Microservicios con NestJS + Diseño de APIs RESTful (cruzados)",
+    "question": "¿Cuál es la diferencia conceptual entre el patrón API Gateway descrito en la guía de microservicios y un servidor REST monolítico?",
+    "ground_truth": "Según el corpus: un API Gateway es un punto de entrada único para múltiples microservicios que maneja routing, autenticación, rate limiting y agregación de respuestas. Un servidor REST monolítico, en cambio, expone una sola aplicación con sus propios endpoints. El gateway puede implementarse en NestJS usando HTTP proxy o GraphQL federation. La diferencia principal es que el gateway DELEGA la lógica a servicios subyacentes y centraliza preocupaciones transversales, mientras que el monolito CONTIENE toda la lógica.",
+    "ground_truth_context": "API Gateway Pattern:\nUn punto de entrada único para todos los microservicios. Maneja routing, autenticación, rate limiting, y agregación de respuestas. NestJS puede actuar como API gateway usando HTTP proxy o GraphQL federation.",
+    "expected_doc_title": "Arquitectura de Microservicios con NestJS",
+    "edge_case_reason": "Pregunta comparativa ambigua: el corpus describe API Gateway pero NO describe explícitamente 'servidor REST monolítico'. El RAG debe inferir la comparación o admitir ambigüedad."
+  },
+  {
+    "id": 14,
+    "category": "out-of-domain",
+    "source_document": null,
+    "question": "¿Cuál es la receta de la milanesa napolitana argentina?",
+    "ground_truth": "[OOD] La base de conocimiento de Vinki está orientada a entrevistas técnicas de Backend (Node.js, REST, PostgreSQL, NestJS microservicios y seguridad). No contiene información sobre gastronomía. La respuesta esperada del sistema RAG ante esta pregunta es indicar que no tiene contexto suficiente para responder, en lugar de alucinar una receta.",
+    "ground_truth_context": "[OOD] No existe chunk relevante en el corpus.",
+    "expected_doc_title": null,
+    "edge_case_reason": "Out-of-domain extremo. Mide si el RAG alucina (responde como si supiera) o reconoce honestamente que no puede responder con el contexto disponible. La métrica Faithfulness debe ser muy baja o el sistema debe abstenerse."
+  },
+  {
+    "id": 15,
+    "category": "out-of-domain",
+    "source_document": null,
+    "question": "¿Qué versión de Kubernetes incluye soporte nativo para Pod Security Standards y en qué año se liberó?",
+    "ground_truth": "[OOD] El corpus de Vinki no incluye documentación sobre Kubernetes ni su historial de versiones. La respuesta esperada del sistema RAG es admitir que no tiene información en su base de conocimiento sobre Kubernetes Pod Security Standards. Una respuesta numérica concreta sería alucinación.",
+    "ground_truth_context": "[OOD] No existe chunk relevante en el corpus.",
+    "expected_doc_title": null,
+    "edge_case_reason": "Out-of-domain de dominio tecnológico CERCANO al corpus (sigue siendo backend/devops). Mide si el RAG resiste la tentación de responder por proximidad temática cuando el contenido específico no está. Stress-test típico de Faithfulness."
+  }
+]
