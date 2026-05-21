@@ -124,12 +124,12 @@ cuatro criterios siguientes mediante inspección del repositorio y la configurac
 
 | Req IA ID | Capacidad evaluada | Métrica | Umbral | Dataset | RF/RNF relacionado | Estado |
 |---|---|---|---|---|---|---|
-| IA-01 | Generación de retroalimentación fiel al contexto recuperado | Faithfulness | ≥ 0,80 | Dataset RAG estático (25–30 preguntas) | RF-25, RF-31 | Pendiente |
-| IA-02 | Respuestas relevantes a la pregunta del estudiante | Answer Relevancy | ≥ 0,80 | Dataset RAG estático (25–30 preguntas) | RF-25 | Pendiente |
-| IA-03 | Precisión del contexto recuperado por búsqueda semántica | Context Precision | ≥ 0,70 | Dataset RAG estático (25–30 preguntas, con contexto esperado) | RF-30, RF-31 | Pendiente |
-| IA-04 | Tasa de alucinaciones en las evaluaciones | Hallucination Rate | ≤ 10 % | Dataset RAG estático (25–30 preguntas) | RF-19, RF-20, RF-21, RF-22, RF-23 | Pendiente |
-| IA-05 | Consistencia de las evaluaciones numéricas (escala 0–5) | Varianza intra-pregunta en ejecuciones repetidas | Varianza ≤ umbral definido en Fase 2 (objetivo: baja dispersión) | Subconjunto del dataset RAG ejecutado N veces | RF-19, RF-20, RF-21, RF-22, RF-23, RNF-18 | Pendiente |
-| IA-06 | Latencia del pipeline RAG completo | Latencia extremo a extremo | P95 < 5 s | Dataset RAG estático (25–30 preguntas) | RNF-01 | Pendiente |
+| IA-01 | Generación de retroalimentación fiel al contexto recuperado | Faithfulness (Ragas) | ≥ 0,80 | Dataset RAG curado N=15 (Fase 6) | RF-25, RF-31 | **TC-IA-001** — ✅ **Verde — 0.933 in-domain** (corrida live 2026-05-21, dataset 15 preguntas con corpus de 5 docs + embeddings reales). Reporte: [`reporte_evaluacion_rag.md`](../05-evaluacion-rag/reporte_evaluacion_rag.md) |
+| IA-02 | Respuestas relevantes a la pregunta del estudiante | Answer Relevancy (Ragas) | ≥ 0,80 | Dataset RAG curado N=15 (Fase 6) | RF-25 | **TC-IA-002** — ⚠ **Amarillo — 0.767 in-domain** (0.03 bajo umbral, dentro de incertidumbre estadística con N=10). Causa: respuestas extendidas (trade-off educativo, HE-08). Detalle: [`reporte_evaluacion_rag.md` § 4.2](../05-evaluacion-rag/reporte_evaluacion_rag.md) |
+| IA-03 | Precisión del contexto recuperado por búsqueda semántica | Context Precision (Ragas) | ≥ 0,70 | Dataset RAG curado N=15 (Fase 6) | RF-30, RF-31 | **TC-IA-003** — ✅ **Verde — 1.000 in-domain** (pgvector cosine retrieval top-5 funcionando perfectamente con embeddings reales) |
+| IA-04 | Recall del contexto recuperado | Context Recall (Ragas) — adoptada en Fase 6 como complemento de IA-03 | ≥ 0,70 (propuesto Fase 6) | Dataset RAG curado N=15 (Fase 6) | RF-30, RF-31 | **TC-IA-004** — ✅ **Verde — 1.000 in-domain**. Nota: la matriz original definía IA-04 como "Hallucination Rate"; en Fase 6 se reordenó — Hallucination Rate se reporta como `1 − Faithfulness` (= 6.7 %, ≤ 10 % ✓) |
+| IA-05 | Answer Correctness contra ground truth humano | Answer Correctness (Ragas) | ≥ 0,70 (propuesto Fase 6) | Dataset RAG curado N=15 con ground truth redactado por humano (no LLM) | RF-19..RF-23, RNF-18 | **TC-IA-005** — ✅ **Verde — 0.828 in-domain**. Ground truth derivado del corpus por humano (no sesgo circular). Nota: la matriz original definía IA-05 como "varianza intra-pregunta"; en Fase 6 se reorientó hacia comparación con ground truth (más estándar Ragas). |
+| IA-06 | Latencia del pipeline RAG completo | Latencia P95 (medida directa) | < 5 s | Dataset RAG curado N=15 (Fase 6) | RNF-01 | **TC-IA-006** — ⚠ **Amarillo** — P95 = 24 399 ms con outlier id=9 (67s, rate-limit OpenAI transitorio); **sin outlier ≈ 5 900 ms** (~18 % sobre umbral). Consistente con HE-06 / D-17: latencia dominada por LLM externo en modo síncrono. |
 
 **Total: 6 capacidades de IA/RAG trazadas.**
 

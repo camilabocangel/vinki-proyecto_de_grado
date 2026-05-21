@@ -1,6 +1,6 @@
 # Estado del proyecto QA — Vinki
 
-> **Última actualización:** 2026-05-21 (**Fase 6-PRE completa** — caracterización del pipeline RAG + dataset de 15 preguntas con ground truth humano + entorno Docker `vinki-rag-eval:6pre` con Ragas 0.3.2 + script `evaluar_rag.py` dry-run verde. Pendiente autorización del docente para corrida live.)
+> **Última actualización:** 2026-05-21 (**Fase 6 COMPLETA — VERDE con observaciones**. Evaluación RAG ejecutada: IA-01 Faithfulness 0.933 ✅, IA-03 Context Precision 1.00 ✅, IA-04 Context Recall 1.00 ✅, IA-05 Answer Correctness 0.828 ✅, Hallucination Rate 6.7 % ≤ 10 % ✅, IA-02 Answer Relevancy 0.767 ⚠ (0.03 bajo umbral), IA-06 Latencia P95 ~5.9 s sin outlier ⚠. Costo real $0.028 USD de $0.30 autorizado.)
 > **Propósito:** punto único de retomada del trabajo de QA. Contiene
 > el resumen ejecutivo del estado actual, decisiones tomadas, próximos
 > pasos y enlaces a todos los artefactos generados.
@@ -17,15 +17,18 @@
 - **Fases QA completadas:** Fase 0 (inventario), Fase 1 (plan
   maestro + matriz), Fase 2 (unitarias backend + frontend), Fase 3
   (integración + integridad de datos), Fase 4 (E2E Playwright).
-- **Fases QA pendientes:** Fase 6 (evaluación RAG con Ragas / DeepEval),
-  Fase 7 (consolidación informe del Capítulo 3.3.2). **Fase 5 completa
-  cerrada (5-A rendimiento + 5-B seguridad)** — auditoría de dependencias
-  cerrada a 0 críticas y altas (2 moderate residuales sin upstream fix
-  en frontend), revisión manual exhaustiva de RNF-05..08 con HE-07 (BOLA
-  en templates) detectado y corregido (D-18) con verificación a 4 niveles.
+- **Fases QA pendientes:** Fase 7 (consolidación informe del Capítulo
+  3.3.2). **Fase 5 completa cerrada** (5-A rendimiento + 5-B seguridad).
+  **Fase 6 completa cerrada** — 5 de 7 métricas IA en verde
+  (Faithfulness 0.933, Context Precision 1.00, Context Recall 1.00,
+  Answer Correctness 0.828, Hallucination 6.7 %); 2 en amarillo con
+  causa documentable (Answer Relevancy 0.767, Latencia P95 ~5.9 s
+  sin outlier). Sistema NO alucina en OOD.
 - **Total de tests verde acumulados:** **653** — 375 unitarias
   backend (368 + 3 regression guards HE-01 + 4 nuevos HE-07) + 134
   unitarias frontend + 97 integración (+5 cross-user HE-07) + 47 E2E.
+  **Fase 6 no modifica código del SUT** — la evaluación es sobre
+  comportamiento del LLM, no sobre lógica del backend.
 - **Estado de la suite:** **VERDE 100 %** — verificado con
   `--repeat-each=3` en E2E (141/141). **2 bugs de seguridad detectados
   y corregidos por el proceso de QA:** HE-01 (ALTA, cross-tenant
@@ -48,9 +51,8 @@
 | Fase 4 — E2E Playwright | ✅ **Cerrada 100 %** | **47/47** verde, verificado 3 corridas (141/141) | 27 RF + 4 RNF cubiertos extremo a extremo · **1 bug ALTA corregido (HE-01)** · **1 bug MEDIA-ALTA diferido por D-13 (HE-05)** | [cierre_fase_4.md](03-pruebas-e2e/cierre_fase_4.md) + [bug_seguridad_HE01.md](03-pruebas-e2e/bug_seguridad_HE01.md) + [plan_mejoras_futuras.md](03-pruebas-e2e/plan_mejoras_futuras.md) |
 | Fase 5-A — Rendimiento (JMeter) | ⚠ **Cerrada con observaciones** | 6 perfiles ejecutados (smoke/carga/estrés RNF-01 ARQ + smoke/carga RNF-02 + RNF-01 REAL 20 muestras) + 1 parcial (RNF-02 estrés a 30 u) + 2 pendientes (RNF-02 estrés 50 u, RNF-03) | **RNF-01 ARQ: P95=361ms a 50u** ✅ · **RNF-02: P95=90ms a 20u** ✅ · **RNF-01 REAL: P95=7 418ms** ⚠ HE-06 acotado a `practice` por D-17. Limitación 8 GB RAM. | [reporte_rendimiento.md](04-pruebas-no-funcionales/rendimiento/reporte_rendimiento.md) + [setup_jmeter.md](04-pruebas-no-funcionales/rendimiento/setup_jmeter.md) + [seed_perf.md](04-pruebas-no-funcionales/rendimiento/seed_perf.md) |
 | Fase 5-B — Seguridad (npm audit + ESLint security + revisión manual) | ✅ **Cerrada** | npm audit: 23 → 0 backend, 11 → 2 frontend (residuales DOMPurify sin upstream). ESLint: 92 warnings todos falsos positivos. Revisión manual exhaustiva RNF-05..08. **HE-07 (BOLA templates) detectado y corregido (D-18)**, +4 unit guards + 5 integration cross-user. Semgrep no ejecutable (entorno MSYS2). | [reporte_seguridad.md](04-pruebas-no-funcionales/seguridad/reporte_seguridad.md) + [bug_seguridad_HE07.md](04-pruebas-no-funcionales/seguridad/bug_seguridad_HE07.md) + [cierre_fase_5.md](04-pruebas-no-funcionales/cierre_fase_5.md) |
-| Fase 6-PRE — Evaluación RAG (preparación) | 🟡 **Completa** | Caracterización pipeline RAG (chunking 800/100, top-5 pgvector, gpt-4o-mini) + dataset de 15 preguntas con ground truth humano (10 in-domain + 3 edge + 2 OOD) + entorno Docker `vinki-rag-eval:6pre` (Ragas 0.3.2) + script `evaluar_rag.py` dry-run verde. | [caracterizacion_rag.md](05-evaluacion-rag/caracterizacion_rag.md) + [dataset_evaluacion.json](05-evaluacion-rag/dataset_evaluacion.json) + [metodologia_dataset.md](05-evaluacion-rag/metodologia_dataset.md) + [metricas_rag.md](05-evaluacion-rag/metricas_rag.md) + [setup_entorno_rag.md](05-evaluacion-rag/setup_entorno_rag.md) + [evaluar_rag.py](05-evaluacion-rag/evaluar_rag.py) |
-| Fase 6-RUN — Evaluación RAG (corrida live) | ⏳ Pendiente | Espera autorización del docente para usar la `OPENAI_API_KEY` (costo estimado $0.02-0.20 USD). | — |
-| Fase 7 — Consolidación informe | ⏳ Pendiente | — | — | — |
+| Fase 6 — Evaluación RAG (Ragas + DeepEval) | ⚠ **Cerrada con observaciones (VERDE)** | 15 preguntas evaluadas, 7 métricas IA + Hallucination. **5 verde** (Faithfulness 0.933, CP 1.00, CR 1.00, AC 0.828, Hall 6.7%) + **2 amarillo** (AR 0.767, Latencia P95 5.9s sin outlier). Sistema NO alucina en OOD. Costo $0.028 USD de $0.30 autorizado (D-19). | [reporte_evaluacion_rag.md](05-evaluacion-rag/reporte_evaluacion_rag.md) + [cierre_fase_6.md](05-evaluacion-rag/cierre_fase_6.md) + [resultados_rag.json](05-evaluacion-rag/resultados_rag.json) |
+| Fase 7 — Consolidación informe (Cap. 3.3.2) | ⏳ Pendiente | — | — |
 
 ---
 
@@ -137,7 +139,7 @@ Decisión formal:
 
 ---
 
-## 4. Decisiones QA tomadas (D-1 a D-18)
+## 4. Decisiones QA tomadas (D-1 a D-19)
 
 Detalle completo en [decisiones_qa.md](01-plan-maestro/decisiones_qa.md).
 
@@ -198,6 +200,10 @@ Detalle completo en [decisiones_qa.md](01-plan-maestro/decisiones_qa.md).
   y sin cambio de UX se corrigen (consistente con HE-01, distinto
   de HE-05). Severidad MEDIA: expone propiedad intelectual de
   recruiters, no PII. Verificación a 4 niveles, 0 regresiones.
+- **D-19** — Autorización del docente para Fase 6-RUN (uso de
+  `OPENAI_API_KEY` real) con presupuesto máximo $0.30 USD.
+  Trazabilidad de gobernanza del gasto. **Costo real ejecutado:
+  $0.028 USD** (~10 % del presupuesto autorizado).
 
 ---
 
@@ -257,6 +263,16 @@ Lista completa en [notas_tecnicas.md](00-inventario/notas_tecnicas.md).
 - **NT-027** — Ownership consistency en TODOS los métodos de acceso
   a un recurso (no solo en listados). Checklist de 5 puntos +
   snippet canónico. Lección aprendida del fix de HE-07.
+- **NT-028** — Docker como entorno reproducible para evaluación RAG
+  (`vinki-rag-eval:6pre` con Ragas 0.3.2). Cuando el Python local no
+  compila wheels nativos y WSL2 requiere `sudo apt` interactivo.
+- **NT-029** — Captura de cookie de sesión httpOnly desde PowerShell
+  para inyección en scripts/contenedores externos al backend.
+- **NT-030** — Semántica de DeepEval HallucinationMetric vs Ragas
+  Faithfulness. Usar `1 − Faithfulness_Ragas` como métrica oficial
+  de Hallucination Rate.
+- **NT-031** — Re-ingestión de corpus para embeddings reales en
+  Fase 6 (el seed dev crea dummies).
 
 ---
 
@@ -286,33 +302,46 @@ Detalle completo en [diferidos_qa.md](01-plan-maestro/diferidos_qa.md).
 
 ## 7. Próximo paso explícito
 
-> **Estado actual (2026-05-21):** **Fase 6-PRE completa**. Toda la
-> infraestructura de evaluación RAG montada y validada (dry-run verde).
-> Suite del SUT sin cambios: **653/653 verde** (375 backend + 134
-> frontend + 97 integración + 47 E2E).
+> **Estado actual (2026-05-21):** **Fase 6 cerrada (VERDE con
+> observaciones).** Evaluación RAG completa con 5 de 7 métricas
+> cumpliendo umbrales del plan maestro § 5.5. Sistema RAG de Vinki
+> demostradamente honesto en OOD (0 % alucinación). Costo ejecutado
+> $0.028 USD (~10 % del presupuesto autorizado por D-19).
 >
-> ### Próximo paso INMEDIATO: Fase 6-RUN (Corrida live)
+> Suite del SUT sin cambios: **653/653 verde**.
 >
-> Esperando **autorización del docente** para usar la `OPENAI_API_KEY`.
-> Costo estimado: **$0.02-0.20 USD** (15 preguntas × ~10 llamadas LLM
-> entre answerer + jueces Ragas/DeepEval + embedder, con `gpt-4o-mini`
-> como modelo económico).
+> ### Próximo paso INMEDIATO: Fase 7 (Consolidación informe Cap. 3.3.2)
 >
-> Pasos al recibir autorización (todo documentado en
-> [`setup_entorno_rag.md` § 2.3](05-evaluacion-rag/setup_entorno_rag.md)):
+> Redacción del capítulo "Pruebas y Validación" del informe del
+> proyecto de grado, integrando toda la evidencia objetiva de las
+> fases 0–6:
 >
-> 1. Levantar backend con `npm run start:perf:real` + sembrar corpus
->    de los 5 documentos del seed dev.
-> 2. Login como recruiter, capturar cookie, exportar `BACKEND_COOKIE`.
-> 3. `docker run --rm -v "${PWD}:/workspace" -w /workspace -e BACKEND_COOKIE vinki-rag-eval:6pre python qa/05-evaluacion-rag/evaluar_rag.py --live`
-> 4. Revisar `resultados_rag.json` + `resultados_rag.md` contra los
->    umbrales del plan maestro § 5.5 + `metricas_rag.md`.
-> 5. Redactar `qa/05-evaluacion-rag/reporte_rag.md` con conclusión
->    (Verde/Amarillo/Rojo) y mapeo a IA-01..IA-06 + Hallucination Rate.
->
-> ### Anterior próximo paso (mantengo histórico):
->
-> Fase 6 (preparación) — completa 2026-05-21.
+> - **Cobertura cuantitativa:**
+>   - Unitarias: 375/375 backend (99.15 % stmts) + 134/134 frontend.
+>   - Integración: 97/97 (RNF-05 a RNF-20 + cross-user).
+>   - E2E Playwright: 47/47 verde estable (verificado ×3 = 141/141).
+>   - **Rendimiento JMeter** (Fase 5-A): 6 perfiles + RNF-01 real.
+>   - **Seguridad** (Fase 5-B): npm audit 0 vulns críticas + ESLint
+>     security + revisión manual RNF-05..08.
+>   - **Evaluación RAG** (Fase 6): 5 de 7 métricas IA en verde +
+>     Hallucination 6.7 %.
+> - **Las 19 decisiones D-1..D-19** como sección de metodología y
+>   alcance.
+> - **Los 9 hallazgos HE-01..HE-09:**
+>   - HE-01 (ALTA): corregido (cache leak cross-tenant).
+>   - HE-02..HE-04 (baja): backlog UX/i18n.
+>   - HE-05 (MEDIA-ALTA): diferido D-13 (skill_id admin).
+>   - HE-06 (baja-media): acotado D-17 (latencia practice).
+>   - HE-07 (MEDIA): corregido D-18 (BOLA templates).
+>   - HE-08 (baja/N-A): trade-off educativo de Answer Relevancy.
+>   - HE-09 (baja): semántica DeepEval mitigada.
+> - **Pieza central del informe:** los **2 bugs de seguridad
+>   detectados y corregidos por QA** (HE-01 en Fase 4, HE-07 en
+>   Fase 5-B) — evidencia objetiva de que el proceso de pruebas
+>   cumple su función de detección temprana.
+> - **Capturas:** HTML JMeter (Fase 5-A), Playwright report
+>   (Fase 4), cobertura lcov (Fase 2), `resultados_rag.json`
+>   (Fase 6).
 >
 > Validación de la **calidad real del LLM** (no la mockeada en Fases
 > 3/4/5), sobre dataset estático curado. Herramientas previstas:

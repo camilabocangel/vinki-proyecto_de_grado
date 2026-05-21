@@ -623,3 +623,109 @@ async getTemplate(id: number, userId: number, role: string) {
 Aplicable a cualquier recurso del SUT con noción de propiedad
 (`createdById`, `userId`, `ownerId`, etc.) + flag opcional de
 publicación (`isPublic`).
+
+## NT-028 — Docker como entorno reproducible para evaluación RAG (Fase 6)
+
+**Fecha:** 2026-05-21 (Fase 6 — D-19).
+
+El Python MSYS2 mingw64 del entorno local no compila wheels nativos
+(`Unsupported platform: 311` con maturin — mismo síntoma que falló
+Semgrep en Fase 5-B). WSL2 Ubuntu requería `sudo apt install python3-venv`
+interactivo. **Solución adoptada: Docker** con imagen custom
+`vinki-rag-eval:6pre` (`python:3.11-slim` base + ragas 0.3.2 + deepeval
+2.9.7 + openai 1.109.1 + pandas + langchain + tiktoken).
+
+**Comando canónico (corrida live):**
+
+```powershell
+$env:BACKEND_COOKIE = Get-Content '<cookie-file>' -Raw
+docker run --rm -v "${PWD}:/workspace" -w /workspace `
+  -e BACKEND_COOKIE `
+  vinki-rag-eval:6pre `
+  python qa/05-evaluacion-rag/evaluar_rag.py --live `
+    --backend-url http://host.docker.internal:3002
+```
+
+Notas:
+- `host.docker.internal` es el alias DNS que Docker Desktop expone
+  para que el contenedor alcance servicios del host (el backend
+  corriendo en Windows en `127.0.0.1:3002`).
+- `BACKEND_COOKIE` se pasa como env var (no en el comando, evita
+  exposición en logs y `ps`).
+- La key OpenAI la lee el script vía `load_dotenv` desde
+  `backend/.env` (cubierto por `.gitignore`).
+
+## NT-029 — Captura de cookie de sesión httpOnly desde PowerShell
+
+**Fecha:** 2026-05-21 (Fase 6).
+
+Las cookies `access_token` + `refresh_token` de Vinki son `httpOnly`
+(no accesibles desde JS). Para enviarlas desde scripts/contenedores
+externos al backend, se capturan vía `WebRequestSession` de PowerShell:
+
+```powershell
+$session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+Invoke-WebRequest -Uri 'http://127.0.0.1:3002/api/auth/login' `
+  -Method Post -ContentType 'application/json' `
+  -Body '{"email":"...","password":"..."}' `
+  -WebSession $session -UseBasicParsing | Out-Null
+$cookies = $session.Cookies.GetCookies('http://127.0.0.1:3002')
+$cookieHeader = (($cookies | ForEach-Object { $_.Name + '=' + $_.Value }) -join '; ')
+$cookieHeader | Out-File -FilePath '<temp-file>' -Encoding ascii -NoNewline
+```
+
+El header resultante (`access_token=...; refresh_token=...`) se inyecta
+en peticiones HTTP posteriores vía `-Headers @{Cookie=$cookieHeader}` o
+se exporta como env var para Docker.
+
+**ATENCIÓN:** archivo temporal de cookie debe ir a un directorio
+fuera del repo (`$env:TEMP\vinki-cookie.txt`) — NUNCA commitear.
+
+## NT-030 — Semántica de DeepEval HallucinationMetric vs Ragas Faithfulness
+
+**Fecha:** 2026-05-21 (Fase 6 — HE-09).
+
+DeepEval `HallucinationMetric.score` mide "fracción del contexto NO
+alineada con la respuesta" — semántica de cobertura inversa, NO
+"alucinación" en el sentido del plan maestro § 5.5. Diverge de Ragas
+Faithfulness (que mide "claims soportados / total claims").
+
+**Regla para Fase 6 y futuras:** usar **Ragas Faithfulness** como
+métrica primaria de no-alucinación. La métrica de "Hallucination Rate
+≤ 10 %" del plan maestro § 5.5 se calcula como `1 − Faithfulness_Ragas`.
+
+DeepEval `HallucinationMetric` queda como verificación cruzada
+cualitativa pero NO se usa como métrica oficial para los umbrales
+del plan maestro. Si en iteraciones futuras se quiere DeepEval, usar
+`FaithfulnessMetric` (que sí es equivalente a Ragas) en lugar de
+`HallucinationMetric`.
+
+## NT-031 — Re-ingestión de corpus para embeddings reales en Fase 6
+
+**Fecha:** 2026-05-21.
+
+El seed dev (`backend/prisma/seed.ts`) crea los 5 documentos del
+corpus con **dummy embeddings (vectores constantes)**. Para que la
+evaluación RAG sea significativa, los embeddings deben ser reales.
+
+**Procedimiento usado:**
+
+1. `npm run seed:perf` (crea catálogos + 3 usuarios fijos + 1 doc dummy).
+2. Login como `perf-admin`.
+3. `DELETE /api/knowledge/1` (eliminar el doc dummy del seed-perf).
+4. Por cada uno de los 5 documentos del corpus (extraídos a
+   `qa/05-evaluacion-rag/corpus_documentos.json` para reproducibilidad):
+   `POST /api/knowledge` con backend en modo `start:perf:real`
+   (LLM_SANDBOX=false). El backend embebe los chunks con
+   `text-embedding-3-small` real.
+5. Verificar con `POST /api/knowledge/search` que la distancia al
+   doc relevante es significativamente menor (~0.30) que al
+   irrelevante (~0.66).
+
+Costo de la ingestión: ~$0.0003 USD (despreciable).
+
+Si en el futuro se quiere reproducir la corrida Fase 6 sin re-ingestar
+manualmente, una opción es **extender el seed dev** para que, cuando
+detecte `LLM_SANDBOX=false`, llame a `OpenaiEmbeddingService` real en
+lugar de generar dummies. Esto está fuera del alcance del MVP pero
+documentado como mejora futura.

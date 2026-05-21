@@ -33,3 +33,6 @@ backend/prisma/*.db
 # Temp
 tmp/
 .tmp/
+
+# DeepEval telemetry (anonymous ID local, no relevante para el repo)
+.deepeval/

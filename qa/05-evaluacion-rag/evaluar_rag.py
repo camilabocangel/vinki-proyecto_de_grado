@@ -405,10 +405,11 @@ def write_outputs(
     samples: list[EvalSample],
     aggregates: dict[str, Any],
     output_dir: Path,
+    suffix: str = "",
 ) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     # JSON detallado
-    json_path = output_dir / "resultados_rag.json"
+    json_path = output_dir / f"resultados_rag{suffix}.json"
     payload = {
         "samples": [
             {
@@ -432,7 +433,7 @@ def write_outputs(
     print(f"[evaluar_rag] resultados JSON → {json_path}")
 
     # Tabla markdown
-    md_path = output_dir / "resultados_rag.md"
+    md_path = output_dir / f"resultados_rag{suffix}.md"
     rows = []
     for s in samples:
         m = s.metrics or {}
@@ -503,6 +504,7 @@ def live_run(
     judge_model: str,
     answerer_model: str,
     output_dir: Path,
+    output_suffix: str = "",
 ) -> None:
     # Carga key real desde backend/.env
     env_path = REPO_ROOT / "backend" / ".env"
@@ -557,7 +559,7 @@ def live_run(
         s.metrics["hallucination_score"] = h
 
     aggs = aggregate(samples)
-    write_outputs(samples, aggs, output_dir)
+    write_outputs(samples, aggs, output_dir, suffix=output_suffix)
     print("[evaluar_rag] OK — Fase 6 completada.")
 
 
@@ -575,9 +577,24 @@ def main() -> int:
     parser.add_argument("--judge-model", default="gpt-4o-mini")
     parser.add_argument("--answerer-model", default="gpt-4o-mini")
     parser.add_argument("--output-dir", default=str(DEFAULT_OUTPUT_DIR))
+    parser.add_argument(
+        "--ids",
+        default="",
+        help="CSV de IDs del dataset a procesar (default: todos). "
+             "Útil para corrida de prueba: --ids 1,11,14",
+    )
+    parser.add_argument(
+        "--output-suffix",
+        default="",
+        help="Sufijo para los nombres de archivos de salida (ej: '-prueba3').",
+    )
     args = parser.parse_args()
 
     samples = load_dataset()
+    if args.ids:
+        wanted = {int(x) for x in args.ids.split(",") if x.strip()}
+        samples = [s for s in samples if s.id in wanted]
+        print(f"[evaluar_rag] filtrado a {len(samples)} preguntas: ids={sorted(s.id for s in samples)}")
     output_dir = Path(args.output_dir)
 
     if args.dry_run:
@@ -589,6 +606,7 @@ def main() -> int:
         judge_model=args.judge_model,
         answerer_model=args.answerer_model,
         output_dir=output_dir,
+        output_suffix=args.output_suffix,
     )
     return 0
 

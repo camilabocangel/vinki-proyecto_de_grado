@@ -667,6 +667,14 @@ representan el rendimiento arquitectónico, no la latencia total con
 LLM real. Esto se documentará explícitamente en el reporte final
 del rendimiento y en el informe del proyecto de grado.
 
+**Anexo Fase 6-RUN (2026-05-21):** el docente autorizó explícitamente
+el uso de la `OPENAI_API_KEY` para la evaluación RAG con un
+**presupuesto máximo de $0.30 USD**. Esta autorización se trata
+como gobernanza del gasto análoga al subset de 10-20 muestras del
+Escenario 4 de Fase 5-A. El costo real ejecutado se reporta en
+[`reporte_evaluacion_rag.md`](../05-evaluacion-rag/reporte_evaluacion_rag.md).
+Registro formal en D-19 (tabla resumen).
+
 ---
 
 ## D-16 — Seed dedicado para pruebas de rendimiento
@@ -889,6 +897,7 @@ solo en los listados". Checklist de 5 puntos en
 | D-16 | Seed para pruebas de rendimiento | Seed dedicado `seed-perf.ts` independiente del seed E2E | `backend/test/perf/seed-perf.ts` + script `seed:perf` + `seed_perf.md` |
 | D-17 | Interpretación del RNF-01 según flujo (`evaluation` vs `practice`) | Cumplimiento se valida sobre el flujo principal asíncrono (BullMQ, ack ~12 ms). HE-06 acotada al modo `practice` (feature opcional, P95 = 7 418 ms con LLM real, latencia externa). Propuesta de sub-umbrales RNF-01-a (< 500 ms) / RNF-01-b (< 8 s) pendiente de validar con tutor. | `analisis_flujo_evaluacion.md` + reclasificación HE-06 en `reporte_rendimiento.md` + matriz RNF-01 actualizada |
 | D-18 | Corrección de HE-07 (BOLA en `getTemplate` + `startFromTemplate`) | **Corregir** ahora — bug de autorización con fix viable sin cambio de UX, consistente con HE-01 y distinto de HE-05. Severidad MEDIA: expone propiedad intelectual de recruiters, no PII. Verificación a 4 niveles, 0 regresiones. | `bug_seguridad_HE07.md` + 6 tests unitarios + 5 tests integración + NT-027 + 2 archivos SUT modificados |
+| D-19 | Autorización del docente para Fase 6-RUN (uso de OPENAI_API_KEY real) | **Aprobado** el 2026-05-21 con presupuesto máximo **$0.30 USD**. Trazabilidad de gobernanza del gasto (igual que D-15 para Escenario 4 de Fase 5-A). El costo real ejecutado se reporta en `reporte_evaluacion_rag.md`. | Anexo a D-15 + `reporte_evaluacion_rag.md` |
 
 > Las decisiones D-1 a D-8 y D-10 a D-12 son **supuestos adoptados** por
 > el equipo de QA ante la ausencia de respuesta del tutor; pueden ser
