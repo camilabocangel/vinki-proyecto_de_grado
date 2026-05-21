@@ -136,7 +136,7 @@ Decisión formal:
 
 ---
 
-## 4. Decisiones QA tomadas (D-1 a D-8)
+## 4. Decisiones QA tomadas (D-1 a D-17)
 
 Detalle completo en [decisiones_qa.md](01-plan-maestro/decisiones_qa.md).
 
@@ -277,30 +277,68 @@ Detalle completo en [diferidos_qa.md](01-plan-maestro/diferidos_qa.md).
 
 ## 7. Próximo paso explícito
 
-> **Fase 5-A (rendimiento) cerrada.** Ver
-> [reporte_rendimiento.md](04-pruebas-no-funcionales/rendimiento/reporte_rendimiento.md)
-> para el detalle completo. Resumen:
+> **Estado actual (2026-05-21):** Fase 5-A cerrada. Trabajo
+> consolidado en commit `cfdd3a6` (working tree limpio, suite verde
+> 371/371). HE-06 reclasificado por D-17 (observación acotada al
+> modo `practice`, no bloqueante).
 >
-> - **Ejecutados con éxito (6 perfiles):**
->   - RNF-01 ARQ (mock): smoke 1u/60s → carga 20u/180s → estrés 50u/300s. P95 a 50u = 361 ms. 0 % err. ✅
->   - RNF-02 search (mock): smoke 1u/60s → carga 20u/180s. P95 a 20u = 90 ms (DB con 10 000 preguntas + 50 chunks). 0 % err. ✅
->   - RNF-01 REAL (LLM `gpt-4o-mini`, D-15): 20 muestras a 2u. P50 = 4 415 ms, **P95 = 7 418 ms**. 0 % err. ⚠ **HE-06**.
-> - **Parcial (1):** RNF-02 estrés a 50u completó hasta ~30u (13 839 samples, P95 = 70 ms) antes de OOM del JVM. HTML regenerado del JTL recortado.
-> - **No ejecutados (1):** RNF-03 dedicado (50u flujo completo) por limitación de memoria del entorno (8 GB RAM). Plan `.jmx` + CSV de 50 estudiantes bulk disponibles para re-ejecución en infraestructura ≥ 16 GB. La capacidad de 50 u con 0 % errores quedó **demostrada en RNF-01 ARQ estrés** (cobertura cruzada).
+> ### Próximo paso INMEDIATO: Fase 5-B (Seguridad)
 >
-> **Siguiente paso: Prompt 5-B (seguridad).** NO requiere JMeter ni
-> mucha memoria. Tareas:
+> No requiere JMeter, no requiere mucha memoria, todo se ejecuta en
+> CLI. Tareas:
 >
-> 1. `npm audit` en `backend/` y `frontend/app/`.
-> 2. Correr Semgrep contra `backend/src/` con reglas OWASP Top 10
->    (config `backend/eslint.security.config.mjs` ya activa para el
->    plugin de lint).
-> 3. `npm run lint:security` en `backend/` (eslint-plugin-security
->    integrado en Fase 2.5).
-> 4. Documentar resultados en
->    `qa/04-pruebas-no-funcionales/seguridad/reporte_seguridad.md`.
-> 5. Generar `qa/04-pruebas-no-funcionales/cierre_fase_5.md`
->    consolidando 5-A + 5-B.
+> 1. **`npm audit`** en `backend/` y `frontend/app/`. Capturar JSON
+>    inicial y posterior (si se aplica algún `npm audit fix` no
+>    breaking, registrar deltas). Output a
+>    `qa/04-pruebas-no-funcionales/seguridad/audit_{backend,frontend}_{inicial,posterior}.json`.
+> 2. **`npm run lint:security`** en `backend/` (ya configurado con
+>    `eslint-plugin-security` desde Fase 2.5; baseline en
+>    `seguridad/eslint_security_inicial.txt`). Capturar el delta y
+>    triagear cualquier hallazgo nuevo.
+> 3. **Semgrep** contra `backend/src/` con reglas OWASP Top 10 (`-c
+>    p/owasp-top-ten` o equivalente). Instalación documentada en
+>    [`seguridad/setup_semgrep.md`](04-pruebas-no-funcionales/seguridad/setup_semgrep.md).
+>    Output a `seguridad/semgrep.json` + tabla de severidades.
+> 4. **Revisión manual de RNF-05 a RNF-08:**
+>    - RNF-05 — bcrypt (no plain text passwords). Ya validado en
+>      Fase 3 (TC-I-005), confirmar que el patrón se mantiene.
+>    - RNF-06 — HTTPS (objetivo de diseño, D-4). Revisar
+>      `docker-compose.prod.yml`.
+>    - RNF-07 — Autorización por propiedad (HE-01 corregido). Ya
+>      validado E2E ×3; revisar que no haya nuevos endpoints
+>      `@Cacheable` que regresionen el patrón.
+>    - RNF-08 — Validación estricta de DTOs (TC-I-008). Confirmar
+>      que todos los controllers nuevos siguen el patrón
+>      `class-validator`.
+> 5. Redactar
+>    `qa/04-pruebas-no-funcionales/seguridad/reporte_seguridad.md`
+>    con la tabla de hallazgos por severidad + estado por RNF.
+> 6. Generar `qa/04-pruebas-no-funcionales/cierre_fase_5.md`
+>    consolidando 5-A (rendimiento) + 5-B (seguridad) como cierre
+>    formal de la Fase 5 completa.
+>
+> ### Después de Fase 5-B → Fase 6 (Evaluación RAG)
+>
+> Ragas + DeepEval contra dataset estático de 25-30 preguntas
+> curadas para validar las 6 capacidades IA-01 a IA-06 (Faithfulness,
+> Answer Relevance, Context Precision, Context Recall, Answer
+> Correctness, Latencia del pipeline RAG completo). Detalle de la
+> metodología en
+> [plan_maestro_pruebas.md § 5.5](01-plan-maestro/plan_maestro_pruebas.md).
+> Esta fase es la que valida la CALIDAD real del LLM (no la mockeada).
+>
+> ### Después de Fase 6 → Fase 7 (Consolidación del Capítulo 3.3.2)
+>
+> Redacción del capítulo "Pruebas y Validación" del informe del
+> proyecto de grado, integrando:
+>
+> - Evidencia objetiva: cobertura, suites, hallazgos, reportes
+>   JMeter, reportes RAG.
+> - Las 17 decisiones D-1..D-17 como sección de "metodología y
+>   alcance".
+> - Los 6 hallazgos HE-01..HE-06 como sección de "defectos
+>   detectados y gestionados".
+> - Capturas de los reportes HTML (JMeter + Playwright + cobertura).
 >
 > **Hallazgo HE-06 — RECLASIFICADO** (D-17, 2026-05-21).
 > Tras el análisis del flujo real de evaluación
@@ -317,11 +355,6 @@ Detalle completo en [diferidos_qa.md](01-plan-maestro/diferidos_qa.md).
 > [reporte_rendimiento.md § 6](04-pruebas-no-funcionales/rendimiento/reporte_rendimiento.md)
 > y registro formal en [decisiones_qa.md § D-17](01-plan-maestro/decisiones_qa.md).
 
-> **Nota sobre Fase 6 (RAG / DeepEval):** se mantendrá la propuesta
-> de Ragas + DeepEval para evaluar las 6 capacidades IA-01 a IA-06
-> contra el dataset estático de 25-30 preguntas (sección 5.5 del
-> plan maestro).
-
 ---
 
 ## 8. Estructura completa de carpetas `qa/`
@@ -329,53 +362,55 @@ Detalle completo en [diferidos_qa.md](01-plan-maestro/diferidos_qa.md).
 ```
 qa/
 ├── ESTADO_DEL_PROYECTO_QA.md      # ← Este archivo. Punto de retomada.
-├── README.md                       # Índice general.
+├── README.md                       # Índice navegable de todos los documentos QA.
 │
 ├── 00-inventario/                  # Fase 0 — inventario técnico del SUT.
 │   ├── inventario_sistema.md       # Catálogo de módulos, endpoints, dependencias.
 │   ├── estado_db_desarrollo.md     # Snapshot de la DB de dev al iniciar QA.
-│   ├── notas_tecnicas.md           # Bitácora NT-001..NT-016 (decisiones técnicas).
+│   ├── notas_tecnicas.md           # Bitácora NT-001..NT-026 (decisiones técnicas).
 │   └── reverificacion_constraints.txt
 │
 ├── 01-plan-maestro/                # Fase 1 — plan, trazabilidad, decisiones.
 │   ├── plan_maestro_pruebas.md     # Plan maestro completo (estrategia por capas).
-│   ├── matriz_trazabilidad.md      # RF/RNF/IA ↔ TC-U-XXX / TC-I-XXX / TC-E-XX.
-│   ├── decisiones_qa.md            # Decisiones D-1 a D-8 con justificación.
+│   ├── matriz_trazabilidad.md      # RF/RNF/IA ↔ TC-U-XXX / TC-I-XXX / TC-E-XX / TC-P-XXX.
+│   ├── decisiones_qa.md            # Decisiones D-1 a D-17 con justificación.
 │   └── diferidos_qa.md             # Catálogo de código fuera de alcance.
 │
 ├── 02-pruebas-unitarias/           # Fase 2 — unitarias backend + frontend.
-│   ├── cierre_fase_2.md            # Documento de cierre de la fase.
+│   ├── cierre_fase_2.md
 │   ├── ajuste_cobertura_3C.md      # Aplicación de D-8 y resultado final.
 │   ├── ajuste_cobertura_final_3B.md
-│   ├── resumen_cobertura_3A.md     # Sub-corrida 3A (backend núcleo).
-│   ├── resumen_cobertura_3B.md     # Sub-corrida 3B (backend resto).
-│   ├── resumen_cobertura_3C.md     # Sub-corrida 3C (frontend).
-│   ├── diagnostico_rapido.md       # Diagnóstico inicial de tests rojos.
-│   ├── reparacion_tests_rojos.md   # Resumen de la reparación dirigida.
-│   ├── setup_summary.md            # Setup de la suite unitaria.
-│   ├── cobertura_backend_3*.txt    # Outputs literales de cobertura.
-│   ├── cobertura_frontend_3*.txt
-│   ├── diagnostico_*_raw.txt       # Outputs literales del diagnóstico inicial.
-│   ├── post_reparacion_*.txt       # Output literal post-reparación.
-│   └── smoke_*.txt                 # Smoke tests iniciales.
+│   ├── resumen_cobertura_{3A,3B,3C}.md
+│   ├── diagnostico_rapido.md / reparacion_tests_rojos.md / setup_summary.md
+│   └── *.txt                       # Outputs literales (cobertura, smoke, diagnóstico).
 │
 ├── 03-pruebas-integracion/         # Fase 3 — integración + integridad.
-│   ├── cierre_fase_3.md            # Documento de cierre de la fase.
-│   ├── resumen_integracion.md      # Inventario por suite + mapeo RF/RNF.
-│   ├── setup_summary.md            # Cómo levantar la infra y correr la suite.
-│   └── resultado_integracion.txt   # Output literal del último run.
+│   ├── cierre_fase_3.md
+│   ├── resumen_integracion.md
+│   ├── setup_summary.md
+│   └── resultado_integracion.txt
 │
-├── 03-pruebas-e2e/                 # Fase 4 — infra Playwright (pre-cargada).
-│   ├── como_ejecutar.md            # Instrucciones de ejecución.
-│   └── smoke_e2e.txt               # Smoke E2E inicial del Prompt 2.5.
+├── 03-pruebas-e2e/                 # Fase 4 — E2E Playwright (47/47 verde).
+│   ├── cierre_fase_4.md            # Cierre formal de la fase.
+│   ├── resumen_e2e.md              # Inventario por suite + mapeo RF/RNF.
+│   ├── hallazgos_e2e.md            # 6 hallazgos consolidados (HE-01..HE-06).
+│   ├── bug_seguridad_HE01.md       # Reporte ejecutivo del bug HE-01 (cache leak).
+│   ├── plan_mejoras_futuras.md     # Backlog priorizado de hallazgos diferidos.
+│   ├── como_ejecutar.md
+│   └── smoke_e2e.txt
 │
-└── 04-pruebas-no-funcionales/      # Fase 5 — rendimiento + seguridad (preparada).
-    ├── rendimiento/                # Setup k6.
-    │   ├── setup_k6.md
-    │   ├── scripts/
-    │   ├── data/
-    │   └── reportes/
-    └── seguridad/                  # Setup Semgrep + ESLint security.
+└── 04-pruebas-no-funcionales/      # Fase 5 — rendimiento + seguridad.
+    ├── rendimiento/                # Fase 5-A — JMeter (D-9), cerrada con observaciones.
+    │   ├── reporte_rendimiento.md  # Reporte completo: tablas, hallazgos, cumplimiento.
+    │   ├── analisis_flujo_evaluacion.md  # Sustenta la reclasificación de HE-06 (D-17).
+    │   ├── analisis_endpoints_rendimiento.md  # Investigación previa (Fase 5-PRE).
+    │   ├── seed_perf.md            # Operativa del seed de perf (D-16).
+    │   ├── setup_jmeter.md         # Instalación, heap, comandos.
+    │   ├── ARCHIVADO_setup_k6.md   # Propuesta inicial archivada (D-9).
+    │   ├── planes/                 # 5 planes .jmx + perf-students.csv.
+    │   ├── resultados/             # 7 .jtl + 7 HTML reports.
+    │   └── capturas/               # (vacío — pendiente para informe).
+    └── seguridad/                  # Fase 5-B — pendiente.
         ├── setup_semgrep.md
         └── eslint_security_inicial.txt
 ```
@@ -449,14 +484,23 @@ asistente) para continuar el trabajo de QA:
 2. Adjunta `docs/requerimientos.md` para contexto del SUT.
 3. Indica explícitamente:
 
-   > "Quiero continuar con la **Fase 4 — Pruebas E2E con Playwright**.
+   > "Quiero continuar con la **Fase 5-B — Pruebas de seguridad**.
    > El contexto completo está en el archivo adjunto
-   > (`qa/ESTADO_DEL_PROYECTO_QA.md`). Procede con el **Prompt 4**."
+   > (`qa/ESTADO_DEL_PROYECTO_QA.md`). Procede con el **Prompt 5-B**."
 
-4. (Opcional, recomendado) Adjunta también
-   `qa/01-plan-maestro/plan_maestro_pruebas.md` para que el asistente
-   tenga la sección 7 (Fase 4 — E2E) con el detalle de los 8 flujos a
-   automatizar.
+4. (Opcional, recomendado) Adjunta también:
+   - `qa/01-plan-maestro/plan_maestro_pruebas.md` para la sección
+     5.5 (criterios) y referencias a OWASP / RNF-05 a RNF-08.
+   - `qa/04-pruebas-no-funcionales/rendimiento/reporte_rendimiento.md`
+     y `analisis_flujo_evaluacion.md` si el tutor requiere contexto
+     de Fase 5-A para justificar HE-06 / D-17.
+
+### Estado de Git al pausar (2026-05-21)
+
+- HEAD: **`cfdd3a6`** — `test(perf): Fase 5-A rendimiento JMeter (RNF-01/02) + HE-06 reclasificado (D-14..D-17)`.
+- Working tree: **limpio**. Todo el trabajo de Fase 5-A + afinamiento HE-06 + D-17 está commiteado.
+- Suite verde: **48/48 suites, 371/371 tests** post-commit.
+- Sin procesos huérfanos (java, node, JMeter — todos detenidos).
 
 ---
 
