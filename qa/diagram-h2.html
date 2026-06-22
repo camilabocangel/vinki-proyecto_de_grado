@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<style>
+  html, body { margin: 0; background: #ffffff; }
+  #wrap { background: #ffffff; display: inline-block; padding: 30px 36px; }
+  #wrap svg { display: block; }
+</style>
+<script src="./mermaid.min.js"></script>
+</head>
+<body>
+<div id="wrap"></div>
+<script>
+const def = `
+flowchart LR
+
+subgraph DEV[" DESARROLLADOR "]
+  direction TB
+  d1["Commit / Push"]
+end
+
+subgraph SCM[" GITHUB (SCM) "]
+  direction TB
+  s1["Repositorio<br/>ci.yml · e2e.yml"]
+end
+
+subgraph CI[" CI · GITHUB ACTIONS "]
+  direction TB
+  c1["Verificación<br/>de tipos"]
+  c2["Pruebas unitarias<br/>+ cobertura"]
+  c3["Integración / E2E<br/>PostgreSQL + Redis"]
+  c1 --> c2 --> c3
+end
+
+subgraph DOCK[" IMÁGENES DOCKER "]
+  direction TB
+  k1["Build de imágenes<br/>backend · frontend"]
+end
+
+subgraph DEP[" DESPLIEGUE · SKYNET (UPB) "]
+  direction TB
+  p1["Clonar repo + .env"]
+  p2["docker compose up -d"]
+  p3["Migraciones Prisma"]
+  p4["nginx<br/>reverse proxy · TLS"]
+  p1 --> p2 --> p3 --> p4
+  fe["frontend"]
+  be["backend"]
+  pg["postgres"]
+  rd["redis"]
+  mn["minio"]
+  p4 --> fe
+  p4 --> be
+  be --> pg
+  be --> rd
+  be --> mn
+end
+
+subgraph PROD[" PRODUCCIÓN "]
+  direction TB
+  r1["Servicio HTTPS<br/>usuarios finales"]
+end
+
+DEV  == "push"    ==> SCM
+SCM  == "trigger" ==> CI
+CI   == "build"   ==> DOCK
+DOCK == "deploy"  ==> DEP
+DEP  == "HTTPS"   ==> PROD
+
+classDef dev   fill:#FCE5CD,stroke:#E8923A,stroke-width:2px,color:#5b3a16;
+classDef scm   fill:#FFF2A8,stroke:#D9B400,stroke-width:2px,color:#5b5300;
+classDef ci    fill:#F3D9F2,stroke:#A64DBF,stroke-width:2px,color:#4a1452;
+classDef dock  fill:#C9D4F2,stroke:#3F5FBF,stroke-width:2px,color:#16265e;
+classDef stg   fill:#FAD8D8,stroke:#D9534F,stroke-width:2px,color:#5e1414;
+classDef infra fill:#DCE6FB,stroke:#3F5FBF,stroke-width:2px,color:#16265e;
+classDef prod  fill:#CDEDCD,stroke:#46A046,stroke-width:2px,color:#13420f;
+
+class d1 dev;
+class s1 scm;
+class c1,c2,c3 ci;
+class k1 dock;
+class p1,p2,p3,p4 stg;
+class fe,be,pg,rd,mn infra;
+class r1 prod;
+
+style DEV  fill:#FFFFFF,stroke:#E8923A,stroke-width:1.5px,color:#5b3a16;
+style SCM  fill:#FFFFFF,stroke:#D9B400,stroke-width:1.5px,color:#5b5300;
+style CI   fill:#FFFFFF,stroke:#A64DBF,stroke-width:1.5px,color:#4a1452;
+style DOCK fill:#FFFFFF,stroke:#3F5FBF,stroke-width:1.5px,color:#16265e;
+style DEP  fill:#FFFFFF,stroke:#D9534F,stroke-width:1.5px,color:#5e1414;
+style PROD fill:#FFFFFF,stroke:#46A046,stroke-width:1.5px,color:#13420f;
+`;
+
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'default',
+  securityLevel: 'loose',
+  flowchart: { htmlLabels: true, curve: 'basis', nodeSpacing: 55, rankSpacing: 95, padding: 16 },
+  themeVariables: { fontFamily: 'Segoe UI, Arial, sans-serif', fontSize: '26px' },
+});
+
+mermaid.render('graph', def)
+  .then(({ svg }) => { document.getElementById('wrap').innerHTML = svg; window.__done = true; })
+  .catch((e) => {
+    document.body.innerHTML = '<pre style="color:red">' + (e && e.message ? e.message : e) + '</pre>';
+    window.__err = String(e && e.message ? e.message : e); window.__done = true;
+  });
+</script>
+</body>
+</html>

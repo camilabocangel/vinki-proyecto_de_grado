@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<style>
+  :root {
+    --bg: #ffffff;
+    --panel: #fbfcfd;
+    --border: #d9e0e7;
+    --header-bg: #00564f;
+    --header-fg: #ffffff;
+    --folder: #1f6feb;
+    --folder-key: #b8860b;
+    --line: #c4ccd4;
+    --text: #1f2933;
+    --muted: #6b7785;
+    --comment: #7a8794;
+    --accent: #00857a;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); }
+  body {
+    font-family: 'Cascadia Code', 'JetBrains Mono', 'Consolas', 'DejaVu Sans Mono', monospace;
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+  #capture {
+    width: 1600px;
+    background: var(--bg);
+    padding: 44px 48px 40px;
+  }
+  .title {
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--header-bg);
+    margin: 0 0 4px;
+    letter-spacing: -0.3px;
+  }
+  .subtitle {
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 15px;
+    color: var(--muted);
+    margin: 0 0 30px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    align-items: start;
+  }
+  .panel {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--panel);
+    box-shadow: 0 1px 3px rgba(16,42,67,0.06);
+  }
+  .panel-header {
+    background: var(--header-bg);
+    color: var(--header-fg);
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .panel-header .tag {
+    margin-left: auto;
+    font-size: 12px;
+    font-weight: 500;
+    opacity: 0.85;
+    background: rgba(255,255,255,0.16);
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+  .tree {
+    padding: 20px 22px 24px;
+    font-size: 15px;
+    line-height: 1.85;
+    white-space: pre;
+  }
+  .row { display: block; }
+  .lines { color: var(--line); }
+  .folder { color: var(--folder); font-weight: 600; }
+  .folder-root { color: var(--accent); font-weight: 700; }
+  .key { color: var(--folder-key); font-weight: 600; }
+  .file { color: var(--text); }
+  .comment { color: var(--comment); font-style: italic; }
+  .ico { font-style: normal; }
+  .legend {
+    margin-top: 26px;
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 13px;
+    color: var(--muted);
+    display: flex;
+    gap: 26px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .legend b { color: var(--text); font-weight: 600; }
+  .legend .sw { display: inline-block; }
+  .legend .sw.folder { color: var(--folder); }
+  .legend .sw.key { color: var(--folder-key); }
+</style>
+</head>
+<body>
+<div id="capture">
+  <h1 class="title">Estructura de Carpetas — Vinki</h1>
+  <p class="subtitle">Plataforma de Simulación de Entrevistas Técnicas con IA · Organización por módulos de dominio</p>
+
+  <div class="grid">
+    <!-- BACKEND -->
+    <div class="panel">
+      <div class="panel-header"><span class="ico">⬢</span> Backend <span class="tag">NestJS · TypeScript · Prisma</span></div>
+<div class="tree"><span class="row"><span class="folder-root">📁 backend/</span></span>
+<span class="row"><span class="lines">├─ </span><span class="key">📁 src/</span>                  <span class="comment"># código fuente de la API</span></span>
+<span class="row"><span class="lines">│  ├─ </span><span class="folder">📁 auth/</span>            <span class="comment"># autenticación y RBAC</span></span>
+<span class="row"><span class="lines">│  │  ├─ </span><span class="folder">📁 dto/</span></span>
+<span class="row"><span class="lines">│  │  ├─ </span><span class="folder">📁 guards/</span>        <span class="comment"># JwtCookie / Roles</span></span>
+<span class="row"><span class="lines">│  │  └─ </span><span class="folder">📁 strategies/</span>    <span class="comment"># Passport JWT</span></span>
+<span class="row"><span class="lines">│  ├─ </span><span class="folder">📁 interviews/</span>      <span class="comment"># ciclo de entrevista</span></span>
+<span class="row"><span class="lines">│  │  ├─ </span><span class="folder">📁 answers/</span></span>
+<span class="row"><span class="lines">│  │  ├─ </span><span class="folder">📁 dto/</span></span>
+<span class="row"><span class="lines">│  │  └─ </span><span class="folder">📁 services/</span></span>
+<span class="row"><span class="lines">│  ├─ </span><span class="folder">📁 evaluation/</span>      <span class="comment"># evaluación IA (BullMQ)</span></span>
+<span class="row"><span class="lines">│  │  ├─ </span><span class="folder">📁 interfaces/</span></span>
+<span class="row"><span class="lines">│  │  ├─ </span><span class="folder">📁 processors/</span>    <span class="comment"># worker de cola</span></span>
+<span class="row"><span class="lines">│  │  └─ </span><span class="folder">📁 services/</span></span>
+<span class="row"><span class="lines">│  ├─ </span><span class="folder">📁 knowledge/</span>       <span class="comment"># ingesta de corpus (RAG)</span></span>
+<span class="row"><span class="lines">│  │  ├─ </span><span class="folder">📁 dto/</span></span>
+<span class="row"><span class="lines">│  │  ├─ </span><span class="folder">📁 processors/</span></span>
+<span class="row"><span class="lines">│  │  └─ </span><span class="folder">📁 services/</span>      <span class="comment"># chunking · retrieval</span></span>
+<span class="row"><span class="lines">│  ├─ </span><span class="folder">📁 rag/</span>             <span class="comment"># generación aumentada</span></span>
+<span class="row"><span class="lines">│  │  └─ </span><span class="folder">📁 services/</span></span>
+<span class="row"><span class="lines">│  ├─ </span><span class="folder">📁 llm/</span>             <span class="comment"># OpenAI · Gemini · Mock</span></span>
+<span class="row"><span class="lines">│  │  ├─ </span><span class="folder">📁 interfaces/</span></span>
+<span class="row"><span class="lines">│  │  └─ </span><span class="folder">📁 services/</span>      <span class="comment"># circuit breaker</span></span>
+<span class="row"><span class="lines">│  ├─ </span><span class="folder">📁 reports/</span>         <span class="comment"># dashboard y reportes</span></span>
+<span class="row"><span class="lines">│  ├─ </span><span class="folder">📁 notifications/</span>   <span class="comment"># SSE + email</span></span>
+<span class="row"><span class="lines">│  ├─ </span><span class="folder">📁 catalogs/</span>        <span class="comment"># roles · lenguajes · skills</span></span>
+<span class="row"><span class="lines">│  │  └─ </span><span class="folder">📁 dto/</span></span>
+<span class="row"><span class="lines">│  ├─ </span><span class="folder">📁 challenges/</span>      <span class="comment"># retos de código</span></span>
+<span class="row"><span class="lines">│  ├─ </span><span class="folder">📁 achievements/</span>    <span class="comment"># gamificación</span></span>
+<span class="row"><span class="lines">│  ├─ </span><span class="folder">📁 health/</span>          <span class="comment"># health check</span></span>
+<span class="row"><span class="lines">│  ├─ </span><span class="folder">📁 common/</span>          <span class="comment"># prisma · filtros · audit</span></span>
+<span class="row"><span class="lines">│  │  └─ </span><span class="folder">📁 filters/</span></span>
+<span class="row"><span class="lines">│  ├─ </span><span class="file">📄 app.module.ts</span>     <span class="comment"># módulo raíz</span></span>
+<span class="row"><span class="lines">│  └─ </span><span class="file">📄 main.ts</span>           <span class="comment"># entry point</span></span>
+<span class="row"><span class="lines">├─ </span><span class="key">📁 prisma/</span>             <span class="comment"># ORM</span></span>
+<span class="row"><span class="lines">│  ├─ </span><span class="folder">📁 migrations/</span></span>
+<span class="row"><span class="lines">│  ├─ </span><span class="file">📄 schema.prisma</span>     <span class="comment"># modelo de datos + pgvector</span></span>
+<span class="row"><span class="lines">│  └─ </span><span class="file">📄 seed.ts</span></span>
+<span class="row"><span class="lines">├─ </span><span class="key">📁 test/</span>               <span class="comment"># integración + e2e</span></span>
+<span class="row"><span class="lines">└─ </span><span class="file">📄 Dockerfile</span></span>
+</div>
+    </div>
+
+    <!-- FRONTEND -->
+    <div class="panel">
+      <div class="panel-header"><span class="ico">⬢</span> Frontend <span class="tag">React 19 · Vite · TypeScript</span></div>
+<div class="tree"><span class="row"><span class="folder-root">📁 frontend/app/</span></span>
+<span class="row"><span class="lines">├─ </span><span class="key">📁 src/</span>                  <span class="comment"># código de la SPA</span></span>
+<span class="row"><span class="lines">│  ├─ </span><span class="folder">📁 pages/</span>           <span class="comment"># una carpeta por feature</span></span>
+<span class="row"><span class="lines">│  │  ├─ </span><span class="folder">📁 auth/</span></span>
+<span class="row"><span class="lines">│  │  ├─ </span><span class="folder">📁 dashboard/</span></span>
+<span class="row"><span class="lines">│  │  ├─ </span><span class="folder">📁 interview/</span>      <span class="comment"># wizard · sesión</span></span>
+<span class="row"><span class="lines">│  │  ├─ </span><span class="folder">📁 feedback/</span>       <span class="comment"># reportes</span></span>
+<span class="row"><span class="lines">│  │  ├─ </span><span class="folder">📁 knowledge/</span></span>
+<span class="row"><span class="lines">│  │  ├─ </span><span class="folder">📁 recruiter/</span></span>
+<span class="row"><span class="lines">│  │  ├─ </span><span class="folder">📁 admin/</span></span>
+<span class="row"><span class="lines">│  │  ├─ </span><span class="folder">📁 challenges/</span></span>
+<span class="row"><span class="lines">│  │  ├─ </span><span class="folder">📁 profile/</span></span>
+<span class="row"><span class="lines">│  │  └─ </span><span class="folder">📁 home/</span></span>
+<span class="row"><span class="lines">│  ├─ </span><span class="folder">📁 components/</span>      <span class="comment"># UI reutilizable</span></span>
+<span class="row"><span class="lines">│  ├─ </span><span class="folder">📁 store/</span>           <span class="comment"># estado global (Zustand)</span></span>
+<span class="row"><span class="lines">│  ├─ </span><span class="folder">📁 hooks/</span>           <span class="comment"># lógica reutilizable</span></span>
+<span class="row"><span class="lines">│  ├─ </span><span class="folder">📁 api/</span>             <span class="comment"># cliente HTTP tipado</span></span>
+<span class="row"><span class="lines">│  ├─ </span><span class="folder">📁 i18n/</span>            <span class="comment"># traducciones ES / EN</span></span>
+<span class="row"><span class="lines">│  │  └─ </span><span class="folder">📁 locales/</span></span>
+<span class="row"><span class="lines">│  ├─ </span><span class="folder">📁 theme/</span>           <span class="comment"># tokens de diseño</span></span>
+<span class="row"><span class="lines">│  ├─ </span><span class="folder">📁 styles/</span>          <span class="comment"># CSS global</span></span>
+<span class="row"><span class="lines">│  ├─ </span><span class="folder">📁 lib/</span>             <span class="comment"># utilidades</span></span>
+<span class="row"><span class="lines">│  ├─ </span><span class="folder">📁 assets/</span>          <span class="comment"># imágenes · svg</span></span>
+<span class="row"><span class="lines">│  ├─ </span><span class="folder">📁 stories/</span>         <span class="comment"># Storybook</span></span>
+<span class="row"><span class="lines">│  ├─ </span><span class="folder">📁 test/</span>            <span class="comment"># utilidades de test</span></span>
+<span class="row"><span class="lines">│  ├─ </span><span class="file">📄 App.tsx</span>           <span class="comment"># router raíz</span></span>
+<span class="row"><span class="lines">│  └─ </span><span class="file">📄 main.tsx</span>          <span class="comment"># bootstrap React</span></span>
+<span class="row"><span class="lines">├─ </span><span class="key">📁 public/</span>             <span class="comment"># estáticos</span></span>
+<span class="row"><span class="lines">├─ </span><span class="key">📁 tests/</span>              <span class="comment"># pruebas e2e (Playwright)</span></span>
+<span class="row"><span class="lines">├─ </span><span class="folder">📁 .storybook/</span></span>
+<span class="row"><span class="lines">├─ </span><span class="file">📄 vite.config.ts</span></span>
+<span class="row"><span class="lines">└─ </span><span class="file">📄 Dockerfile</span></span>
+</div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><b>Leyenda:</b></span>
+    <span><span class="sw key">📁</span> carpeta clave</span>
+    <span><span class="sw folder">📁</span> módulo de dominio</span>
+    <span><span class="sw">📄</span> archivo</span>
+    <span style="margin-left:auto"><b>Arquitectura:</b> monolito modular &nbsp;·&nbsp; <b>BD:</b> PostgreSQL 15 + pgvector</span>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<style>
+  html, body { margin: 0; background: #ffffff; }
+  #wrap { background: #ffffff; display: inline-block; padding: 30px 34px; }
+  #wrap svg { display: block; }
+</style>
+<script src="./mermaid.min.js"></script>
+</head>
+<body>
+<div id="wrap"></div>
+<script>
+const def = `
+flowchart TB
+
+usuario["<b>Usuario</b><br/><i>[Persona]</i><br/>Estudiante / postulante<br/>que practica entrevistas"]:::person
+admin["<b>Administrador</b><br/><i>[Persona]</i><br/>Gestiona el banco de<br/>preguntas y catálogos"]:::person
+
+subgraph SYS["Vinki — Plataforma de práctica de entrevistas con IA"]
+  direction TB
+  spa["<b>Single-Page Application</b><br/><i>[Contenedor: React · Vite · Ant Design]</i><br/>Interfaz de entrevistas, feedback<br/>y panel de administración"]:::container
+  api["<b>API Application</b><br/><i>[Contenedor: NestJS · Node 20]</i><br/>API REST · autenticación JWT · lógica de<br/>negocio · orquestación del pipeline RAG"]:::container
+  db[("<b>Base de datos</b><br/><i>[PostgreSQL + pgvector]</i><br/>Usuarios, entrevistas, preguntas,<br/>evaluaciones y embeddings")]:::db
+  redis[("<b>Cache y colas</b><br/><i>[Redis + BullMQ]</i><br/>Cache y trabajos en<br/>segundo plano")]:::db
+  minio[("<b>Almacén de objetos</b><br/><i>[MinIO · S3]</i><br/>Audios de las<br/>respuestas")]:::db
+end
+
+llm["<b>Proveedor LLM</b><br/><i>[Sistema externo]</i><br/>OpenAI / Google Gemini<br/>preguntas, evaluación y embeddings"]:::ext
+gmail["<b>Gmail API</b><br/><i>[Sistema externo]</i><br/>Notificaciones por<br/>correo (OAuth2)"]:::ext
+
+usuario -- "Usa · HTTPS" --> spa
+admin -- "Administra · HTTPS" --> spa
+spa -- "Llamadas a la API · JSON/HTTPS" --> api
+api -- "Lee y escribe · Prisma/SQL" --> db
+api -- "Encola y cachea · ioredis" --> redis
+api -- "Guarda/recupera audios · API S3" --> minio
+api -- "Genera y evalúa · HTTPS/REST" --> llm
+api -- "Envía correos · HTTPS/REST" --> gmail
+
+classDef person    fill:#08427B,stroke:#052E56,stroke-width:1px,color:#ffffff;
+classDef container fill:#1168BD,stroke:#0B4884,stroke-width:1px,color:#ffffff;
+classDef db        fill:#1168BD,stroke:#0B4884,stroke-width:1px,color:#ffffff;
+classDef ext       fill:#8A8A8A,stroke:#5F5F5F,stroke-width:1px,color:#ffffff;
+
+style SYS fill:#F4F8FD,stroke:#5A6B7B,stroke-width:1.5px,stroke-dasharray:7 5,color:#2b3a47;
+`;
+
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  securityLevel: 'loose',
+  flowchart: { htmlLabels: true, curve: 'basis', nodeSpacing: 60, rankSpacing: 85, padding: 14 },
+  themeVariables: { fontFamily: 'Segoe UI, Arial, sans-serif', fontSize: '17px', lineColor: '#5A6B7B' },
+});
+
+mermaid.render('graph', def)
+  .then(({ svg }) => { document.getElementById('wrap').innerHTML = svg; window.__done = true; })
+  .catch((e) => {
+    document.body.innerHTML = '<pre style="color:red">' + (e && e.message ? e.message : e) + '</pre>';
+    window.__err = String(e && e.message ? e.message : e); window.__done = true;
+  });
+</script>
+</body>
+</html>

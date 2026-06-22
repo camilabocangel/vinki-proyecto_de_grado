@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<style>
+  html, body { margin: 0; background: #ffffff; }
+  #wrap { background: #ffffff; display: inline-block; padding: 28px 32px; }
+  #wrap svg { display: block; }
+</style>
+<script src="./mermaid.min.js"></script>
+</head>
+<body>
+<div id="wrap"></div>
+<script>
+const def = `
+flowchart LR
+
+subgraph DEV[" DESARROLLADOR "]
+  direction TB
+  d1["Commit / Push<br/>ramas: master · feat/* · qa · 001-*<br/>(+ Pull Request a master)"]
+end
+
+subgraph SCM[" GESTOR DE CÓDIGO (GitHub) "]
+  direction TB
+  s1["Repositorio Git<br/>dispara los workflows<br/>ci.yml · e2e.yml"]
+end
+
+subgraph CI[" INTEGRACIÓN CONTINUA — GitHub Actions "]
+  direction TB
+  c0["Runner ubuntu-latest<br/>Node 20 · npm ci"]
+  c1["Verificación de tipos<br/>tsc --noEmit"]
+  c2["Lint + Lint de seguridad<br/>eslint · eslint-plugin-security"]
+  c3["Pruebas unitarias + cobertura<br/>Jest (backend) · Vitest (frontend)"]
+  c4["Pruebas de integración / E2E<br/>Prisma migrate + seed · Playwright<br/>sobre PostgreSQL y Redis reales"]
+  c5["Audit de dependencias<br/>npm audit"]
+  svc["Service containers reales del runner<br/>PostgreSQL pgvector:pg15 · Redis 7-alpine"]
+  c0 --> c1 --> c2 --> c3 --> c4 --> c5
+  svc -.-> c3
+  svc -.-> c4
+end
+
+subgraph DOCK[" IMÁGENES DOCKER "]
+  direction TB
+  k1["Build de imágenes<br/>docker compose build<br/>backend · frontend"]
+end
+
+subgraph DEP[" DESPLIEGUE — Servidor Skynet (UPB) "]
+  direction TB
+  p0["git clone del repositorio"]
+  p1["Configurar variables de entorno<br/>.env: DATABASE_URL · REDIS_URL<br/>JWT_* · OPENAI_API_KEY"]
+  p2["docker compose -f docker-compose.prod.yml up -d"]
+  p3["Migraciones Prisma<br/>prisma migrate deploy"]
+  p4["nginx 1.27-alpine<br/>Reverse proxy + TLS<br/>:443 · :80 → 443"]
+  p0 --> p1 --> p2 --> p3 --> p4
+  fe["frontend<br/>Vite · :5173<br/>build ./frontend/app"]
+  be["backend<br/>NestJS · :3000<br/>build ./backend"]
+  pg["postgres<br/>pgvector:pg15<br/>vol pgdata"]
+  rd["redis<br/>7-alpine<br/>vol redisdata"]
+  mn["minio<br/>S3 · vol miniodata"]
+  p4 -- "/" --> fe
+  p4 -- "/api" --> be
+  be --> pg
+  be --> rd
+  be --> mn
+end
+
+subgraph PROD[" PRODUCCIÓN "]
+  direction TB
+  r1["Servicio en línea HTTPS<br/>para usuarios finales"]
+end
+
+%% Flujo horizontal entre etapas (enlaces subgrafo-a-subgrafo:
+%% preservan el direction TB interno de cada columna).
+DEV  == "push"          ==> SCM
+SCM  == "trigger build" ==> CI
+CI   == "build"         ==> DOCK
+DOCK == "deploy"        ==> DEP
+DEP  == "HTTPS :443"    ==> PROD
+
+classDef dev  fill:#FCE5CD,stroke:#E8923A,stroke-width:1.5px,color:#5b3a16;
+classDef scm  fill:#FFF2A8,stroke:#D9B400,stroke-width:1.5px,color:#5b5300;
+classDef ci   fill:#F3D9F2,stroke:#A64DBF,stroke-width:1.5px,color:#4a1452;
+classDef dock fill:#C9D4F2,stroke:#3F5FBF,stroke-width:1.5px,color:#16265e;
+classDef stg  fill:#FAD8D8,stroke:#D9534F,stroke-width:1.5px,color:#5e1414;
+classDef infra fill:#DCE6FB,stroke:#3F5FBF,stroke-width:1.5px,color:#16265e;
+classDef prod fill:#CDEDCD,stroke:#46A046,stroke-width:1.5px,color:#13420f;
+
+class d1 dev;
+class s1 scm;
+class c0,c1,c2,c3,c4,c5,svc ci;
+class k1 dock;
+class p0,p1,p2,p3,p4 stg;
+class fe,be,pg,rd,mn infra;
+class r1 prod;
+
+style DEV  fill:#FFFFFF,stroke:#E8923A,stroke-width:1px,color:#5b3a16;
+style SCM  fill:#FFFFFF,stroke:#D9B400,stroke-width:1px,color:#5b5300;
+style CI   fill:#FFFFFF,stroke:#A64DBF,stroke-width:1px,color:#4a1452;
+style DOCK fill:#FFFFFF,stroke:#3F5FBF,stroke-width:1px,color:#16265e;
+style DEP  fill:#FFFFFF,stroke:#D9534F,stroke-width:1px,color:#5e1414;
+style PROD fill:#FFFFFF,stroke:#46A046,stroke-width:1px,color:#13420f;
+`;
+
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'default',
+  securityLevel: 'loose',
+  flowchart: { htmlLabels: true, curve: 'basis', nodeSpacing: 45, rankSpacing: 70, padding: 10 },
+  themeVariables: { fontFamily: 'Segoe UI, Arial, sans-serif', fontSize: '15px' },
+});
+
+mermaid.render('graph', def)
+  .then(({ svg }) => { document.getElementById('wrap').innerHTML = svg; window.__done = true; })
+  .catch((e) => {
+    document.body.innerHTML = '<pre style="color:red">' + (e && e.message ? e.message : e) + '</pre>';
+    window.__err = String(e && e.message ? e.message : e); window.__done = true;
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<style>
+  html, body { margin: 0; background: #ffffff; }
+  #wrap { background: #ffffff; display: inline-block; padding: 30px 36px; }
+  #wrap svg { display: block; }
+</style>
+<script src="./mermaid.min.js"></script>
+</head>
+<body>
+<div id="wrap"></div>
+<script>
+const def = `
+flowchart TB
+
+spa["<b>Single-Page Application</b><br/><i>[Contenedor: React · Vite]</i><br/>Interfaz de usuario en el navegador"]:::container
+
+subgraph SYS["API Application&nbsp;&nbsp;·&nbsp;&nbsp;[Contenedor: NestJS · Node 20]"]
+  direction TB
+
+  ctrl["<b>REST Controllers</b><br/><i>[Componentes: NestJS Controllers]</i><br/>Auth · Interviews · Knowledge · Admin"]:::component
+
+  subgraph SRV[" "]
+    direction LR
+    authSvc["<b>Auth Service</b><br/><i>[Componente: NestJS Provider]</i><br/>JWT (RSA) y bcrypt"]:::component
+    intSvc["<b>Interview Service</b><br/><i>[Componente: NestJS Provider]</i><br/>Preguntas, evaluación y transcripción"]:::component
+    ragSvc["<b>Knowledge / RAG Service</b><br/><i>[Componente: NestJS Provider]</i><br/>Chunking, embeddings y recuperación"]:::component
+  end
+
+  subgraph SRV2[" "]
+    direction LR
+    llmGw["<b>LLM Gateway</b><br/><i>[Componente: NestJS Provider]</i><br/>Fachada OpenAI/Gemini + circuit breaker"]:::component
+    data["<b>Acceso a datos (Prisma)</b><br/><i>[Componente: NestJS Provider]</i><br/>Repositorios ORM"]:::component
+  end
+end
+
+db[("<b>Base de datos</b><br/><i>[Contenedor: PostgreSQL + pgvector]</i>")]:::container
+redis[("<b>Cache y colas</b><br/><i>[Contenedor: Redis + BullMQ]</i>")]:::container
+llm["<b>Proveedor LLM</b><br/><i>[Sistema externo]</i><br/>OpenAI / Google Gemini"]:::ext
+gmail["<b>Gmail API</b><br/><i>[Sistema externo]</i><br/>Notificaciones (OAuth2)"]:::ext
+
+spa -- "Usa · JSON/HTTPS" --> ctrl
+
+ctrl --> authSvc
+ctrl --> intSvc
+ctrl --> ragSvc
+
+intSvc --> ragSvc
+intSvc --> llmGw
+ragSvc --> llmGw
+
+authSvc --> data
+intSvc --> data
+ragSvc --> data
+
+data -- "Lee y escribe · Prisma/SQL" --> db
+llmGw -- "Genera/embeddings · HTTPS" --> llm
+intSvc -- "Encola trabajos · BullMQ" --> redis
+intSvc -- "Envía correos · HTTPS" --> gmail
+
+classDef container fill:#1168BD,stroke:#0B4884,stroke-width:1px,color:#ffffff;
+classDef component fill:#85BBF0,stroke:#4E92D4,stroke-width:1px,color:#0a2740;
+classDef ext       fill:#8A8A8A,stroke:#5F5F5F,stroke-width:1px,color:#ffffff;
+
+class spa,db,redis container;
+class ctrl,authSvc,intSvc,ragSvc,llmGw,data component;
+class llm,gmail ext;
+
+style SYS  fill:#F4F8FD,stroke:#5A6B7B,stroke-width:1.5px,stroke-dasharray:7 5,color:#22303c;
+style SRV  fill:#00000000,stroke:#00000000,color:#00000000;
+style SRV2 fill:#00000000,stroke:#00000000,color:#00000000;
+`;
+
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  securityLevel: 'loose',
+  flowchart: { htmlLabels: true, curve: 'basis', nodeSpacing: 55, rankSpacing: 80, padding: 14 },
+  themeVariables: { fontFamily: 'Segoe UI, Arial, sans-serif', fontSize: '17px', lineColor: '#5A6B7B' },
+});
+
+mermaid.render('graph', def)
+  .then(({ svg }) => { document.getElementById('wrap').innerHTML = svg; window.__done = true; })
+  .catch((e) => {
+    document.body.innerHTML = '<pre style="color:red">' + (e && e.message ? e.message : e) + '</pre>';
+    window.__err = String(e && e.message ? e.message : e); window.__done = true;
+  });
+</script>
+</body>
+</html>

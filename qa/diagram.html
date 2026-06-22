@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<style>
+  html, body { margin: 0; background: #ffffff; }
+  #wrap { background: #ffffff; display: inline-block; padding: 28px 32px; }
+  #wrap svg { display: block; }
+</style>
+<script src="./mermaid.min.js"></script>
+</head>
+<body>
+<div id="wrap"></div>
+<script>
+const def = `
+flowchart TB
+
+internet(["Internet / Usuarios finales"])
+
+subgraph CI["FASE CI — GitHub Actions · .github/workflows/ci.yml + e2e.yml · en cada commit / push / PR a master"]
+  direction TB
+  commit["Commit / Push<br/>ramas: master · feat/* · qa · 001-*<br/>(y Pull Request a master)"]
+  runner["GitHub Actions runner<br/>ubuntu-latest · Node 20 · npm ci"]
+  types["1 · Verificación de tipos<br/>tsc --noEmit (backend + frontend)"]
+  unit["2 · Pruebas unitarias + cobertura<br/>Jest (backend) · Vitest (frontend)"]
+  integ["3 · Pruebas de integración / E2E<br/>Prisma migrate + seed · Playwright<br/>sobre PostgreSQL y Redis reales"]
+  dbuild["4 · Build de imágenes Docker<br/>backend · frontend (docker compose build)"]
+
+  subgraph CISVC["Service containers efímeros del runner"]
+    direction LR
+    pgci[("PostgreSQL<br/>pgvector/pgvector:pg15")]
+    rdci[("Redis<br/>redis:7-alpine")]
+  end
+
+  commit --> runner --> types --> unit --> integ --> dbuild
+  CISVC -. "servicios reales" .-> unit
+  CISVC -. "servicios reales" .-> integ
+end
+
+subgraph DEP["FASE DESPLIEGUE — Servidor Skynet (UPB) · docker compose -f docker-compose.prod.yml"]
+  direction TB
+  clone["1 · git clone del repositorio"]
+  envc["2 · Configurar variables de entorno<br/>.env → DATABASE_URL · REDIS_URL · JWT_* · OPENAI_API_KEY"]
+  up["3 · docker compose -f docker-compose.prod.yml up -d"]
+  migrate["4 · Migraciones de base de datos<br/>prisma migrate deploy"]
+  nginx{{"nginx 1.27-alpine<br/>Reverse proxy + TLS<br/>:443 · :80 → 443"}}
+
+  subgraph STACK["5 contenedores de producción"]
+    direction TB
+    fe["frontend<br/>Vite · expone :5173<br/>build ./frontend/app"]
+    be["backend<br/>NestJS · expone :3000<br/>build ./backend"]
+    pg[("postgres<br/>pgvector/pgvector:pg15<br/>volumen: pgdata")]
+    rd[("redis<br/>redis:7-alpine<br/>volumen: redisdata")]
+    mn[("minio<br/>minio/minio · almacén S3<br/>volumen: miniodata")]
+  end
+
+  clone --> envc --> up --> migrate --> nginx
+  nginx -- "/" --> fe
+  nginx -- "/api" --> be
+  be --> pg
+  be --> rd
+  be --> mn
+end
+
+internet -- "HTTPS :443" --> nginx
+dbuild == "despliegue en el servidor" ==> clone
+
+classDef ci fill:#E8F0FE,stroke:#1A73E8,stroke-width:1.5px,color:#0B2447;
+classDef dep fill:#E6F4EA,stroke:#188038,stroke-width:1.5px,color:#0B2447;
+classDef app fill:#D7E8FF,stroke:#1A56B0,stroke-width:1.5px,color:#0B2447;
+classDef db fill:#FEF7E0,stroke:#F9AB00,stroke-width:1.5px,color:#3C2F00;
+classDef proxy fill:#F3E8FD,stroke:#8430CE,stroke-width:2px,color:#2A0A4A;
+classDef ep fill:#FCE8E6,stroke:#D93025,stroke-width:2px,color:#5C0A00;
+
+class commit,runner,types,unit,integ,dbuild ci;
+class clone,envc,up,migrate dep;
+class fe,be app;
+class pgci,rdci,pg,rd,mn db;
+class nginx proxy;
+class internet ep;
+
+style CI fill:#F6F9FE,stroke:#1A73E8,stroke-width:2px,color:#0B2447;
+style DEP fill:#F4FBF6,stroke:#188038,stroke-width:2px,color:#0B2447;
+style CISVC fill:#FFFDF5,stroke:#F9AB00,stroke-dasharray:4 3,color:#3C2F00;
+style STACK fill:#FBFCFE,stroke:#5F6368,stroke-width:1.5px,color:#202124;
+`;
+
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'default',
+  securityLevel: 'loose',
+  flowchart: { htmlLabels: true, curve: 'basis', nodeSpacing: 55, rankSpacing: 60, padding: 12 },
+  themeVariables: { fontFamily: 'Segoe UI, Arial, sans-serif', fontSize: '16px' },
+});
+
+mermaid.render('graph', def)
+  .then(({ svg }) => {
+    document.getElementById('wrap').innerHTML = svg;
+    window.__done = true;
+  })
+  .catch((e) => {
+    document.body.innerHTML = '<pre style="color:red">' + (e && e.message ? e.message : e) + '</pre>';
+    window.__err = String(e && e.message ? e.message : e);
+    window.__done = true;
+  });
+</script>
+</body>
+</html>

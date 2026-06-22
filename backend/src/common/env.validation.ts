@@ -74,6 +74,22 @@ class EnvironmentVariables {
   @IsString()
   @IsOptional()
   FRONTEND_URL?: string;
+
+  @IsString()
+  @IsOptional()
+  GMAIL_CLIENT_ID?: string;
+
+  @IsString()
+  @IsOptional()
+  GMAIL_CLIENT_SECRET?: string;
+
+  @IsString()
+  @IsOptional()
+  GMAIL_REFRESH_TOKEN?: string;
+
+  @IsString()
+  @IsOptional()
+  GMAIL_SENDER_EMAIL?: string;
 }
 
 export function validate(config: Record<string, unknown>) {

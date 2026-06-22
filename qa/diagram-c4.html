@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<style>
+  html, body { margin: 0; background: #ffffff; }
+  #wrap { background: #ffffff; display: inline-block; padding: 28px 32px; }
+  #wrap svg { display: block; }
+</style>
+<script src="./mermaid.min.js"></script>
+</head>
+<body>
+<div id="wrap"></div>
+<script>
+const def = `
+C4Container
+    title Diagrama de Contenedores (C4) — Vinki · Plataforma de práctica de entrevistas con IA
+
+    Person(user, "Usuario", "Estudiante / postulante que practica entrevistas técnicas")
+    Person(admin, "Administrador", "Gestiona el banco de preguntas y los catálogos")
+
+    System_Boundary(c1, "Vinki") {
+        Container(spa, "Single-Page Application", "React · Vite · Ant Design", "Entrega en el navegador la interfaz de entrevistas, feedback y panel de administración")
+        Container(api, "API Application", "NestJS · Node 20", "API REST, autenticación JWT, lógica de negocio y orquestación del pipeline RAG")
+        ContainerDb(db, "Base de datos", "PostgreSQL + pgvector", "Usuarios, entrevistas, preguntas, evaluaciones y embeddings vectoriales")
+        ContainerDb(redis, "Cache y colas", "Redis + BullMQ", "Cache y trabajos en segundo plano (ingesta de documentos, notificaciones)")
+        ContainerDb(minio, "Almacén de objetos", "MinIO (compatible S3)", "Audios de las respuestas de los usuarios")
+    }
+
+    System_Ext(llm, "Proveedor LLM", "OpenAI / Google Gemini — genera preguntas, evalúa respuestas y calcula embeddings")
+    System_Ext(gmail, "Gmail API", "Envío de notificaciones por correo vía OAuth2")
+
+    Rel(user, spa, "Usa", "HTTPS")
+    Rel(admin, spa, "Administra", "HTTPS")
+    Rel(spa, api, "Realiza llamadas a la API", "JSON / HTTPS")
+    Rel(api, db, "Lee y escribe", "Prisma · SQL")
+    Rel(api, redis, "Encola trabajos y cachea", "ioredis")
+    Rel(api, minio, "Guarda y recupera audios", "API S3")
+    Rel(api, llm, "Genera y evalúa contenido", "HTTPS / REST")
+    Rel(api, gmail, "Envía correos", "HTTPS / REST")
+
+    UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
+`;
+
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'default',
+  securityLevel: 'loose',
+  themeVariables: { fontFamily: 'Segoe UI, Arial, sans-serif' },
+  c4: { diagramMarginX: 20, diagramMarginY: 20, c4ShapeMargin: 40, width: 240, height: 150 },
+});
+
+mermaid.render('graph', def)
+  .then(({ svg }) => { document.getElementById('wrap').innerHTML = svg; window.__done = true; })
+  .catch((e) => {
+    document.body.innerHTML = '<pre style="color:red">' + (e && e.message ? e.message : e) + '</pre>';
+    window.__err = String(e && e.message ? e.message : e); window.__done = true;
+  });
+</script>
+</body>
+</html>
